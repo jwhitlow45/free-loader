@@ -1,10 +1,10 @@
 {
-  "name": "Example Plugin",
-  "author": "John Doe",
-  "flags": ["debug", "_root"],
+  "name": "Free Game Notifier",
+  "author": "jwhitlow45",
+  "flags": ["debug"],
   "publish": {
-    "tags": ["template", "root"],
-    "description": "Decky example plugin.",
-    "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
+    "tags": ["free", "game", "games", "notifier", "steam", "store", "library"],
+    "description": "Plugin to send Steam Deck notifications of free games in the steam store.",
+    "image": "https://i.imgflip.com/4uhugx.png?a467808"
   }
 }
