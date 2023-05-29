@@ -60,12 +60,15 @@ class Settings:
         logger.info('Restored settings file')
         
     def __parse_settings(self, user_settings):
-        # Read update frequency
+        self.__parse_update_frequency_settings(user_settings)
+        self.__parse_notification_settings(user_settings)
+        
+    def __parse_update_frequency_settings(self, user_settings):
         update_frequency = user_settings.get('update_frequency', UpdateFrequency())
         self.update_frequency.days = update_frequency.get('days', DEF_DAYS)
         self.update_frequency.hours = update_frequency.get('hours', DEF_HOURS)
         self.update_frequency.minutes = update_frequency.get('minutes', DEF_MINUTES)
         
-        # Read notification settings
+    def __parse_notification_settings(self, user_settings):
         self.notify_forever_games = user_settings.get('notify_forever_games', DEF_NOTIFY_FOREVER_GAMES)
         self.notify_trial_games = user_settings.get('notify_trial_games', DEF_NOTIFY_TRIAL_GAMES)

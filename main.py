@@ -1,28 +1,37 @@
 import os
-
-# The decky plugin module is located at decky-loader/plugin
-# For easy intellisense checkout the decky-loader code one directory up
-# or add the `decky-loader/plugin` path to `python.analysis.extraPaths` in `.vscode/settings.json`
-import decky_plugin
+import shutil
+import json
 from decky_plugin import logger
-
-settingsDir = os.environ["DECKY_PLUGIN_SETTINGS_DIR"]
-
-# REWRITE TO USE JSON FILE IN DIRECTORY
+from Settings import Settings
 
 class Plugin:
-    # Expose settings methods to allow them to be called from typescript
-    # Credit to the decky-autosuspend plugin for this snippet
-    # https://github.com/jurassicplayer/decky-autosuspend/blob/main/main.py
+    def __init__(self):
+        self.user_settings = Settings()
+        self.user_settings.read_settings()
+        
     async def settings_read(self):
-        logger.info('Reading settings')
-        pass
+        self.user_settings.read_settings()
+        return vars(self.user_settings)
+            
     async def settings_commit(self):
-        logger.info('Saving settings')
-        pass
-    async def settings_getSetting(self, key: str, defaults):
+        self.user_settings.commit_settings()
+        
+    async def settings_getSetting(self, key: str):
         logger.info('Get {}'.format(key))
-        pass
-    async def settings_setSetting(self, key: str, value):
-        logger.info('Set {}: {}'.format(key, value))
-        pass
+        settings_dict = vars(self.user_settings)
+        return settings_dict.get(key)
+    
+    async def settings_set_update_frequency(self, update_freq_json):
+        self.user_settings.__parse_update_frequency_settings(update_freq_json)
+        self.settings_commit()        
+    
+    async def settings_toggle_notify_forever_games(self):
+        self.user_settings.notify_forever_games -= 1
+        self.user_settings.notify_forever_games *= -1
+        self.settings_commit()
+        
+    async def settings_toggle_notify_trial_games(self):
+        self.user_settings.notify_forever_games -= 1
+        self.user_settings.notify_trial_games *= 1
+        self.settings_commit()
+        
