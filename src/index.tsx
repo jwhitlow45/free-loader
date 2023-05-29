@@ -7,21 +7,7 @@ import {
 } from "decky-frontend-lib";
 import { VFC } from "react";
 import { FaBell } from "react-icons/fa";
-
-import { ActionsPanel } from "./components/ActionsPanel";
-import { SettingsPanel } from "./components/SettingsPanel";
-import { UpdateFrequencyPanel } from "./components/UpdateFrequencyPanel";
-
-const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
-
-  return (
-    <div>
-      <ActionsPanel />
-      <UpdateFrequencyPanel />
-      <SettingsPanel />
-    </div>
-  );
-};
+import { FreeLoader } from "./components/FreeLoader";
 
 const FreeGamesRouter: VFC = () => {
   return (
@@ -41,7 +27,7 @@ export default definePlugin((serverApi: ServerAPI) => {
 
   return {
     title: <div className={staticClasses.Title}>Free Loader</div>,
-    content: <Content serverAPI={serverApi} />,
+    content: <FreeLoader serverAPI={serverApi} />,
     icon: <FaBell />,
     onDismount() {
       serverApi.routerHook.removeRoute("/free-games");

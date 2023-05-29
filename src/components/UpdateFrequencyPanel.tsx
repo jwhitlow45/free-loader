@@ -1,7 +1,8 @@
 import { Field, PanelSection, PanelSectionRow } from "decky-frontend-lib";
 import { FrequencyRow } from "./FrequencyRow";
+import { ApiProps } from "./FreeLoader";
 
-function UpdateFrequencyPanel() {
+const UpdateFrequencyPanel: React.FunctionComponent<ApiProps> = (props) => {
   return (
     <PanelSection title="Update Frequency">
       <PanelSectionRow>
@@ -12,9 +13,9 @@ function UpdateFrequencyPanel() {
           spacingBetweenLabelAndChild="none"
           childrenContainerWidth="max"
         >
-          <FrequencyRow label='Days' value='10'></FrequencyRow>
-          <FrequencyRow label='Hours' value='10'></FrequencyRow>
-          <FrequencyRow label='Minutes' value='10'></FrequencyRow>
+          <FrequencyRow label='Days' value={10}></FrequencyRow>
+          <FrequencyRow label='Hours' value={10}></FrequencyRow>
+          <FrequencyRow label='Minutes' value={10}></FrequencyRow>
         </Field>
       </PanelSectionRow>
     </PanelSection>
