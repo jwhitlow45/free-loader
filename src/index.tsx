@@ -10,14 +10,14 @@ import { FaBell } from "react-icons/fa";
 
 import { ActionsPanel } from "./components/ActionsPanel";
 import { SettingsPanel } from "./components/SettingsPanel";
-
-const STEAM_DB_FREE_GAMES_URL = 'https://steamdb.info/upcoming/free/';
+import { UpdateFrequencyPanel } from "./components/UpdateFrequencyPanel";
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
 
   return (
     <div>
       <ActionsPanel />
+      <UpdateFrequencyPanel />
       <SettingsPanel />
     </div>
   );
