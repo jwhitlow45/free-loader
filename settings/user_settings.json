@@ -1,0 +1,9 @@
+{
+    "update_frequency": {
+        "days": 0,
+        "hours": 12,
+        "minutes": 0
+    },
+    "notify_forever_games": 1,
+    "notify_trial_games": 1
+}
