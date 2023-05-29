@@ -12,9 +12,9 @@ function UpdateFrequencyPanel() {
           spacingBetweenLabelAndChild="none"
           childrenContainerWidth="max"
         >
-          <FrequencyRow label='Minutes' value='10'></FrequencyRow>
-          <FrequencyRow label='Hours' value='10'></FrequencyRow>
           <FrequencyRow label='Days' value='10'></FrequencyRow>
+          <FrequencyRow label='Hours' value='10'></FrequencyRow>
+          <FrequencyRow label='Minutes' value='10'></FrequencyRow>
         </Field>
       </PanelSectionRow>
     </PanelSection>
