@@ -40,7 +40,7 @@ export default definePlugin((serverApi: ServerAPI) => {
   });
 
   return {
-    title: <div className={staticClasses.Title}>Free Game Notifier</div>,
+    title: <div className={staticClasses.Title}>Free Loader</div>,
     content: <Content serverAPI={serverApi} />,
     icon: <FaBell />,
     onDismount() {

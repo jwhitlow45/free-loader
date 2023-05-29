@@ -1,9 +1,9 @@
 {
-  "name": "Free Game Notifier",
+  "name": "Free Loader",
   "author": "jwhitlow45",
   "flags": ["debug"],
   "publish": {
-    "tags": ["free", "game", "games", "notifier", "steam", "store", "library"],
+    "tags": ["free", "game", "games", "notifications", "steam", "store", "library", "loader"],
     "description": "Plugin to send Steam Deck notifications of free games in the steam store.",
     "image": "https://i.imgflip.com/4uhugx.png?a467808"
   }
