@@ -29,9 +29,11 @@ class Plugin:
         self.user_settings.notify_forever_games -= 1
         self.user_settings.notify_forever_games *= -1
         self.settings_commit()
+        return { 'value' : self.user_settings.notify_forever_games}
         
     async def settings_toggle_notify_trial_games(self):
         self.user_settings.notify_forever_games -= 1
         self.user_settings.notify_trial_games *= 1
         self.settings_commit()
+        return { 'value' : self.user_settings.notify_trial_games}
         

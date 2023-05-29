@@ -1,6 +1,6 @@
 import json
 import os
-from decky_plugin import logger
+# from decky_plugin import logger
 
 DEF_DAYS = 0
 DEF_HOURS = 12
@@ -33,23 +33,25 @@ class Settings:
         self.notify_trial_games = notify_trial_games
     
     def read_settings(self):
-        if not os.path.exists(SETTINGS_FILE_PATH) or not os.path.isfile(SETTINGS_FILE_PATH):
+        if not self.__is_settings_file_exist():
             self.restore_settings()
         try:
             with open(SETTINGS_FILE_PATH, 'r') as file:
                 user_settings = json.load(file)
                 self.__parse_settings(user_settings)
         except Exception as e:
-            logger.info(f'Exception while trying to read settings file: {e}')
+            # logger.info(f'Exception while trying to read settings file: {e}')
             self.restore_settings()
-        logger.info('Read user settings')
+        # logger.info('Read user settings')
     
     def commit_settings(self):
+        if not self.__is_settings_file_exist():
+            self.restore_settings()
         with open(SETTINGS_FILE_PATH, 'w') as file:
             file.seek(0)
             json.dump(vars(self), file, indent=4, cls=UpdateFrequencyEncoder)
             file.truncate()
-        logger.info('Saved changes to settings file')
+        # logger.info('Saved changes to settings file')
     
     def restore_settings(self):
         defaults = Settings()
@@ -57,8 +59,11 @@ class Settings:
             file.seek(0)
             json.dump(vars(defaults), file, indent=4, cls=UpdateFrequencyEncoder)
             file.truncate()
-        logger.info('Restored settings file')
-        
+        # logger.info('Restored settings file')
+
+    def __is_settings_file_exist(self):
+        return os.path.exists(SETTINGS_FILE_PATH) and os.path.isfile(SETTINGS_FILE_PATH)
+
     def __parse_settings(self, user_settings):
         self.__parse_update_frequency_settings(user_settings)
         self.__parse_notification_settings(user_settings)
@@ -72,3 +77,6 @@ class Settings:
     def __parse_notification_settings(self, user_settings):
         self.notify_forever_games = user_settings.get('notify_forever_games', DEF_NOTIFY_FOREVER_GAMES)
         self.notify_trial_games = user_settings.get('notify_trial_games', DEF_NOTIFY_TRIAL_GAMES)
+        
+test = Settings()
+test.restore_settings()

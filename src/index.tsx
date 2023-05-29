@@ -8,6 +8,7 @@ import {
 import { VFC } from "react";
 import { FaBell } from "react-icons/fa";
 import { FreeLoader } from "./components/FreeLoader";
+import { PyCaller } from "./PyCaller";
 
 const FreeGamesRouter: VFC = () => {
   return (
@@ -21,13 +22,16 @@ const FreeGamesRouter: VFC = () => {
 };
 
 export default definePlugin((serverApi: ServerAPI) => {
+  PyCaller.setServer(serverApi);
   serverApi.routerHook.addRoute("/free-games", FreeGamesRouter, {
     exact: true,
   });
+  
+  serverApi.callPluginMethod('settings_toggle_notify_forever_games', {});
 
   return {
     title: <div className={staticClasses.Title}>Free Loader</div>,
-    content: <FreeLoader serverAPI={serverApi} />,
+    content: <FreeLoader />,
     icon: <FaBell />,
     onDismount() {
       serverApi.routerHook.removeRoute("/free-games");

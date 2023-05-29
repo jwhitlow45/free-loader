@@ -1,19 +1,54 @@
-import { ButtonItem, PanelSection, PanelSectionRow } from "decky-frontend-lib";
-import { ApiProps } from "./FreeLoader";
+import { ButtonItem, PanelSection, PanelSectionRow, ToggleField } from "decky-frontend-lib";
+import { useEffect, useState } from "react";
+import { PyCaller, SettingsWrapper } from "../PyCaller";
 
-const SettingsPanel: React.FunctionComponent<ApiProps> = (props) => {
+const SettingsPanel: React.FunctionComponent = () => {
+
+  const [settings, setSettings] = useState<SettingsWrapper>({});
+  const [isSettingsLoaded, setSettingsLoaded] = useState(false);
+  const [notifyForeverGames, setNotifyForeverGames] = useState(false);
+  const [notifyTrialGames, setNotifyTrialGames] = useState(false);
+
+  const [_, updateGUI] = useState('');
+
+  useEffect(() => {
+    PyCaller.getSettings().then((response) => {
+      if (response.success) {
+        setSettings(response.result)
+        setSettingsLoaded(true);
+        setNotifyForeverGames(settings[0].notify_forever_games)
+        setNotifyTrialGames(settings[0].notify_trial_games)
+      }
+    })
+  });
+
   return (
     <PanelSection title="Settings">
       <PanelSectionRow>
+        <ToggleField
+          label='Notify on Forever Games'
+          checked={notifyForeverGames}
+          layout='below'
+          onChange={() => {
+            async () => {
+              PyCaller.toggleNotifyForeverGames().then((response) => {
+                if (response.success) {
+                  let toggleValue = response.result[0].value;
+                  setNotifyForeverGames(toggleValue);
+                }
+              });
+            }
+        }}></ToggleField>
         <ButtonItem layout='below' onClick={() => {
-          props.serverAPI.callPluginMethod('settings_setSetting', { 'key':'freeloader', 'value':'test' });
-          props.serverAPI.callPluginMethod('settings_commit', {});
-        }}>set setting</ButtonItem>
-        <ButtonItem id='test-element' layout='below' onClick={() => {
-          let test = document.getElementById('test-element');
-          let result = props.serverAPI.callPluginMethod('settings_getSetting', { 'key':'freeloader' });
-          result.then((value) => {if (test != null) test.innerText = value.result.toString()})
-        }}>get setting</ButtonItem>
+          async () => {
+            PyCaller.toggleNotifyForeverGames().then((response) => {
+              if (response.success) {
+                let toggleValue = response.result[0].value;
+                setNotifyForeverGames(toggleValue);
+              }
+            });
+          }
+        }}>Notify on Trial Games</ButtonItem>
       </PanelSectionRow>
     </PanelSection>
   );

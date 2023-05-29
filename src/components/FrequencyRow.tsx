@@ -4,6 +4,7 @@ import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 type FrequencyRowProps = {
   label: string;
   value: number;
+  onClick?(e: MouseEvent): void
 }
 
 const ArrowButtonStyle = {
