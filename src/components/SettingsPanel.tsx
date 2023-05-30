@@ -19,7 +19,7 @@ const SettingsPanel: React.FunctionComponent = () => {
         setNotifyForeverGames(settings[0].notify_forever_games)
         setNotifyTrialGames(settings[0].notify_trial_games)
       }
-    })
+    });
   });
 
   return (
@@ -30,24 +30,10 @@ const SettingsPanel: React.FunctionComponent = () => {
           checked={notifyForeverGames}
           layout='below'
           onChange={() => {
-            async () => {
-              PyCaller.toggleNotifyForeverGames().then((response) => {
-                if (response.success) {
-                  let toggleValue = response.result[0].value;
-                  setNotifyForeverGames(toggleValue);
-                }
-              });
-            }
+            
         }}></ToggleField>
-        <ButtonItem layout='below' onClick={() => {
-          async () => {
-            PyCaller.toggleNotifyForeverGames().then((response) => {
-              if (response.success) {
-                let toggleValue = response.result[0].value;
-                setNotifyForeverGames(toggleValue);
-              }
-            });
-          }
+        <ButtonItem layout='below' onClick={async () => {
+          await PyCaller.restoreSettings();
         }}>Notify on Trial Games</ButtonItem>
       </PanelSectionRow>
     </PanelSection>

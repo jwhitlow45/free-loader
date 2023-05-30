@@ -1,23 +1,42 @@
+import os
 from settings import SettingsManager
 from decky_plugin import logger
 # Get environment variable
 settingsDir = os.environ["DECKY_PLUGIN_SETTINGS_DIR"]
 
-import os
-logger.info('Settings path: {}'.format(os.path.join(settingsDir, 'settings.json'))
+logger.info('Settings path: {}'.format(os.path.join(settingsDir, 'settings.json')))
 settings = SettingsManager(name="settings", settings_directory=settingsDir)
-settings.read()
+
+SETTINGS_DEFAULTS = {
+    'update_frequency_day': 0,
+    'update_frequency_hour': 12,
+    'update_frequency_min': 0,
+    'notify_forever_games': 1,
+    'notify_trial_games': 1,
+}
 
 class Plugin:
-  async def settings_read(self):
-    logger.info('Reading settings')
-    return settings.read()
-  async def settings_commit(self):
-    logger.info('Saving settings')
-    return settings.commit()
-  async def settings_getSetting(self, key: str, defaults):
-    logger.info('Get {}'.format(key))
-    return settings.getSetting(key, defaults)
-  async def settings_setSetting(self, key: str, value):
-    logger.info('Set {}: {}'.format(key, value))
-    return settings.setSetting(key, value)
+    async def settings_read(self):
+        logger.info('Reading settings')
+        return settings.read()
+
+    async def settings_commit(self):
+        logger.info('Saving settings')
+        return settings.commit()
+
+    async def settings_getSetting(self, key: str):
+        logger.info('Get {}'.format(key))
+        return settings.getSetting(key)
+
+    async def settings_setSetting(self, key: str, value):
+        logger.info('Set {}: {}'.format(key, value))
+        return settings.setSetting(key, value)
+    
+    async def settings_restoreSettings(self):
+        for key, value in SETTINGS_DEFAULTS.items():
+            settings.setSetting(key, value)
+        settings.commit()
+        logger.info('Restored settings to defaults')
+        
+    async def log(self, info):
+        logger.info(info)

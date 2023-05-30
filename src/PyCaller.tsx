@@ -1,13 +1,9 @@
 import { ServerAPI, ServerResponse } from "decky-frontend-lib";
 
-type UpdateFrequency = {
-    days: number,
-    hours: number,
-    minutes: number
-}
-
 type Settings = {
-    update_frequency: UpdateFrequency,
+    update_frequency_day: number,
+    update_frequency_hour: number,
+    update_frequency_min: number,
     notify_forever_games: boolean,
     notify_trial_games: boolean
 }
@@ -37,11 +33,11 @@ export class PyCaller {
         return await this.serverAPI.callPluginMethod<{}, SettingsWrapper>('settings_read', {});
     }
 
-    static async toggleNotifyForeverGames(): Promise<ServerResponse<ToggleResponseWrapper>> {
-        return await this.serverAPI.callPluginMethod<{}, ToggleResponseWrapper>('settings_toggle_notify_forever_games', {});
+    static async restoreSettings() {
+        await this.serverAPI.callPluginMethod<{}, {}>('settings_restoreSettings', {});
     }
 
-    static async toggleTrialForeverGames(): Promise<ServerResponse<ToggleResponseWrapper>> {
-        return await this.serverAPI.callPluginMethod<{}, ToggleResponseWrapper>('settings_toggle_notify_trial_games', {});
+    static async logger(info: string) {
+        await this.serverAPI.callPluginMethod<{}, {}>('log', {'info' : info})
     }
 }
