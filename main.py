@@ -11,15 +11,11 @@ SETTINGS_DEFAULTS = {
     'update_frequency_day': 0,
     'update_frequency_hour': 12,
     'update_frequency_min': 0,
-    'notify_forever_games': 1,
-    'notify_trial_games': 1,
+    'notify_forever_games': True,
+    'notify_trial_games': True,
 }
 
 class Plugin:
-    async def settings_read(self):
-        logger.info('Reading settings')
-        return settings.read()
-
     async def settings_commit(self):
         logger.info('Saving settings')
         return settings.commit()
@@ -35,8 +31,8 @@ class Plugin:
     async def settings_restoreSettings(self):
         for key, value in SETTINGS_DEFAULTS.items():
             settings.setSetting(key, value)
-        settings.commit()
         logger.info('Restored settings to defaults')
+        return settings.commit()
         
     async def log(self, info):
         logger.info(info)
