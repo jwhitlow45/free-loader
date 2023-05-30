@@ -1,5 +1,5 @@
 import { ButtonItem, PanelSection, PanelSectionRow, ToggleField } from "decky-frontend-lib";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PyCaller } from "../PyCaller";
 
 enum Settings {
@@ -8,6 +8,7 @@ enum Settings {
 }
 
 let cur_settings = {}
+// configs
 const MAX_LOAD_SETTINGS_RETRIES = 3;
 const RETRY_COOLDOWN = 1000;
 
@@ -23,7 +24,7 @@ async function loadSettings(retries: number = 0) {
     if (response.success) {
       cur_settings[Settings[item]] = !!response.result;
     } else {
-      PyCaller.logger(`Cannot load settings...retrying in ${RETRY_COOLDOWN/1000} second(s).`);
+      PyCaller.logger(`Cannot load settings...retrying in ${RETRY_COOLDOWN / 1000} second(s).`);
       await new Promise(f => setTimeout(f, RETRY_COOLDOWN));
       return loadSettings(retries + 1);
     }
@@ -31,24 +32,27 @@ async function loadSettings(retries: number = 0) {
   return true;
 }
 
+var loaded = false
+
 const SettingsPanel: React.FunctionComponent = () => {
+  let [notifyForeverGames, setNotifyForeverGames] = useState(cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
+  let [notifyTrialGames, setNotifyTrialGames] = useState(cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
 
-  let [notifyForeverGames, setNotifyForeverGames] = useState(false);
-  let [notifyTrialGames, setNotifyTrialGames] = useState(false);
-
-  useEffect(() => {
-    loadSettings().then((loaded) => {
+  if (!loaded) {
+    loadSettings().then((success) => {
+      loaded = success;
       if (loaded) {
         PyCaller.logger('Loaded settings:');
         PyCaller.logger(cur_settings);
-        setNotifyForeverGames(cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
-        setNotifyTrialGames(cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
       } else {
         PyCaller.logger('Could not load settings...restoring settings file.');
         PyCaller.restoreSettings();
+        loadSettings();
       }
+      setNotifyForeverGames(cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
+      setNotifyTrialGames(cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
     });
-  });
+  }
 
   return (
     <PanelSection title="Settings">
@@ -62,7 +66,10 @@ const SettingsPanel: React.FunctionComponent = () => {
             await PyCaller.setSetting(
               Settings.NOTIFY_FOREVER_GAMES,
               cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
-        }}></ToggleField>
+            setNotifyForeverGames(cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
+          }} />
+      </PanelSectionRow>
+      <PanelSectionRow>
         <ToggleField
           label='Notify on Trial Games'
           checked={notifyTrialGames}
@@ -73,20 +80,16 @@ const SettingsPanel: React.FunctionComponent = () => {
               Settings.NOTIFY_TRIAL_GAMES,
               cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
             setNotifyTrialGames(cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
-            PyCaller.logger('button');
-            PyCaller.logger(notifyTrialGames);
-            PyCaller.logger(cur_settings);
-        }}>Notify on Trial Games</ToggleField>
+          }} />
+      </PanelSectionRow>
+      <PanelSectionRow>
         <ButtonItem layout='below' onClick={async () => {
           await PyCaller.restoreSettings();
+          await loadSettings().then(() => {
+            setNotifyForeverGames(cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
+            setNotifyTrialGames(cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
+          });
         }}>Restore Settings</ButtonItem>
-        <ButtonItem layout='below' onClick={async () => {
-          let forever = await PyCaller.getSetting(Settings.NOTIFY_FOREVER_GAMES);
-          let trial = await PyCaller.getSetting(Settings.NOTIFY_TRIAL_GAMES);
-          
-          await PyCaller.logger(forever.result);
-          await PyCaller.logger(trial.result);
-        }}>Test Button</ButtonItem>
       </PanelSectionRow>
     </PanelSection>
   );
