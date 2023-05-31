@@ -4,34 +4,50 @@ import { PyCaller } from "../PyCaller";
 import { loadSettings } from "./utils/settings";
 import { FrequencyRow } from "./FrequencyRow";
 
-enum Settings {
+export enum Settings {
   UPDATE_FREQ_DAY = "update_frequency_day",
   UPDATE_FREQ_HOUR = "update_frequency_hour",
   UPDATE_FREQ_MIN = "update_frequency_min",
-  NOTIFY_FOREVER_GAMES = 'notify_forever_games',
-  NOTIFY_TRIAL_GAMES = 'notify_trial_games'
+  NOTIFY_FOREVER_GAMES = "notify_forever_games",
+  NOTIFY_TRIAL_GAMES = "notify_trial_games"
 }
 
 let cur_settings = {}
 let loaded = false
 
 const SettingsPanel: React.FunctionComponent = () => {
-  let cur_day = cur_settings[Settings.UPDATE_FREQ_DAY]
-  let cur_hour = cur_settings[Settings.UPDATE_FREQ_HOUR]
-  let cur_min = cur_settings[Settings.UPDATE_FREQ_MIN]
-  let [days, setDays] = useState(cur_day === undefined ? 0 : cur_day);
-  let [hours, setHours] = useState(cur_hour === undefined ? 0 : cur_hour);
-  let [mins, setMins] = useState(cur_min === undefined ? 0 : cur_min);
+  let [days, setDays] = useState(cur_settings[Settings.UPDATE_FREQ_DAY]);
+  let [hours, setHours] = useState(cur_settings[Settings.UPDATE_FREQ_HOUR]);
+  let [mins, setMins] = useState(cur_settings[Settings.UPDATE_FREQ_MIN]);
 
   let [notifyForeverGames, setNotifyForeverGames] = useState(cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
   let [notifyTrialGames, setNotifyTrialGames] = useState(cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
 
-  async function update_all_states() {
+  async function updateAllStates() {
     setDays(cur_settings[Settings.UPDATE_FREQ_DAY])
     setHours(cur_settings[Settings.UPDATE_FREQ_HOUR])
     setMins(cur_settings[Settings.UPDATE_FREQ_MIN])
     setNotifyForeverGames(cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
     setNotifyTrialGames(cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
+  }
+
+  async function updateFreq(setting: Settings, increment: boolean) {
+    const MAX_VALUE = 99;
+    const MIN_VALUE = 0;
+
+    if (increment) {
+      let inc_value = cur_settings[setting] + 1;
+      if (inc_value > MAX_VALUE)
+        return;
+      cur_settings[setting] = inc_value;
+    } else {
+      let dec_value = cur_settings[setting] - 1;
+      if (dec_value < MIN_VALUE)
+        return;
+      cur_settings[setting] = dec_value;
+    }
+    await PyCaller.setSetting(setting, cur_settings[setting]);
+    updateAllStates();
   }
 
   if (!loaded) {
@@ -49,7 +65,7 @@ const SettingsPanel: React.FunctionComponent = () => {
           loaded = true;
         });
       }
-      update_all_states();
+      updateAllStates();
     });
   }
 
@@ -64,9 +80,9 @@ const SettingsPanel: React.FunctionComponent = () => {
             spacingBetweenLabelAndChild="none"
             childrenContainerWidth="max"
           >
-            <FrequencyRow label='Days' value={days}></FrequencyRow>
-            <FrequencyRow label='Hours' value={hours}></FrequencyRow>
-            <FrequencyRow label='Minutes' value={mins}></FrequencyRow>
+            <FrequencyRow label='Days' setting={Settings.UPDATE_FREQ_DAY} value={days} OnClick={updateFreq}></FrequencyRow>
+            <FrequencyRow label='Hours' setting={Settings.UPDATE_FREQ_HOUR} value={hours} OnClick={updateFreq}></FrequencyRow>
+            <FrequencyRow label='Minutes' setting={Settings.UPDATE_FREQ_MIN} value={mins} OnClick={updateFreq}></FrequencyRow>
           </Field>
         </PanelSectionRow>
       </PanelSection>
@@ -102,7 +118,7 @@ const SettingsPanel: React.FunctionComponent = () => {
             await PyCaller.restoreSettings();
             await loadSettings(Settings).then((output) => {
               cur_settings = output;
-              update_all_states();
+              updateAllStates();
             });
           }}>Restore Settings</ButtonItem>
         </PanelSectionRow>
