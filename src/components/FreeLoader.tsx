@@ -1,12 +1,10 @@
 import { ActionsPanel } from "./ActionsPanel";
-import { SettingsPanel } from "./SettingsPanel";
-import { UpdateFrequencyPanel } from "./UpdateFrequencyPanel";
+import { SettingsPanel } from "./SettingsPanels";
 
 const FreeLoader: React.FunctionComponent = () => {
     return (
         <div>
           <ActionsPanel />
-          <UpdateFrequencyPanel />
           <SettingsPanel />
         </div>
       );
