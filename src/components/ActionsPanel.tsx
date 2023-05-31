@@ -14,6 +14,7 @@ function ActionsPanel() {
         >
           <Focusable style={{ display: 'flex' }}>
             <DialogButton
+              onOKActionDescription='View Game List'
               style={{
                 padding: '10px',
                 fontSize: '14px',
@@ -22,6 +23,7 @@ function ActionsPanel() {
               View Game List
             </DialogButton>
             <DialogButton
+              onOKActionDescription='Update Game List'
               style={{
                 display: 'flex',
                 justifyContent: 'center',
