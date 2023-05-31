@@ -1,4 +1,4 @@
-import { DialogButton, Field, Focusable, PanelSection, PanelSectionRow } from "decky-frontend-lib";
+import { DialogButton, Field, Focusable, PanelSection, PanelSectionRow, Router } from "decky-frontend-lib";
 import { FaRedo } from "react-icons/fa";
 
 function ActionsPanel() {
@@ -18,6 +18,10 @@ function ActionsPanel() {
               style={{
                 padding: '10px',
                 fontSize: '14px',
+              }}
+              onClick={() => { 
+                Router.CloseSideMenus();
+                Router.Navigate("/free-games");
               }}
             >
               View Game List
