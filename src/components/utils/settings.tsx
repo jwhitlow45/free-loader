@@ -15,7 +15,7 @@ export async function loadSettings(settings: any, retries: number = 0): Promise<
     for (let item in settings) {
         let response = await PyCaller.getSetting(settings[item]);
         if (response.success) {
-            output_settings[settings[item]] = !!response.result;
+            output_settings[settings[item]] = response.result;
         } else {
             PyCaller.logger(`Cannot load settings...retrying in ${RETRY_COOLDOWN / 1000} second(s).`);
             await new Promise(f => setTimeout(f, RETRY_COOLDOWN));
