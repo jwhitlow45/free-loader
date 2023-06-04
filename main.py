@@ -1,8 +1,15 @@
 import os
+import sys
+
+sys.path.append(os.path.abspath('../plugins/free-loader'))
+
 from enum import Enum
 from time import sleep
 from settings import SettingsManager
 from decky_plugin import logger
+import py_modules.deal_db
+
+
 # Get environment variable
 settingsDir = os.environ["DECKY_PLUGIN_SETTINGS_DIR"]
 
@@ -26,6 +33,8 @@ SETTINGS_DEFAULTS = {
 
 class Plugin:
     async def _main(self):
+        logger.info()
+
         # while True:
         #     sleep(3)
         #     await self.log(self, info='hello world')
