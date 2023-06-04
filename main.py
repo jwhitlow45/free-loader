@@ -21,7 +21,7 @@ SETTINGS_DEFAULTS = {
     Settings.UPDATE_FREQ_HOUR.value : 12,
     Settings.UPDATE_FREQ_MIN.value : 0,
     Settings.NOTIFY_FOREVER_GAMES.value : True,
-    Settings.NOTIFY_TRIAL_GAMES.value : True,
+    Settings.NOTIFY_TRIAL_GAMES.value : False,
 }
 
 class Plugin:

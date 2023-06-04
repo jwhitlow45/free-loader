@@ -102,7 +102,8 @@ const SettingsPanel: React.FunctionComponent = () => {
         </PanelSectionRow>
         <PanelSectionRow>
           <ToggleField
-            label='Notify on Trial Games'
+            disabled
+            label='Notify on Trial Games (WIP)'
             checked={notifyTrialGames}
             layout='below'
             onChange={async () => {
