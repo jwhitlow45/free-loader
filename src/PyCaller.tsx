@@ -25,6 +25,10 @@ export class PyCaller {
         await this.serverAPI.callPluginMethod<{}, {}>('settings_restoreSettings', {});
     }
 
+    static async updateDealsNow() {
+        await this.serverAPI.callPluginMethod<{}, boolean>('update_deals_now', {});
+    }
+
     static async logger(info: any) {
         await this.serverAPI.callPluginMethod<{}, {}>('log', {'info' : info})
     }

@@ -7,7 +7,7 @@ from enum import Enum
 from time import sleep
 from settings import SettingsManager
 from decky_plugin import logger
-import py_modules.deal_db
+from py_modules.deal_db import DealDB
 
 
 # Get environment variable
@@ -56,6 +56,10 @@ class Plugin:
             settings.setSetting(key, value)
         logger.info('Restored settings to defaults')
         return settings.commit()
+    
+    async def update_deals_now(self):
+        dealdb = DealDB()
+        dealdb.process_new_deals()
         
     async def log(self, info):
         logger.info(info)
