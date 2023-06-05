@@ -26,7 +26,11 @@ export class PyCaller {
     }
 
     static async updateDealsNow() {
-        await this.serverAPI.callPluginMethod<{}, boolean>('update_deals_now', {});
+        await this.serverAPI.callPluginMethod<{}, {}>('update_deals_now', {});
+    }
+
+    static async readDeals(): Promise<any> {
+        return await this.serverAPI.callPluginMethod<{}, {}>('read_deals', {}); 
     }
 
     static async logger(info: any) {
