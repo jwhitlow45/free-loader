@@ -9,7 +9,7 @@ from request_lib import request
 from typing import List
 
 INIT_JSON = {}
-DEFAULT_DB_FILE_PATH = 'deal_db.json'
+DEFAULT_DB_FILE_PATH = os.path.join(os.environ.get('DECKY_PLUGIN_SETTINGS_DIR'), 'deal_db.json')
 DEAL_API_ENDPOINT = 'https://www.gamerpower.com/api/giveaways?platform=steam&type=game'
 
 class Deal(Enum):
