@@ -62,7 +62,7 @@ class Plugin:
         dealdb.process_new_deals()
         
     async def read_deals(self) -> dict:
-        logger.info('I')
+        logger.info('Reading deals')
         dealdb = DealDB()
         dealdb.import_from_json()
         return dealdb.deals
