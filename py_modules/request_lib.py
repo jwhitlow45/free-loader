@@ -5,6 +5,7 @@ import typing
 import urllib.error
 import urllib.parse
 import urllib.request
+import ssl
 from email.message import Message
 
 class Response(typing.NamedTuple):
@@ -62,9 +63,13 @@ def request(
     httprequest = urllib.request.Request(
         url, data=request_data, headers=headers, method=method
     )
+    
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
 
     try:
-        with urllib.request.urlopen(httprequest) as httpresponse:
+        with urllib.request.urlopen(httprequest, context=context) as httpresponse:
             response = Response(
                 headers=httpresponse.headers,
                 status=httpresponse.status,
