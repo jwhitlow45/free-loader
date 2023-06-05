@@ -33,7 +33,6 @@ SETTINGS_DEFAULTS = {
 
 class Plugin:
     async def _main(self):
-        logger.info()
 
         # while True:
         #     sleep(3)

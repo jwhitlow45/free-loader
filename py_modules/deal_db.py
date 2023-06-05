@@ -3,64 +3,86 @@
 import json
 import os
 from enum import Enum
+from datetime import datetime, timedelta, timezone
 from decky_plugin import logger
 from request_lib import request
+from typing import List
 
 INIT_JSON = {}
-DEFAULT_FILE_PATH = 'deal_db.json'
+DEFAULT_DB_FILE_PATH = 'deal_db.json'
 DEAL_API_ENDPOINT = 'https://www.gamerpower.com/api/giveaways?platform=steam&type=game'
 
 class Deal(Enum):
     ID = 'id'
     TITLE = 'title'
     WORTH = 'worth'
-    THUMBNAIL = 'thumbnail'
     IMAGE = 'image'
-    DESCRIPTION = 'description'
-    INSTRUCTIONS = 'instructions'
     OPEN_GIVEAWAY_URL = 'open_giveaway_url'
     PUBLISHED_DATE = 'published_date'
-    TYPE = 'type'
-    PLATFORMS = 'platforms'
     END_DATE = 'end_date'
-    USERS = 'users'
     STATUS = 'status'
-    GAMERPOWER_URL = 'gamerpower_url'
-    OPEN_GIVEAWAY = 'open_giveaway'
+    NOTIFIED = 'notified'
 
 class DealDB:
     def __init__(self, deals: dict = {}):
         self.deals: dict = deals
         
-    def import_from_json(self, file_path: str = DEFAULT_FILE_PATH) -> dict:
+    def import_from_json(self, file_path: str = DEFAULT_DB_FILE_PATH) -> None:
         # if file does not exist create it
         if not os.path.isfile(file_path):
+            logger.info('No deals db, creating new empty one')
             with open(file_path, 'w') as json_file:
                 json.dump(INIT_JSON, json_file, indent=4)
-            return INIT_JSON
+            self.deals = INIT_JSON
         
         with open(file_path, 'r') as json_file:
-            return json.load(json_file)
+            logger.info('Loaded deals from db')
+            self.deals = json.load(json_file)
         
-    def export_to_json(self, file_path: str = DEFAULT_FILE_PATH) -> None:
+    def export_to_json(self, file_path: str = DEFAULT_DB_FILE_PATH) -> None:
         with open(file_path, 'w') as json_file:
             json.dump(self.deals, json_file, indent=4)
             
-    def compare_new_deals(self, new_deals: dict) -> dict:
+    def compare_deals(self, deals: dict[Deal]) -> dict:
         new_db = {}
-        for key in new_deals:
-            if key in self.deals:
-                # we have already seen this deal
-                new_db[key] = True
+        num_new_deals = 0
+        
+        for key in deals:
+            new_db[key] = deals[key]
+            
+            if key not in self.deals:
+                new_db[key][Deal.NOTIFIED.value] = False
+                num_new_deals += 1
             else:
-                # we have not seen this deal
-                new_db[key] = False
+                new_db[key][Deal.NOTIFIED.value] = self.deals[key][Deal.NOTIFIED.value]
+            
+        logger.info(f'Found {num_new_deals} new deals')
         return new_db
     
-    def compare_and_export_new_deals(self, new_deals: dict) -> dict:
-        new_db = self.compare_new_deals(new_deals)
-        self.export_to_json(new_db)
-        return new_db
+    def compare_and_export_deals(self, deals: dict[Deal]) -> dict:
+        new_deals = self.compare_deals(deals)
+        self.deals = new_deals
+        self.export_to_json()
+        return new_deals
+    
+    def format_deals(self, deals: List[dict]) -> dict:
+        formatted_deals = {}
+        for new_deal in deals:
+            # ensure deal was published within last 90 days
+            date = datetime.strptime(new_deal.get(Deal.PUBLISHED_DATE.value), '%Y-%m-%d %H:%M:%S')
+            if date < (datetime.utcnow() - timedelta(days=90)):
+                continue
+            
+            # ensure deal is active
+            if new_deal.get(Deal.STATUS.value) != "Active":
+                continue
+            
+            cur_deal = {}
+            for att in Deal:
+                cur_deal[att.value] = new_deal.get(att.value)
+            id = new_deal.get(Deal.ID.value)
+            formatted_deals[str(id)] = cur_deal
+        return formatted_deals
     
     def get_new_deals(self) -> dict:
         r = request(DEAL_API_ENDPOINT)
@@ -69,15 +91,13 @@ class DealDB:
             return {}
         
         if r.status == 200:
-            logger.info('Parsing deals response')
-            logger.info(r.json())
-            
-            # for deal in request.json():
-            #     print(datetime.strptime(deal.get(Deal.END_DATE.value)))
-            return {}
+            logger.info('Received response containing deals')
+            return self.format_deals(r.json())
                 
         logger.error(f'Something went wrong. Received status code {r.status}')
         return None
-
-test = DealDB()
-test.get_new_deals()
+    
+    def process_new_deals(self) -> None:
+        self.import_from_json()
+        new_deals = self.get_new_deals()
+        self.compare_and_export_deals(new_deals)
