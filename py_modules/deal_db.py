@@ -43,6 +43,7 @@ class DealDB:
     def export_to_json(self, file_path: str = DEFAULT_DB_FILE_PATH) -> None:
         with open(file_path, 'w') as json_file:
             json.dump(self.deals, json_file, indent=4)
+            logger.info(f'Wrote deals to {DEFAULT_DB_FILE_PATH}')
             
     def compare_deals(self, deals: dict[Deal]) -> dict:
         new_db = {}
@@ -64,7 +65,6 @@ class DealDB:
         new_deals = self.compare_deals(deals)
         self.deals = new_deals
         self.export_to_json()
-        return new_deals
     
     def format_deals(self, deals: List[dict]) -> dict:
         formatted_deals = {}
@@ -73,14 +73,14 @@ class DealDB:
             if new_deal.get(Deal.STATUS.value) != "Active":
                 continue
             
-            # parse date
-            date = datetime.strptime(new_deal.get(Deal.PUBLISHED_DATE.value), '%Y-%m-%d %H:%M:%S')
             # ensure deal was published within last 90 days
-            if date < (datetime.utcnow() - timedelta(days=90)):
+            pub_date = datetime.strptime(new_deal.get(Deal.PUBLISHED_DATE.value), '%Y-%m-%d %H:%M:%S')
+            if pub_date < (datetime.utcnow() - timedelta(days=90)):
                 continue
             
             # overwrite with just date information
-            new_deal[Deal.END_DATE.value] = str(date.strftime('%Y-%m-%d'))
+            end_date = datetime.strptime(new_deal.get(Deal.END_DATE.value), '%Y-%m-%d %H:%M:%S')
+            new_deal[Deal.END_DATE.value] = end_date.strftime('%Y-%m-%d')
             
             cur_deal = {}
             for att in Deal:
