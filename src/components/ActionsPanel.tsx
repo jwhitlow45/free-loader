@@ -23,7 +23,8 @@ function ActionsPanel() {
                 padding: '10px',
                 fontSize: '14px',
               }}
-              onClick={() => { 
+              onClick={async () => { 
+                await PyCaller.updateDealsNow();
                 Router.CloseSideMenus();
                 Router.Navigate("/free-games");
               }}
