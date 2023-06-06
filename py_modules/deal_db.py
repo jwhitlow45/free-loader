@@ -79,6 +79,12 @@ class DealDB:
             
             cur_deal = {}
             for att in Deal:
+                if att == Deal.TITLE:
+                    title = new_deal.get(att.value)
+                    str_end = title.find(' (Steam)')
+                    if str_end != -1:
+                        cur_deal[att.value] = title[:str_end]
+                        continue
                 cur_deal[att.value] = new_deal.get(att.value)
             id = new_deal.get(Deal.ID.value)
             formatted_deals[str(id)] = cur_deal
