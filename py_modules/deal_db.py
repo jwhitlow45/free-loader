@@ -3,7 +3,8 @@
 import json
 import os
 from enum import Enum
-from datetime import datetime, timedelta, timezone
+from time import daylight
+from datetime import datetime, timedelta
 from decky_plugin import logger
 from request_lib import request
 from typing import List
@@ -68,18 +69,23 @@ class DealDB:
     def format_deals(self, deals: List[dict]) -> dict:
         formatted_deals = {}
         for new_deal in deals:
-            # ensure deal was published within last 90 days
-            date = datetime.strptime(new_deal.get(Deal.PUBLISHED_DATE.value), '%Y-%m-%d %H:%M:%S')
-            if date < (datetime.utcnow() - timedelta(days=90)):
-                continue
-            
             # ensure deal is active
             if new_deal.get(Deal.STATUS.value) != "Active":
                 continue
             
+            # parse date
+            date = datetime.strptime(new_deal.get(Deal.PUBLISHED_DATE.value), '%Y-%m-%d %H:%M:%S')
+            # ensure deal was published within last 90 days
+            if date < (datetime.utcnow() - timedelta(days=90)):
+                continue
+            
+            # overwrite with just date information
+            new_deal[Deal.END_DATE.value] = str(date.strftime('%Y-%m-%d'))
+            
             cur_deal = {}
             for att in Deal:
                 if att == Deal.TITLE:
+                    # remove extra text from title
                     title = new_deal.get(att.value)
                     str_end = title.find(' (Steam)')
                     if str_end != -1:
