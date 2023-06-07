@@ -8,8 +8,7 @@ export enum Settings {
   UPDATE_FREQ_DAY = "update_frequency_day",
   UPDATE_FREQ_HOUR = "update_frequency_hour",
   UPDATE_FREQ_MIN = "update_frequency_min",
-  NOTIFY_FOREVER_GAMES = "notify_forever_games",
-  NOTIFY_TRIAL_GAMES = "notify_trial_games"
+  NOTIFY_ON_FREE_GAMES = "notify_on_free_games",
 }
 
 let cur_settings = {}
@@ -20,15 +19,13 @@ const SettingsPanel: React.FunctionComponent = () => {
   let [hours, setHours] = useState(cur_settings[Settings.UPDATE_FREQ_HOUR]);
   let [mins, setMins] = useState(cur_settings[Settings.UPDATE_FREQ_MIN]);
 
-  let [notifyForeverGames, setNotifyForeverGames] = useState(cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
-  let [notifyTrialGames, setNotifyTrialGames] = useState(cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
+  let [notifyFreeGames, setNotifyFreeGames] = useState(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
 
   async function updateAllStates() {
     setDays(cur_settings[Settings.UPDATE_FREQ_DAY])
     setHours(cur_settings[Settings.UPDATE_FREQ_HOUR])
     setMins(cur_settings[Settings.UPDATE_FREQ_MIN])
-    setNotifyForeverGames(cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
-    setNotifyTrialGames(cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
+    setNotifyFreeGames(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
   }
 
   async function updateFreq(setting: Settings, increment: boolean) {
@@ -89,29 +86,15 @@ const SettingsPanel: React.FunctionComponent = () => {
       <PanelSection title="Settings">
         <PanelSectionRow>
           <ToggleField
-            label='Notify on Forever Games'
-            checked={notifyForeverGames}
+            label='Notify on Free Games'
+            checked={notifyFreeGames}
             layout='below'
             onChange={async () => {
-              cur_settings[Settings.NOTIFY_FOREVER_GAMES] = !cur_settings[Settings.NOTIFY_FOREVER_GAMES];
+              cur_settings[Settings.NOTIFY_ON_FREE_GAMES] = !cur_settings[Settings.NOTIFY_ON_FREE_GAMES];
               await PyCaller.setSetting(
-                Settings.NOTIFY_FOREVER_GAMES,
-                cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
-              setNotifyForeverGames(cur_settings[Settings.NOTIFY_FOREVER_GAMES]);
-            }} />
-        </PanelSectionRow>
-        <PanelSectionRow>
-          <ToggleField
-            disabled
-            label='Notify on Trial Games (WIP)'
-            checked={notifyTrialGames}
-            layout='below'
-            onChange={async () => {
-              cur_settings[Settings.NOTIFY_TRIAL_GAMES] = !cur_settings[Settings.NOTIFY_TRIAL_GAMES];
-              await PyCaller.setSetting(
-                Settings.NOTIFY_TRIAL_GAMES,
-                cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
-              setNotifyTrialGames(cur_settings[Settings.NOTIFY_TRIAL_GAMES]);
+                Settings.NOTIFY_ON_FREE_GAMES,
+                cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
+              setNotifyFreeGames(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
             }} />
         </PanelSectionRow>
         <PanelSectionRow>

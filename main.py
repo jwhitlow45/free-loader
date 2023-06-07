@@ -20,15 +20,13 @@ class Settings(Enum):
     UPDATE_FREQ_DAY = "update_frequency_day"
     UPDATE_FREQ_HOUR = "update_frequency_hour"
     UPDATE_FREQ_MIN = "update_frequency_min"
-    NOTIFY_FOREVER_GAMES = "notify_forever_games"
-    NOTIFY_TRIAL_GAMES = "notify_trial_games"
+    NOTIFY_ON_FREE_GAMES = "notify_on_free_games"
     
 SETTINGS_DEFAULTS = {
     Settings.UPDATE_FREQ_DAY.value : 0,
     Settings.UPDATE_FREQ_HOUR.value : 12,
     Settings.UPDATE_FREQ_MIN.value : 0,
-    Settings.NOTIFY_FOREVER_GAMES.value : True,
-    Settings.NOTIFY_TRIAL_GAMES.value : False,
+    Settings.NOTIFY_ON_FREE_GAMES.value : True,
 }
 
 class Plugin:
