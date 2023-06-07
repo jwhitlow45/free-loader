@@ -4,7 +4,6 @@ import sys
 sys.path.append(os.path.abspath('../plugins/free-loader'))
 
 from enum import Enum
-from time import sleep
 from settings import SettingsManager
 from decky_plugin import logger
 from py_modules.deal_db import DealDB
@@ -31,11 +30,12 @@ SETTINGS_DEFAULTS = {
 
 class Plugin:
     async def _main(self):
-
-        # while True:
-        #     sleep(3)
-        #     await self.log(self, info='hello world')
-        pass
+        # check settings for validity, if a setting is malformed then set it to default
+        for key, value in SETTINGS_DEFAULTS.items():
+            setting = await Plugin.settings_getSetting(self, key)
+            if setting == None:
+                logger.info(f'Setting {key} is malformed...resetting to default.')
+                await Plugin.settings_setSetting(self, key, value)
     
     async def settings_commit(self):
         logger.info('Saving settings')
