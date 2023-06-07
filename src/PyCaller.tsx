@@ -25,8 +25,15 @@ export class PyCaller {
         await this.serverAPI.callPluginMethod<{}, {}>('settings_restoreSettings', {});
     }
 
-    static async updateDealsNow() {
-        await this.serverAPI.callPluginMethod<{}, {}>('update_deals_now', {});
+    static async updateDealsNow(notifyOnZeroNewGames = true) {
+        let response = await this.serverAPI.callPluginMethod<{}, {}>('update_deals_now', {});
+        if (response.success) {
+            let numFreeGames = Number(response.result);
+            if (notifyOnZeroNewGames == true || numFreeGames > 0)
+            this.serverAPI.toaster.toast({title:'Free Loader', body:`Found ${response.result} new free games!`});
+        } else {
+            this.serverAPI.toaster.toast({title:'Free Loader', body:'Failed to update games list.'});
+        }
     }
 
     static async readDeals(): Promise<any> {

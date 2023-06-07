@@ -26,6 +26,7 @@ class Deal(Enum):
 class DealDB:
     def __init__(self, deals: dict = {}):
         self.deals: dict = deals
+        self.num_new_deals = 0
         
     def import_from_json(self, file_path: str = DEFAULT_DB_FILE_PATH) -> None:
         # if file does not exist create it
@@ -46,15 +47,14 @@ class DealDB:
             
     def compare_deals(self, deals: dict[Deal]) -> dict:
         new_db = {}
-        num_new_deals = 0
         
         for key in deals:
             new_db[key] = deals[key]
             
             if key not in self.deals:
-                num_new_deals += 1
+                self.num_new_deals += 1
             
-        logger.info(f'Found {num_new_deals} new deals')
+        logger.info(f'Found {self.num_new_deals} new deals')
         return new_db
     
     def compare_and_export_deals(self, deals: dict[Deal]) -> dict:

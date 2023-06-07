@@ -60,9 +60,10 @@ class Plugin:
     async def update_deals_now(self):
         dealdb = DealDB()
         dealdb.process_new_deals()
+        return dealdb.num_new_deals
         
     async def read_deals(self) -> dict:
-        logger.info('Reading deals')
+        logger.info('Reading deals from local json')
         dealdb = DealDB()
         dealdb.import_from_json()
         return dealdb.deals
