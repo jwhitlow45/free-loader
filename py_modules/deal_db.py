@@ -22,7 +22,6 @@ class Deal(Enum):
     PUBLISHED_DATE = 'published_date'
     END_DATE = 'end_date'
     STATUS = 'status'
-    NOTIFIED = 'notified'
 
 class DealDB:
     def __init__(self, deals: dict = {}):
@@ -53,10 +52,7 @@ class DealDB:
             new_db[key] = deals[key]
             
             if key not in self.deals:
-                new_db[key][Deal.NOTIFIED.value] = False
                 num_new_deals += 1
-            else:
-                new_db[key][Deal.NOTIFIED.value] = self.deals[key][Deal.NOTIFIED.value]
             
         logger.info(f'Found {num_new_deals} new deals')
         return new_db
