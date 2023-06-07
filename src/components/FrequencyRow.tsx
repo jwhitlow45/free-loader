@@ -25,6 +25,7 @@ const FrequencyRow: React.FunctionComponent<FrequencyRowProps> = (props) => {
       <DialogLabel style={{ display: 'flex' }}>{props.label + ': ' + props.value}</DialogLabel>
       <div style={{ display: 'flex', width: '30%', marginLeft: 'auto' }}>
         <DialogButton 
+          onOKActionDescription = {'Increase'}
           style={ArrowButtonStyle}
           onClick={() => {
               props.OnClick(props.setting, true);
@@ -32,6 +33,7 @@ const FrequencyRow: React.FunctionComponent<FrequencyRowProps> = (props) => {
           <FaArrowUp />
         </DialogButton>
         <DialogButton 
+          onOKActionDescription = {'Decrease'}
           style={ArrowButtonStyle}
           onClick={() => {
             props.OnClick(props.setting, false)
