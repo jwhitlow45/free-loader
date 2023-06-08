@@ -3,7 +3,7 @@ import { FaRedo } from "react-icons/fa";
 import { PyCaller } from "../PyCaller";
 import { useState } from "react";
 
-function ActionsPanel() {
+const ActionsPanel: React.FunctionComponent = () => {
   const [disabled, setDisabled] = useState(false);
 
   return (
