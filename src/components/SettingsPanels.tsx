@@ -1,11 +1,13 @@
 import { ButtonItem, Field, PanelSection, PanelSectionRow, ToggleField } from "decky-frontend-lib";
-import { useState } from "react";
+import React, { createContext, useState } from "react";
 import { PyCaller } from "../PyCaller";
 import { Settings, loadSettings } from "./utils/settings";
 import { FrequencyRow } from "./FrequencyRow";
 
 let cur_settings = {}
 let loaded = false
+
+export const UpdateFreqConext = createContext((setting: Settings, increment: boolean) => {});
 
 const SettingsPanel: React.FunctionComponent = () => {
   let [days, setDays] = useState(cur_settings[Settings.UPDATE_FREQ_DAY]);
@@ -70,9 +72,11 @@ const SettingsPanel: React.FunctionComponent = () => {
             spacingBetweenLabelAndChild="none"
             childrenContainerWidth="max"
           >
-            <FrequencyRow label='Days' setting={Settings.UPDATE_FREQ_DAY} value={days} OnClick={updateFreq}></FrequencyRow>
-            <FrequencyRow label='Hours' setting={Settings.UPDATE_FREQ_HOUR} value={hours} OnClick={updateFreq}></FrequencyRow>
-            <FrequencyRow label='Minutes' setting={Settings.UPDATE_FREQ_MIN} value={mins} OnClick={updateFreq}></FrequencyRow>
+            <UpdateFreqConext.Provider value={updateFreq}>
+              <FrequencyRow label='Days' setting={Settings.UPDATE_FREQ_DAY} value={days}></FrequencyRow>
+              <FrequencyRow label='Hours' setting={Settings.UPDATE_FREQ_HOUR} value={hours}></FrequencyRow>
+              <FrequencyRow label='Minutes' setting={Settings.UPDATE_FREQ_MIN} value={mins}></FrequencyRow>
+            </UpdateFreqConext.Provider>
           </Field>
         </PanelSectionRow>
       </PanelSection>

@@ -1,12 +1,13 @@
 import { DialogButton, DialogLabel, Focusable } from "decky-frontend-lib";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { Settings } from "./utils/settings";
+import { UpdateFreqConext } from "./SettingsPanels";
+import { useContext } from "react";
 
 type FrequencyRowProps = {
   label: string;
   value: number;
   setting: Settings;
-  OnClick(setting: Settings, increment: boolean): void
 }
 
 const ArrowButtonStyle = {
@@ -20,6 +21,7 @@ const ArrowButtonStyle = {
 };
 
 const FrequencyRow: React.FunctionComponent<FrequencyRowProps> = (props) => {
+  const update_freq = useContext(UpdateFreqConext);
   return (
     <Focusable style={{ display: 'flex', alignItems: 'center' }}>
       <DialogLabel style={{ display: 'flex' }}>{props.label + ': ' + props.value}</DialogLabel>
@@ -28,15 +30,15 @@ const FrequencyRow: React.FunctionComponent<FrequencyRowProps> = (props) => {
           onOKActionDescription = {'Increase'}
           style={ArrowButtonStyle}
           onClick={() => {
-              props.OnClick(props.setting, true);
-            }}>
+            update_freq(props.setting, true);
+          }}>
           <FaArrowUp />
         </DialogButton>
         <DialogButton 
           onOKActionDescription = {'Decrease'}
           style={ArrowButtonStyle}
           onClick={() => {
-            props.OnClick(props.setting, false)
+            update_freq(props.setting, false)
           }}>
           <FaArrowDown />
         </DialogButton>
