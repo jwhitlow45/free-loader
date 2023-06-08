@@ -8,6 +8,7 @@ import { FaBell } from "react-icons/fa";
 import { FreeLoader } from "./components/FreeLoader";
 import { PyCaller } from "./PyCaller";
 import { FreeGamesPage } from "./components/FreeGamesPage";
+import { update_loop } from "./components/utils/time";
 
 const FreeGamesRouter: VFC = () => {
   return (
@@ -20,7 +21,9 @@ export default definePlugin((serverApi: ServerAPI) => {
   serverApi.routerHook.addRoute("/free-games", FreeGamesRouter, {
     exact: true,
   });
-  
+
+  update_loop()
+
   return {
     title: <div className={staticClasses.Title}>Free Loader</div>,
     content: <FreeLoader />,

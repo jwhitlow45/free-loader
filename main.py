@@ -20,12 +20,14 @@ class Settings(Enum):
     UPDATE_FREQ_HOUR = "update_frequency_hour"
     UPDATE_FREQ_MIN = "update_frequency_min"
     NOTIFY_ON_FREE_GAMES = "notify_on_free_games"
+    LAST_UPDATE_TIME = "last_update_timestamp"
     
 SETTINGS_DEFAULTS = {
     Settings.UPDATE_FREQ_DAY.value : 0,
     Settings.UPDATE_FREQ_HOUR.value : 12,
     Settings.UPDATE_FREQ_MIN.value : 0,
     Settings.NOTIFY_ON_FREE_GAMES.value : True,
+    Settings.LAST_UPDATE_TIME.value: '1970-01-01T00:00:00Z'
 }
 
 class Plugin:

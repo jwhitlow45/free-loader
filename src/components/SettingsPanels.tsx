@@ -1,15 +1,8 @@
 import { ButtonItem, Field, PanelSection, PanelSectionRow, ToggleField } from "decky-frontend-lib";
 import { useState } from "react";
 import { PyCaller } from "../PyCaller";
-import { loadSettings } from "./utils/settings";
+import { Settings, loadSettings } from "./utils/settings";
 import { FrequencyRow } from "./FrequencyRow";
-
-export enum Settings {
-  UPDATE_FREQ_DAY = "update_frequency_day",
-  UPDATE_FREQ_HOUR = "update_frequency_hour",
-  UPDATE_FREQ_MIN = "update_frequency_min",
-  NOTIFY_ON_FREE_GAMES = "notify_on_free_games",
-}
 
 let cur_settings = {}
 let loaded = false
@@ -48,7 +41,7 @@ const SettingsPanel: React.FunctionComponent = () => {
   }
 
   if (!loaded) {
-    loadSettings(Settings).then((output) => {
+    loadSettings().then((output) => {
       loaded = Object.keys(output).length > 0;
       if (loaded) {
         cur_settings = output;
@@ -57,7 +50,7 @@ const SettingsPanel: React.FunctionComponent = () => {
       } else {
         PyCaller.logger('Could not load settings...restoring settings file.');
         PyCaller.restoreSettings();
-        loadSettings(Settings).then((output) => {
+        loadSettings().then((output) => {
           cur_settings = output;
           loaded = true;
         });
@@ -100,7 +93,7 @@ const SettingsPanel: React.FunctionComponent = () => {
         <PanelSectionRow>
           <ButtonItem layout='below' onClick={async () => {
             await PyCaller.restoreSettings();
-            await loadSettings(Settings).then((output) => {
+            await loadSettings().then((output) => {
               cur_settings = output;
               updateAllStates();
             });

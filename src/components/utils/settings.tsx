@@ -4,7 +4,15 @@ import { PyCaller } from "../../PyCaller";
 const MAX_LOAD_SETTINGS_RETRIES = 3;
 const RETRY_COOLDOWN = 1000;
 
-export async function loadSettings(settings: any, retries: number = 0): Promise<{}> {
+export enum Settings {
+    UPDATE_FREQ_DAY = "update_frequency_day",
+    UPDATE_FREQ_HOUR = "update_frequency_hour",
+    UPDATE_FREQ_MIN = "update_frequency_min",
+    NOTIFY_ON_FREE_GAMES = "notify_on_free_games",
+    LAST_UPDATE_TIME = "last_update_timestamp",
+}
+
+export async function loadSettings(retries: number = 0): Promise<{}> {
     let output_settings = {};
     // wait for 1 second to give time for loading
     if (retries > MAX_LOAD_SETTINGS_RETRIES) {
@@ -12,14 +20,14 @@ export async function loadSettings(settings: any, retries: number = 0): Promise<
         return {};
     }
 
-    for (let item in settings) {
-        let response = await PyCaller.getSetting(settings[item]);
+    for (let item in Settings) {
+        let response = await PyCaller.getSetting(Settings[item]);
         if (response.success) {
-            output_settings[settings[item]] = response.result;
+            output_settings[Settings[item]] = response.result;
         } else {
             PyCaller.logger(`Cannot load settings...retrying in ${RETRY_COOLDOWN / 1000} second(s).`);
             await new Promise(f => setTimeout(f, RETRY_COOLDOWN));
-            return loadSettings(settings, retries + 1);
+            return loadSettings(retries + 1);
         }
     }
     return output_settings;
