@@ -11,11 +11,13 @@ export async function update_loop() {
     const last_update_time = new Date(String((await PyCaller.getSetting(Settings.LAST_UPDATE_TIME)).result));
     // get interval of frequency check
     const settings = await loadSettings();
-    const freq_ms = convert_frequency_to_ms(
+    let freq_ms = convert_frequency_to_ms(
       settings[Settings.UPDATE_FREQ_DAY],
       settings[Settings.UPDATE_FREQ_HOUR],
       settings[Settings.UPDATE_FREQ_MIN]
     );
+    // make minimum update time 60 seconds
+    freq_ms = freq_ms > 0 ? freq_ms : 60000
     // get ms time of next update
     let next_update_ms = last_update_time.getTime() + freq_ms;
     // if current time is before next update time then wait for update time
