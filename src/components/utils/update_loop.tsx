@@ -1,7 +1,7 @@
 import { PyCaller } from "../../PyCaller";
 import { Settings, loadSettings } from "./settings";
 
-export function convert_frequency_to_ms(days: number, hours: number, mins: number) {
+function convert_frequency_to_ms(days: number, hours: number, mins: number) {
   return days * 86400000 + hours * 3600000 + mins * 60000
 }
 

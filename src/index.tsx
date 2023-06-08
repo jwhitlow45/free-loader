@@ -8,7 +8,7 @@ import { FaBell } from "react-icons/fa";
 import { FreeLoader } from "./components/FreeLoader";
 import { PyCaller } from "./PyCaller";
 import { FreeGamesPage } from "./components/FreeGamesPage";
-import { update_loop } from "./components/utils/time";
+import { update_loop } from "./components/utils/update_loop";
 
 const FreeGamesRouter: VFC = () => {
   return (
