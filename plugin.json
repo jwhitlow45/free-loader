@@ -4,7 +4,7 @@
   "flags": ["debug"],
   "publish": {
     "tags": ["free", "game", "games", "notifications", "steam", "store", "library", "loader"],
-    "description": "Plugin to send Steam Deck notifications of free games in the steam store.",
+    "description": "Plugin to provide notifications for and easy access to free games on the Steam store.",
     "image": "https://i.imgflip.com/4uhugx.png?a467808"
   }
 }
