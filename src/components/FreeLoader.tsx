@@ -1,28 +1,19 @@
 import { createContext } from "react";
 import { ActionsPanel } from "./ActionsPanel";
 import { SettingsPanel } from "./SettingsPanels";
-import { updateInterval } from "./utils/updateInterval";
 
-export const TimerContext = createContext({setTimer: (newTimer: NodeJS.Timer) => { }});
+type FreeGamesPageProps = {
+  setTimer(newTimer: NodeJS.Timer): void
+}
 
-const FreeLoader: React.FunctionComponent = () => {
+export const TimerContext = createContext((newTimer: NodeJS.Timer) => {});
 
-  let updateTimer: NodeJS.Timer;
-  (async () => {
-    updateTimer = await updateInterval();
-  })()
-
+const FreeLoader: React.FunctionComponent<FreeGamesPageProps> = (props) => {
   return (
-    <div>
-      <TimerContext.Provider value={{setTimer: (newTimer: NodeJS.Timer) => {
-        clearInterval(updateTimer);
-        updateTimer = newTimer;
-      }}
-      }>
-        <ActionsPanel />
-        <SettingsPanel />
-      </TimerContext.Provider>
-    </div>
+    <TimerContext.Provider value={props.setTimer}>
+      <ActionsPanel />
+      <SettingsPanel />
+    </TimerContext.Provider>
   );
 }
 

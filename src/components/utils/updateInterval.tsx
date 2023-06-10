@@ -1,13 +1,12 @@
 import { PyCaller } from "../../PyCaller";
-import { Settings, loadSettings } from "./settings";
+import { Settings } from "./settings";
 
 function convert_frequency_to_ms(days: number, hours: number, mins: number) {
   return days * 86400000 + hours * 3600000 + mins * 60000
 }
 
-export async function updateInterval(): Promise<NodeJS.Timer> {
+export async function updateInterval(settings: {}): Promise<NodeJS.Timer> {
   // get interval of frequency check
-  const settings = await loadSettings();
   let freq_ms = convert_frequency_to_ms(
     settings[Settings.UPDATE_FREQ_DAY],
     settings[Settings.UPDATE_FREQ_HOUR],

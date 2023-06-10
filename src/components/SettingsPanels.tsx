@@ -3,8 +3,8 @@ import { createContext, useContext, useState } from "react";
 import { PyCaller } from "../PyCaller";
 import { Settings, loadSettings } from "./utils/settings";
 import { FrequencyRow } from "./FrequencyRow";
-import { TimerContext } from "./FreeLoader";
 import { updateInterval } from "./utils/updateInterval";
+import { TimerContext } from "./FreeLoader";
 
 let cur_settings = {}
 let loaded = false
@@ -18,7 +18,7 @@ const SettingsPanel: React.FunctionComponent = () => {
 
   let [notifyFreeGames, setNotifyFreeGames] = useState(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
   
-  const { setTimer } = useContext(TimerContext);
+  const setTimer = useContext(TimerContext);
 
   async function updateAllStates() {
     setDays(cur_settings[Settings.UPDATE_FREQ_DAY])
@@ -44,11 +44,11 @@ const SettingsPanel: React.FunctionComponent = () => {
     }
     await PyCaller.setSetting(setting, cur_settings[setting]);
     updateAllStates();
-    setTimer(await updateInterval());
+    setTimer(await updateInterval(cur_settings));
   }
 
   if (!loaded) {
-    loadSettings().then((output) => {
+    loadSettings().then(async(output) => {
       loaded = Object.keys(output).length > 0;
       if (loaded) {
         cur_settings = output;
@@ -58,12 +58,12 @@ const SettingsPanel: React.FunctionComponent = () => {
         PyCaller.loggerError('Could not load settings...restoring settings file.');
         PyCaller.restoreSettings();
         loadSettings().then(async (output) => {
-          setTimer(await updateInterval());
           cur_settings = output;
           loaded = true;
         });
       }
       updateAllStates();
+      setTimer(await updateInterval(cur_settings));
     });
   }
 
@@ -103,11 +103,11 @@ const SettingsPanel: React.FunctionComponent = () => {
         <PanelSectionRow>
           <ButtonItem layout='below' onClick={async () => {
             await PyCaller.restoreSettings();
-            setTimer(await updateInterval());
             await loadSettings().then((output) => {
               cur_settings = output;
               updateAllStates();
             });
+            setTimer(await updateInterval(cur_settings));
           }}>Restore Settings</ButtonItem>
         </PanelSectionRow>
       </PanelSection>
