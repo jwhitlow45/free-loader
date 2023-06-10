@@ -6,7 +6,7 @@ type FreeGamesPageProps = {
   setTimer(newTimer: NodeJS.Timer): void
 }
 
-export const TimerContext = createContext((newTimer: NodeJS.Timer) => {});
+export const TimerContext = createContext((newTimer: NodeJS.Timer) => { newTimer; });
 
 const FreeLoader: React.FunctionComponent<FreeGamesPageProps> = (props) => {
   return (

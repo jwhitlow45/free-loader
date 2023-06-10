@@ -9,7 +9,7 @@ import { TimerContext } from "./FreeLoader";
 let cur_settings = {}
 let loaded = false
 
-export const UpdateFreqConext = createContext((setting: Settings, increment: boolean) => {});
+export const UpdateFreqConext = createContext((setting: Settings, increment: boolean) => { setting; increment; });
 
 const SettingsPanel: React.FunctionComponent = () => {
   let [days, setDays] = useState(cur_settings[Settings.UPDATE_FREQ_DAY]);
@@ -17,7 +17,7 @@ const SettingsPanel: React.FunctionComponent = () => {
   let [mins, setMins] = useState(cur_settings[Settings.UPDATE_FREQ_MIN]);
 
   let [notifyFreeGames, setNotifyFreeGames] = useState(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
-  
+
   const setTimer = useContext(TimerContext);
 
   async function updateAllStates() {
@@ -48,7 +48,7 @@ const SettingsPanel: React.FunctionComponent = () => {
   }
 
   if (!loaded) {
-    loadSettings().then(async(output) => {
+    loadSettings().then(async (output) => {
       loaded = Object.keys(output).length > 0;
       if (loaded) {
         cur_settings = output;
