@@ -25,7 +25,7 @@ const FreeGamesPage: React.FunctionComponent = () => {
   const loadGames = async (retries = 0) => {
     let response = await PyCaller.readDeals();
     if (response.success) {
-      PyCaller.logger('Read json db and loaded games page');
+      PyCaller.loggerInfo('Read json db and loaded games page');
       let gamesInfo = response.result;
       let gameRows = [];
       for (let key in gamesInfo) {
@@ -40,10 +40,10 @@ const FreeGamesPage: React.FunctionComponent = () => {
       setGamesContainer(gameRows);
     } else {
       if (retries <= MAX_RETRIES) {
-        PyCaller.logger('Failed to read deals from json db...retrying');
+        PyCaller.loggerError('Failed to read deals from json db...retrying');
         loadGames(retries + 1);
       } else {
-        PyCaller.logger(`Reached max retry limit of ${MAX_RETRIES}...cannot load page.`);
+        PyCaller.loggerError(`Reached max retry limit of ${MAX_RETRIES}...cannot load page.`);
         setGamesContainer(FAILED_TO_LOAD_PAGE);
       }
     }

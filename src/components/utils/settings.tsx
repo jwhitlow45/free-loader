@@ -16,7 +16,7 @@ export async function loadSettings(retries: number = 0): Promise<{}> {
     let output_settings = {};
     // wait for 1 second to give time for loading
     if (retries > MAX_LOAD_SETTINGS_RETRIES) {
-        PyCaller.logger(`Max retries of ${MAX_LOAD_SETTINGS_RETRIES} reached for loading settings.`);
+        PyCaller.loggerError(`Max retries of ${MAX_LOAD_SETTINGS_RETRIES} reached for loading settings.`);
         return {};
     }
 
@@ -25,7 +25,7 @@ export async function loadSettings(retries: number = 0): Promise<{}> {
         if (response.success) {
             output_settings[Settings[item]] = response.result;
         } else {
-            PyCaller.logger(`Cannot load settings...retrying in ${RETRY_COOLDOWN / 1000} second(s).`);
+            PyCaller.loggerError(`Cannot load settings...retrying in ${RETRY_COOLDOWN / 1000} second(s).`);
             await new Promise(f => setTimeout(f, RETRY_COOLDOWN));
             return loadSettings(retries + 1);
         }

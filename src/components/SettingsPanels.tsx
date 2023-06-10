@@ -45,7 +45,7 @@ const SettingsPanel: React.FunctionComponent = () => {
     await PyCaller.setSetting(setting, cur_settings[setting]);
     updateAllStates();
     setTimer(await updateInterval());
-    await PyCaller.logger('Updated timer to reflect new update frequency.')
+    await PyCaller.loggerInfo('Updated timer to reflect new update frequency.')
   }
 
   if (!loaded) {
@@ -53,10 +53,10 @@ const SettingsPanel: React.FunctionComponent = () => {
       loaded = Object.keys(output).length > 0;
       if (loaded) {
         cur_settings = output;
-        PyCaller.logger('Loaded settings:');
-        PyCaller.logger(cur_settings);
+        PyCaller.loggerInfo('Loaded settings:');
+        PyCaller.loggerInfo(cur_settings);
       } else {
-        PyCaller.logger('Could not load settings...restoring settings file.');
+        PyCaller.loggerError('Could not load settings...restoring settings file.');
         PyCaller.restoreSettings();
         loadSettings().then((output) => {
           cur_settings = output;

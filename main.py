@@ -68,5 +68,8 @@ class Plugin:
         dealdb.import_from_json()
         return dealdb.deals
         
-    async def log(self, info):
+    async def logger_info(self, info):
         logger.info(info)
+        
+    async def logger_error(self, error):
+        logger.error(error)
