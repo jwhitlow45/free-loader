@@ -3,36 +3,23 @@
 Do you hate having to look for free Steam game promotions on external websites? Do you hate having to manually search for these games on your Steam Deck? Then Free Loader is the right plugin for you!
 
 ## Features
----
 ### View Games List
 - View a list of currently free games with links to their Steam store pages to easily add them to your library
-
-<ul style="list-style: none;">
-   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/games_list.jpg?raw=true"/></li>
-</ul>
+<img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/games_list.jpg?raw=true"/>
 
 ### Manual Games List Update
 - Check for new free games anytime you like with the click of a button
 
 ### Notifications for new free games
 - Get a notification when new games are found
-
-<ul style="list-style: none;">
-   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/notification.jpg?raw=true"/></li>
-</ul>
+<img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/notification.jpg?raw=true"/>
 
 ### User Settings
 - Change games list update frequency
-
-<ul style="list-style: none;">
-   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/update_frequency.jpg?raw=true"/></li>
-</ul>
+<img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/update_frequency.jpg?raw=true"/>
 
 - Enable/Disable notifications
-
-<ul style="list-style: none;">
-   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/notification_toggle.jpg?raw=true"/></li>
-</ul>
+<img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/notification_toggle.jpg?raw=true"/>
 
 # Accessibility
 I am not a front-end developer, and have little to no experience with building accessible applications. If there is anything I could implement to make this plugin more accessible to yourself or anyone else please do not hesitate to create an issue (or PR) and I will do my best to address it with what time I have.
