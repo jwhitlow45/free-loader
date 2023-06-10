@@ -34,6 +34,8 @@ export default definePlugin((serverApi: ServerAPI) => {
     updateTimer = newTimer;
   };
 
+  PyCaller.updateDealsNow(false);
+
   return {
     title: <div className={staticClasses.Title}>Free Loader</div>,
     content: <FreeLoader setTimer={setTimer} />,
