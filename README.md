@@ -8,7 +8,7 @@ Do you hate having to look for free Steam game promotions on external websites? 
 - View a list of currently free games with links to their Steam store pages to easily add them to your library
 
 <ul style="list-style: none;">
-   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/screenshots/games_list.jpg?raw=true"/></li>
+   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/games_list.jpg?raw=true"/></li>
 </ul>
 
 ### Manual Games List Update
@@ -18,20 +18,20 @@ Do you hate having to look for free Steam game promotions on external websites? 
 - Get a notification when new games are found
 
 <ul style="list-style: none;">
-   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/screenshots/notification.jpg?raw=true"/></li>
+   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/notification.jpg?raw=true"/></li>
 </ul>
 
 ### User Settings
 - Change games list update frequency
 
 <ul style="list-style: none;">
-   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/screenshots/update_frequency.jpg?raw=true"/></li>
+   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/update_frequency.jpg?raw=true"/></li>
 </ul>
 
 - Enable/Disable notifications
 
 <ul style="list-style: none;">
-   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/screenshots/notification_toggle.jpg?raw=true"/></li>
+   <li><img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/notification_toggle.jpg?raw=true"/></li>
 </ul>
 
 # Accessibility
