@@ -35,6 +35,6 @@ The website has a long history and a great reputation. While I do not think this
 The plugin *could* be written in a way that circumvents their redirects to Steam store pages, only relying on their API. However, given that they are providing an API for FREE the least I can do is use their redirect links. If you really don't like this then I encourage you to fork this plugin and circumvent their redirects as you see fit.
 
 # Installation
-Install from the plugin store for your own safety!
+Install from the [plugin store](https://plugins.deckbrew.xyz/) for your own safety!
 
 If you are savy enough to install the plugin manually then you are more than welcome to, but be warned there may be security or other vulnerabilities that have not been caught/reviewed. Do so at your own risk!
