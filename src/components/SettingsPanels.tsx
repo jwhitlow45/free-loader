@@ -1,5 +1,5 @@
 import { ButtonItem, Field, PanelSection, PanelSectionRow, ToggleField } from "decky-frontend-lib";
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { PyCaller } from "../PyCaller";
 import { Settings, loadSettings } from "./utils/settings";
 import { FrequencyRow } from "./FrequencyRow";
@@ -20,14 +20,14 @@ const SettingsPanel: React.FunctionComponent = () => {
 
   const setTimer = useContext(TimerContext);
 
-  async function updateAllStates() {
+  const updateAllStates = useCallback(async () => {
     setDays(cur_settings[Settings.UPDATE_FREQ_DAY])
     setHours(cur_settings[Settings.UPDATE_FREQ_HOUR])
     setMins(cur_settings[Settings.UPDATE_FREQ_MIN])
     setNotifyFreeGames(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
-  }
+  }, [cur_settings]);
 
-  async function updateFreq(setting: Settings, increment: boolean) {
+  const updateFreq = useCallback(async (setting: Settings, increment: boolean) => {
     const MAX_VALUE = 99;
     const MIN_VALUE = 0;
 
@@ -45,7 +45,7 @@ const SettingsPanel: React.FunctionComponent = () => {
     await PyCaller.setSetting(setting, cur_settings[setting]);
     updateAllStates();
     setTimer(await updateInterval(cur_settings));
-  }
+  }, [cur_settings]);
 
   if (!loaded) {
     loadSettings().then(async (output) => {
