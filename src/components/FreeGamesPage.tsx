@@ -1,5 +1,5 @@
 import { PyCaller } from "../PyCaller";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GamePanel } from "./GamePanel";
 
 enum Deal {
@@ -22,7 +22,7 @@ const FAILED_TO_LOAD_PAGE = [
 
 const FreeGamesPage: React.FunctionComponent = () => {
   const [gamesContainer, setGamesContainer] = useState(EMPTY_DIV)
-  const loadGames = async (retries = 0) => {
+  const loadGames = useCallback(async (retries = 0) => {
     let response = await PyCaller.readDeals();
     if (response.success) {
       PyCaller.loggerInfo('Read json db and loaded games page');
@@ -47,7 +47,7 @@ const FreeGamesPage: React.FunctionComponent = () => {
         setGamesContainer(FAILED_TO_LOAD_PAGE);
       }
     }
-  }
+  }, [gamesContainer]);
 
   useEffect(() => {
     if (gamesContainer == EMPTY_DIV) {
