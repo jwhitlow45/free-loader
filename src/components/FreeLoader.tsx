@@ -1,19 +1,12 @@
-import { createContext } from "react";
 import { ActionsPanel } from "./ActionsPanel";
 import { SettingsPanel } from "./SettingsPanels";
 
-type FreeGamesPageProps = {
-  setTimer(newTimer: NodeJS.Timer): void
-}
-
-export const TimerContext = createContext((newTimer: NodeJS.Timer) => { newTimer; });
-
-const FreeLoader: React.FunctionComponent<FreeGamesPageProps> = (props) => {
+const FreeLoader: React.FunctionComponent = () => {
   return (
-    <TimerContext.Provider value={props.setTimer}>
+    <div>
       <ActionsPanel />
       <SettingsPanel />
-    </TimerContext.Provider>
+    </div>
   );
 }
 

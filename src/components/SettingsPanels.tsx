@@ -1,10 +1,9 @@
 import { ButtonItem, Field, PanelSection, PanelSectionRow, ToggleField } from "decky-frontend-lib";
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 import { PyCaller } from "../PyCaller";
 import { Settings, loadSettings } from "./utils/settings";
 import { FrequencyRow } from "./FrequencyRow";
-import { updateInterval } from "./utils/updateInterval";
-import { TimerContext } from "./FreeLoader";
+import { UpdateGamesListTimer } from "./utils/UpdateGamesListTimer";
 
 let cur_settings = {}
 let loaded = false
@@ -17,8 +16,6 @@ const SettingsPanel: React.FunctionComponent = () => {
   let [mins, setMins] = useState(cur_settings[Settings.UPDATE_FREQ_MIN]);
 
   let [notifyFreeGames, setNotifyFreeGames] = useState(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
-
-  const setTimer = useContext(TimerContext);
 
   const updateAllStates = useCallback(async () => {
     setDays(cur_settings[Settings.UPDATE_FREQ_DAY])
@@ -44,7 +41,7 @@ const SettingsPanel: React.FunctionComponent = () => {
     }
     await PyCaller.setSetting(setting, cur_settings[setting]);
     updateAllStates();
-    setTimer(await updateInterval(cur_settings));
+    await UpdateGamesListTimer.updateTimer(cur_settings);
   }, [cur_settings]);
 
   if (!loaded) {
@@ -63,7 +60,7 @@ const SettingsPanel: React.FunctionComponent = () => {
         });
       }
       updateAllStates();
-      setTimer(await updateInterval(cur_settings));
+      await UpdateGamesListTimer.updateTimer(cur_settings);
     });
   }
 
@@ -107,7 +104,7 @@ const SettingsPanel: React.FunctionComponent = () => {
               cur_settings = output;
               updateAllStates();
             });
-            setTimer(await updateInterval(cur_settings));
+            await UpdateGamesListTimer.updateTimer(cur_settings);
           }}>Restore Settings</ButtonItem>
         </PanelSectionRow>
       </PanelSection>
