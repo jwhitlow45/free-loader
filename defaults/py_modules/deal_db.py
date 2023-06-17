@@ -74,8 +74,15 @@ class DealDB:
             if pub_date < (datetime.utcnow() - timedelta(days=90)):
                 continue
             
+            # some deals on gamerpower have an end date of N/A
+            # these are promotional, require third-party accounts, and overall
+            # will just clutter the games available, i have opted to ignore them
+            end_date_str = new_deal.get(Deal.END_DATE.value)
+            if end_date_str == 'N/A':
+                continue
+            
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d %H:%M:%S')
             # overwrite with just date information
-            end_date = datetime.strptime(new_deal.get(Deal.END_DATE.value), '%Y-%m-%d %H:%M:%S')
             new_deal[Deal.END_DATE.value] = end_date.strftime('%Y-%m-%d')
             
             cur_deal = {}
