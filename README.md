@@ -26,11 +26,11 @@ I am not a front-end developer, and have little to no experience with building a
 
 # Disclaimer
 
-This plugin relies on a completely free API provided by [GamePower](https://www.gamerpower.com/api-read). Your system will be making various GET requests to their API to find free games on Steam, as well as using their provided links which redirect from their website directly to Steam store pages.
+This plugin relies on a completely free API provided by [GamerPower](https://www.gamerpower.com/api-read). Your system will be making various GET requests to their API to find free games on Steam, as well as using their provided links which redirect from their website directly to Steam store pages.
 
 I am in no way affiliated with this website, and as such cannot make any guarantees pertaining analytics data collected on users of this plugin.
 
-The website has a long history and a great reputation. While I do not think this is of any concern I want to make it very clear that just because I do not collect any analytics pertaining to this plugin, does not mean GamePower does not.
+The website has a long history and a great reputation. While I do not think this is of any concern I want to make it very clear that just because I do not collect any analytics pertaining to this plugin, does not mean GamerPower does not.
 
 The plugin *could* be written in a way that circumvents their redirects to Steam store pages, only relying on their API. However, given that they are providing an API for FREE the least I can do is use their redirect links. If you really don't like this then I encourage you to fork this plugin and circumvent their redirects as you see fit.
 
