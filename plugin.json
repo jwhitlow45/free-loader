@@ -5,6 +5,6 @@
   "publish": {
     "tags": ["free", "game", "games", "notifications", "steam", "store", "library", "loader"],
     "description": "Plugin to provide notifications for and easy access to free games on the Steam store.",
-    "image": "https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/ui.jpg?raw=true"
+    "image": "https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/ui.png?raw=true"
   }
 }
