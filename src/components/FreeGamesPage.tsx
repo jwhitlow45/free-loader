@@ -16,9 +16,15 @@ enum Deal {
 
 const MAX_RETRIES = 3;
 const EMPTY_DIV = [<div></div>];
+const NON_GAMES_PAGE_STYLE = { display: 'flex', justifyContent: 'center', marginTop: '175px' }
 const FAILED_TO_LOAD_PAGE = [
-  <div><h1 style={{ display: 'flex', justifyContent: 'center', marginTop: '175px' }}>Failed to load games!</h1></div>
+  <div><h1 style={NON_GAMES_PAGE_STYLE}>
+    Failed to load games!</h1></div>
 ];
+const NO_GAMES_PAGE = [
+  <div><h1 style={NON_GAMES_PAGE_STYLE}>
+    No free games right now.<br/>Check back later!</h1></div>
+]
 
 const FreeGamesPage: React.FunctionComponent = () => {
   const [gamesContainer, setGamesContainer] = useState(EMPTY_DIV)
@@ -37,6 +43,7 @@ const FreeGamesPage: React.FunctionComponent = () => {
             link={gamesInfo[key][Deal.OPEN_GIVEAWAY_URL]}
             end_date={gamesInfo[key][Deal.END_DATE]}/>)
       }
+      if (gameRows.length == 0) gameRows.push(NO_GAMES_PAGE[0]);
       setGamesContainer(gameRows);
     } else {
       if (retries <= MAX_RETRIES) {
