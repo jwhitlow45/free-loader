@@ -1,6 +1,6 @@
 {
   "name": "free-loader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Plugin to provide notifications for and easy access to free games on the Steam store",
   "scripts": {
     "build": "shx rm -rf dist && rollup -c",
