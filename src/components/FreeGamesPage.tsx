@@ -11,6 +11,7 @@ enum Deal {
   PUBLISHED_DATE = 'published_date',
   END_DATE = 'end_date',
   STATUS = 'status',
+  PLATFORMS = 'platforms',
   NOTIFIED = 'notified'
 }
 
@@ -41,7 +42,8 @@ const FreeGamesPage: React.FunctionComponent = () => {
             worth={gamesInfo[key][Deal.WORTH]} 
             image_url={gamesInfo[key][Deal.IMAGE]}
             link={gamesInfo[key][Deal.OPEN_GIVEAWAY_URL]}
-            end_date={gamesInfo[key][Deal.END_DATE]}/>)
+            end_date={gamesInfo[key][Deal.END_DATE]}
+            platforms={gamesInfo[key][Deal.PLATFORMS]}/>)
       }
       if (gameRows.length == 0) gameRows.push(NO_GAMES_PAGE[0]);
       setGamesContainer(gameRows);
