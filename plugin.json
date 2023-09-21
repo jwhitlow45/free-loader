@@ -3,8 +3,8 @@
   "author": "jwhitlow45",
   "flags": ["debug"],
   "publish": {
-    "tags": ["free", "game", "games", "notifications", "steam", "store", "library", "loader"],
-    "description": "Plugin to provide notifications for and easy access to free games on the Steam store.",
-    "image": "https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/ui.png?raw=true"
+    "tags": ["free", "game", "games", "notifications", "steam", "store", "library", "loader", "epic", "epic games store"],
+    "description": "Notifications for free games on Steam and Epic Games!",
+    "image": "https://github.com/jwhitlow45/free-loader/blob/main/assets/free-loader-logo.png?raw=true"
   }
 }
