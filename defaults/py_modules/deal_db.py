@@ -23,6 +23,7 @@ class Deal(Enum):
     PUBLISHED_DATE = 'published_date'
     END_DATE = 'end_date'
     STATUS = 'status'
+    PLATFORMS = 'platforms'
 
 
 class Endpoint(Enum):
@@ -98,6 +99,9 @@ class DealDB:
                 if att == Deal.TITLE:
                     title = new_deal.get(att.value)
                     cur_deal[att.value] = self.cleanup_deal_title(title)
+                elif att == Deal.PLATFORMS:
+                    platforms = new_deal.get(att.value)
+                    cur_deal[att.value] = self.cleanup_deal_platforms(platforms)
                 else:
                     cur_deal[att.value] = new_deal.get(att.value)
             id = new_deal.get(Deal.ID.value)
@@ -119,6 +123,13 @@ class DealDB:
             # filters are not in the string
             title = title.removesuffix(' Giveaway')
         return title
+    
+    def cleanup_deal_platforms(self, platforms: str):
+        # ordering is important as earlier platforms have higher priority
+        store_names = ['Steam', 'Epic Games Store']
+        for store_name in store_names:
+            if store_name in platforms:
+                return store_name
 
     def get_new_deals(self) -> dict:
         responses = {e.name: request(e.value) for e in Endpoint}
