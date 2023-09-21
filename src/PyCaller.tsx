@@ -3,6 +3,7 @@ import { Settings } from "./components/utils/settings";
 
 export class PyCaller {
     private static serverAPI: ServerAPI;
+    private static toastTitle = 'Free Loader';
 
     static setServer(server: ServerAPI) {
         this.serverAPI = server;
@@ -34,18 +35,23 @@ export class PyCaller {
             let numFreeGames = Number(response.result);
             msg = `Found ${response.result} new free games!`
             if ((notifyOnZeroNewGames == true || numFreeGames > 0) && is_notifications_enabled) {
-                this.serverAPI.toaster.toast({ title: 'Free Loader', body: msg });
+                this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: msg });
             }
             PyCaller.loggerInfo(msg);
         } else {
             msg = 'Failed to update games list'
-            this.serverAPI.toaster.toast({ title: 'Free Loader', body: msg });
+            this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: msg });
             PyCaller.loggerError(msg);
         }
     }
 
     static async readDeals(): Promise<any> {
         return await this.serverAPI.callPluginMethod<{}, {}>('read_deals', {});
+    }
+
+    static async clearDeals(): Promise<any> {
+        this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: 'Cleared deal database' })
+        return await this.serverAPI.callPluginMethod<{}, {}>('clear_deals', {});
     }
 
     static async loggerInfo(info: any) {

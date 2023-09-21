@@ -67,6 +67,12 @@ class Plugin:
         dealdb = DealDB()
         dealdb.import_from_json()
         return dealdb.deals
+    
+    async def clear_deals(self) -> dict:
+        dealdb = DealDB()
+        dealdb.export_to_json()
+        logger.info('Cleared deal database')
+        return dealdb.deals
         
     async def logger_info(self, info):
         logger.info(info)

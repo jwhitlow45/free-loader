@@ -99,6 +99,11 @@ const SettingsPanel: React.FunctionComponent = () => {
         </PanelSectionRow>
         <PanelSectionRow>
           <ButtonItem layout='below' onClick={async () => {
+            await PyCaller.clearDeals();
+          }}>Clear Games Database</ButtonItem>
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <ButtonItem layout='below' onClick={async () => {
             await PyCaller.restoreSettings();
             await loadSettings().then((output) => {
               cur_settings = output;
