@@ -1,5 +1,7 @@
 # Free Loader Decky Plugin
 
+![Free Loader Logo](https://github.com/jwhitlow45/free-loader/blob/main/assets/free-loader-logo.png?raw=true)
+
 Do you hate having to look for free Steam game promotions on external websites? Do you hate having to manually search for these games on your Steam Deck? Then Free Loader is the right plugin for you!
 
 ## Features
