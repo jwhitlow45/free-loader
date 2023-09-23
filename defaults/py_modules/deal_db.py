@@ -9,10 +9,11 @@ from decky_plugin import logger
 from request_lib import request
 from typing import List
 
+from py_modules.settings import Settings, SETTINGS_DEFAULTS, settingsManager
+
 INIT_JSON = {}
 DEFAULT_DB_FILE_PATH = os.path.join(os.environ.get(
     'DECKY_PLUGIN_SETTINGS_DIR'), 'deal_db.json')
-
 
 class Deal(Enum):
     ID = 'id'
@@ -24,11 +25,6 @@ class Deal(Enum):
     END_DATE = 'end_date'
     STATUS = 'status'
     PLATFORMS = 'platforms'
-
-
-class Endpoint(Enum):
-    STEAM_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=steam&type=game'
-    EGS_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=epic-games-store&type=game'
 
 
 class DealDB:
@@ -52,6 +48,16 @@ class DealDB:
         with open(file_path, 'w') as json_file:
             json.dump(self.deals, json_file, indent=4)
             logger.info(f'Wrote deals to {DEFAULT_DB_FILE_PATH}')
+    
+    def get_deal_endpoints(self) -> dict:
+        STEAM_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=steam&type=game'
+        EGS_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=epic-games-store&type=game'
+        endpoints = {
+            STEAM_REQUEST: settingsManager.getSetting(Settings.ENABLE_STEAM_GAMES.value),
+            EGS_REQUEST: settingsManager.getSetting(Settings.ENABLE_EGS_GAMES.value)
+        }
+        logger.info(endpoints)
+        return endpoints
 
     def compare_deals(self, deals: dict[Deal]) -> dict:
         new_db = {}
@@ -132,7 +138,8 @@ class DealDB:
                 return store_name
 
     def get_new_deals(self) -> dict:
-        responses = {e.name: request(e.value) for e in Endpoint}
+        responses = {endpoint: request(endpoint) for endpoint, enabled in self.get_deal_endpoints().items() if enabled}
+        logger.info(f'Requested free game information for the following endpoints: {[r for r in responses]}')
         deal_response_list = []
 
         for endpoint, response in responses.items():

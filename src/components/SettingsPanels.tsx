@@ -1,9 +1,10 @@
-import { ButtonItem, Field, PanelSection, PanelSectionRow, ToggleField } from "decky-frontend-lib";
+import { ButtonItem, Field, PanelSection, PanelSectionRow } from "decky-frontend-lib";
 import { createContext, useCallback, useState } from "react";
 import { PyCaller } from "../PyCaller";
 import { Settings, loadSettings } from "./utils/settings";
 import { FrequencyRow } from "./FrequencyRow";
 import { UpdateGamesListTimer } from "./utils/UpdateGamesListTimer";
+import { SettingToggle } from "./SettingToggle";
 
 let cur_settings = {}
 let loaded = false
@@ -16,12 +17,16 @@ const SettingsPanel: React.FunctionComponent = () => {
   let [mins, setMins] = useState(cur_settings[Settings.UPDATE_FREQ_MIN]);
 
   let [notifyFreeGames, setNotifyFreeGames] = useState(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
+  let [enableSteamGames, setEnableSteamGames] = useState(cur_settings[Settings.ENABLE_STEAM_GAMES]);
+  let [enableEgsGames, setEnableEgsGames] = useState(cur_settings[Settings.ENABLE_EGS_GAMES]);
 
   const updateAllStates = useCallback(async () => {
     setDays(cur_settings[Settings.UPDATE_FREQ_DAY])
     setHours(cur_settings[Settings.UPDATE_FREQ_HOUR])
     setMins(cur_settings[Settings.UPDATE_FREQ_MIN])
     setNotifyFreeGames(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
+    setEnableSteamGames(cur_settings[Settings.ENABLE_STEAM_GAMES]);
+    setEnableEgsGames(cur_settings[Settings.ENABLE_EGS_GAMES]);
   }, [cur_settings]);
 
   const updateFreq = useCallback(async (setting: Settings, increment: boolean) => {
@@ -85,17 +90,28 @@ const SettingsPanel: React.FunctionComponent = () => {
       </PanelSection>
       <PanelSection title="Settings">
         <PanelSectionRow>
-          <ToggleField
+          <SettingToggle
             label='Notify on Free Games'
-            checked={notifyFreeGames}
-            layout='below'
-            onChange={async () => {
-              cur_settings[Settings.NOTIFY_ON_FREE_GAMES] = !cur_settings[Settings.NOTIFY_ON_FREE_GAMES];
-              await PyCaller.setSetting(
-                Settings.NOTIFY_ON_FREE_GAMES,
-                cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
-              setNotifyFreeGames(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
-            }} />
+            value={notifyFreeGames}
+            setting={Settings.NOTIFY_ON_FREE_GAMES}
+            setter={setNotifyFreeGames}
+            cur_settings={cur_settings}/>
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Enable Steam Games'
+            value={enableSteamGames}
+            setting={Settings.ENABLE_STEAM_GAMES}
+            setter={setEnableSteamGames}
+            cur_settings={cur_settings}/>
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Enable EGS Games'
+            value={enableEgsGames}
+            setting={Settings.ENABLE_EGS_GAMES}
+            setter={setEnableEgsGames}
+            cur_settings={cur_settings}/>
         </PanelSectionRow>
         <PanelSectionRow>
           <ButtonItem layout='below' onClick={async () => {

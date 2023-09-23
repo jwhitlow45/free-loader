@@ -10,6 +10,8 @@ export enum Settings {
     UPDATE_FREQ_MIN = "update_frequency_min",
     NOTIFY_ON_FREE_GAMES = "notify_on_free_games",
     LAST_UPDATE_TIME = "last_update_timestamp",
+    ENABLE_STEAM_GAMES = "enable_steam_games",
+    ENABLE_EGS_GAMES = "enable_egs_games",
 }
 
 export async function loadSettings(retries: number = 0): Promise<{}> {

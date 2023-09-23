@@ -7,28 +7,9 @@ from enum import Enum
 from settings import SettingsManager
 from decky_plugin import logger
 from py_modules.deal_db import DealDB
+from py_modules.deal_db import SETTINGS_DEFAULTS
+from py_modules.settings import settingsManager
 
-
-# Get environment variable
-settingsDir = os.environ["DECKY_PLUGIN_SETTINGS_DIR"]
-
-logger.info('Settings path: {}'.format(os.path.join(settingsDir, 'settings.json')))
-settings = SettingsManager(name="settings", settings_directory=settingsDir)
-
-class Settings(Enum):
-    UPDATE_FREQ_DAY = "update_frequency_day"
-    UPDATE_FREQ_HOUR = "update_frequency_hour"
-    UPDATE_FREQ_MIN = "update_frequency_min"
-    NOTIFY_ON_FREE_GAMES = "notify_on_free_games"
-    LAST_UPDATE_TIME = "last_update_timestamp"
-    
-SETTINGS_DEFAULTS = {
-    Settings.UPDATE_FREQ_DAY.value : 0,
-    Settings.UPDATE_FREQ_HOUR.value : 12,
-    Settings.UPDATE_FREQ_MIN.value : 0,
-    Settings.NOTIFY_ON_FREE_GAMES.value : True,
-    Settings.LAST_UPDATE_TIME.value: '1970-01-01T00:00:00Z'
-}
 
 class Plugin:
     async def _main(self):
@@ -41,21 +22,21 @@ class Plugin:
     
     async def settings_commit(self):
         logger.info('Saving settings')
-        return settings.commit()
+        return settingsManager.commit()
 
     async def settings_getSetting(self, key: str):
         logger.info('Get {}'.format(key))
-        return settings.getSetting(key)
+        return settingsManager.getSetting(key)
 
     async def settings_setSetting(self, key: str, value):
         logger.info('Set {}: {}'.format(key, value))
-        return settings.setSetting(key, value)
+        return settingsManager.setSetting(key, value)
     
     async def settings_restoreSettings(self):
         for key, value in SETTINGS_DEFAULTS.items():
-            settings.setSetting(key, value)
+            settingsManager.setSetting(key, value)
         logger.info('Restored settings to defaults')
-        return settings.commit()
+        return settingsManager.commit()
     
     async def update_deals_now(self):
         dealdb = DealDB()
