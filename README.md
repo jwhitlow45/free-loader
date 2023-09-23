@@ -11,6 +11,7 @@ Do you hate having to look for free Steam game promotions on external websites? 
 
 ### Manual Games List Update
 - Check for new free games anytime you like with the click of a button
+<img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/manual_update.jpg?raw=true"/>
 
 ### Notifications for new free games
 - Get a notification when new games are found
@@ -23,11 +24,16 @@ Do you hate having to look for free Steam game promotions on external websites? 
 - Enable/Disable notifications
 <img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/notification_toggle.jpg?raw=true"/>
 
+- Enable/Disable individual stores
+<img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/store_toggle.jpg?raw=true"/>
+
+- Clear local games database and restore settings to default
+<img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/defaults.jpg?raw=true"/>
+
 # Accessibility
 I am not a front-end developer, and have little to no experience with building accessible applications. If there is anything I could implement to make this plugin more accessible to yourself or anyone else please do not hesitate to create an issue (or PR) and I will do my best to address it with what time I have.
 
 # Disclaimer
-
 This plugin relies on a completely free API provided by [GamerPower](https://www.gamerpower.com/api-read). Your system will be making various GET requests to their API to find free games on Steam, as well as using their provided links which redirect from their website directly to Steam store pages.
 
 I am in no way affiliated with this website, and as such cannot make any guarantees pertaining analytics data collected on users of this plugin.
