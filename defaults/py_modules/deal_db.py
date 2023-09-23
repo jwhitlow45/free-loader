@@ -15,6 +15,7 @@ INIT_JSON = {}
 DEFAULT_DB_FILE_PATH = os.path.join(os.environ.get(
     'DECKY_PLUGIN_SETTINGS_DIR'), 'deal_db.json')
 
+
 class Deal(Enum):
     ID = 'id'
     TITLE = 'title'
@@ -25,6 +26,11 @@ class Deal(Enum):
     END_DATE = 'end_date'
     STATUS = 'status'
     PLATFORMS = 'platforms'
+
+
+class Endpoint(Enum):
+    STEAM_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=steam&type=game'
+    EGS_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=epic-games-store&type=game'
 
 
 class DealDB:
@@ -50,13 +56,10 @@ class DealDB:
             logger.info(f'Wrote deals to {DEFAULT_DB_FILE_PATH}')
     
     def get_deal_endpoints(self) -> dict:
-        STEAM_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=steam&type=game'
-        EGS_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=epic-games-store&type=game'
         endpoints = {
-            STEAM_REQUEST: settingsManager.getSetting(Settings.ENABLE_STEAM_GAMES.value),
-            EGS_REQUEST: settingsManager.getSetting(Settings.ENABLE_EGS_GAMES.value)
+            Endpoint.STEAM_REQUEST: settingsManager.getSetting(Settings.ENABLE_STEAM_GAMES.value),
+            Endpoint.EGS_REQUEST: settingsManager.getSetting(Settings.ENABLE_EGS_GAMES.value)
         }
-        logger.info(endpoints)
         return endpoints
 
     def compare_deals(self, deals: dict[Deal]) -> dict:
@@ -138,7 +141,8 @@ class DealDB:
                 return store_name
 
     def get_new_deals(self) -> dict:
-        responses = {endpoint: request(endpoint) for endpoint, enabled in self.get_deal_endpoints().items() if enabled}
+        responses = {endpoint.name: request(endpoint.value) for endpoint, enabled in self.get_deal_endpoints().items() \
+                        if enabled}
         logger.info(f'Requested free game information for the following endpoints: {[r for r in responses]}')
         deal_response_list = []
 
@@ -150,7 +154,11 @@ class DealDB:
             if response.status == 200:
                 logger.info(
                     f'Received response containing deals from {endpoint}')
-                deal_response_list.append(response.json())
+                response_json = response.json()
+                # remove games on both Steam and EGS from EGS endpoint response
+                if endpoint == Endpoint.EGS_REQUEST.name:
+                    response_json = [game for game in response_json if 'Steam' not in game[Deal.PLATFORMS.value]]
+                deal_response_list.append(response_json)
                 continue
 
             logger.error(
