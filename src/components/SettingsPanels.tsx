@@ -21,6 +21,7 @@ const SettingsPanel: React.FunctionComponent = () => {
   let [enableEgsGames, setEnableEgsGames] = useState(cur_settings[Settings.ENABLE_EGS_GAMES]);
   let [enableGogGames, setEnableGogGames] = useState(cur_settings[Settings.ENABLE_GOG_GAMES]);
   let [showTitles, setShowTitles] = useState(cur_settings[Settings.SHOW_TITLES]);
+  let [showHiddenGames, setShowHiddenGames] = useState(cur_settings[Settings.SHOW_HIDDEN_GAMES]);
 
   const updateAllStates = useCallback(async () => {
     setDays(cur_settings[Settings.UPDATE_FREQ_DAY])
@@ -31,6 +32,7 @@ const SettingsPanel: React.FunctionComponent = () => {
     setEnableEgsGames(cur_settings[Settings.ENABLE_EGS_GAMES]);
     setEnableGogGames(cur_settings[Settings.ENABLE_GOG_GAMES]);
     setShowTitles(cur_settings[Settings.SHOW_TITLES]);
+    setShowHiddenGames(cur_settings[Settings.SHOW_HIDDEN_GAMES]);
   }, [cur_settings]);
 
   const updateFreq = useCallback(async (setting: Settings, increment: boolean) => {
@@ -107,6 +109,14 @@ const SettingsPanel: React.FunctionComponent = () => {
             value={showTitles}
             setting={Settings.SHOW_TITLES}
             setter={setShowTitles}
+            cur_settings={cur_settings}/>
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Show Hidden Games'
+            value={showHiddenGames}
+            setting={Settings.SHOW_HIDDEN_GAMES}
+            setter={setShowHiddenGames}
             cur_settings={cur_settings}/>
         </PanelSectionRow>
         <PanelSectionRow>

@@ -19,6 +19,7 @@ class Settings(Enum):
     ENABLE_EGS_GAMES = "enable_egs_games"
     ENABLE_GOG_GAMES = "enable_gog_games"
     SHOW_TITLES = "show_titles"
+    SHOW_HIDDEN_GAMES = "show_hidden_games"
 
 
 SETTINGS_DEFAULTS = {
@@ -27,8 +28,9 @@ SETTINGS_DEFAULTS = {
     Settings.UPDATE_FREQ_MIN.value: 0,
     Settings.NOTIFY_ON_FREE_GAMES.value: True,
     Settings.LAST_UPDATE_TIME.value: "1970-01-01T00:00:00Z",
-    Settings.SHOW_TITLES.value: True,
     Settings.ENABLE_STEAM_GAMES.value: True,
     Settings.ENABLE_EGS_GAMES.value: True,
     Settings.ENABLE_GOG_GAMES.value: True,
+    Settings.SHOW_TITLES.value: True,
+    Settings.SHOW_HIDDEN_GAMES.value: False,
 }

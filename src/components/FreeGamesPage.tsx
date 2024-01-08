@@ -33,6 +33,8 @@ const FreeGamesPage: React.FunctionComponent = () => {
 
   const loadGames = useCallback(async (retries = 0) => {
     let show_titles = Boolean((await PyCaller.getSetting(Settings.SHOW_TITLES)).result)
+    let show_hidden_games = Boolean((await PyCaller.getSetting(Settings.SHOW_HIDDEN_GAMES)).result)
+
     let response = await PyCaller.readDeals();
     if (response.success) {
       PyCaller.loggerInfo('Read json db and loaded games page');
@@ -49,7 +51,8 @@ const FreeGamesPage: React.FunctionComponent = () => {
             end_date={gamesInfo[key][Deal.END_DATE]}
             platforms={gamesInfo[key][Deal.PLATFORMS]}
             hidden={gamesInfo[key][Deal.HIDDEN]}
-            show_title={show_titles}/>)
+            show_title={show_titles}
+            show_hidden_game={show_hidden_games}/>)
       }
       if (gameRows.length == 0) gameRows.push(NO_GAMES_PAGE[0]);
       setGamesContainer(gameRows);

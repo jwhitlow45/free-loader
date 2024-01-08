@@ -12,10 +12,12 @@ type GamePanelProps = {
   platforms: string;
   show_title: boolean;
   hidden: boolean;
+  show_hidden_game: boolean;
 }
 
 const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
-  const [hideGamePanel, setHideGamePanel] = React.useState(props.hidden);
+  const [hiddenState, setHiddenState] = React.useState(props.hidden);
+  const [hideGamePanel, setHideGamePanel] = React.useState(!props.show_hidden_game && props.hidden);
   if (hideGamePanel) return null;
   return (
     <PanelSection>
@@ -27,12 +29,13 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
           onSecondaryButton={async () => {
             let response = await PyCaller.toggleDealVisibility(props.id)
             if (response.success) {
-              let is_hidden = Boolean(response.result['hidden'])
-              setHideGamePanel(is_hidden)
+              let hidden_state = Boolean(response.result['hidden'])
+              setHiddenState(hidden_state)
+              setHideGamePanel(!props.show_hidden_game && hidden_state)
             }
           }}
           onOKActionDescription='Open Store Page'
-          onSecondaryActionDescription={hideGamePanel ? 'Show Game':'Hide Game'}
+          onSecondaryActionDescription={hiddenState ? 'Show Game':'Hide Game'}
         >
           <table>
             <tr>
@@ -47,6 +50,9 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
                   <h3 style={{ lineHeight: '10px' }}>{props.platforms}</h3>
                   <h3 style={{ lineHeight: '10px' }}><s>{props.worth}</s> Free</h3>
                   <h3 style={{ lineHeight: '10px' }}>Ends {props.end_date}</h3>
+                  <h3 style={{
+                    lineHeight: hiddenState ? '10px':'0px',
+                    visibility: hiddenState ? 'visible':'hidden' }}><i>Hidden</i></h3>
                 </div>
               </td>
             </tr>
