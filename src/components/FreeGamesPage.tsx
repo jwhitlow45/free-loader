@@ -65,7 +65,7 @@ const FreeGamesPage: React.FunctionComponent = () => {
   });
 
   return (
-    <div style={{ overflowY: 'scroll', marginTop: '60px', height: 'calc(100%-80px)' }}>
+    <div style={{ overflowY: 'scroll', marginTop: '60px', marginBottom: '60px', height: 'calc(100%-80px)' }}>
       {gamesContainer}
     </div>
   );
