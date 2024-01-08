@@ -13,6 +13,7 @@ export enum Settings {
     ENABLE_STEAM_GAMES = "enable_steam_games",
     ENABLE_EGS_GAMES = "enable_egs_games",
     ENABLE_GOG_GAMES = "enable_gog_games",
+    SHOW_TITLES = "show_titles",
 }
 
 export async function loadSettings(retries: number = 0): Promise<{}> {

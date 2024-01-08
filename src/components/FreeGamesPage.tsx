@@ -1,6 +1,7 @@
 import { PyCaller } from "../PyCaller";
 import { useCallback, useEffect, useState } from "react";
 import { GamePanel } from "./GamePanel";
+import { Settings } from "./utils/settings";
 
 enum Deal {
   ID = 'id',
@@ -29,7 +30,9 @@ const NO_GAMES_PAGE = [
 
 const FreeGamesPage: React.FunctionComponent = () => {
   const [gamesContainer, setGamesContainer] = useState(EMPTY_DIV)
+
   const loadGames = useCallback(async (retries = 0) => {
+    let show_titles = Boolean((await PyCaller.getSetting(Settings.SHOW_TITLES)).result)
     let response = await PyCaller.readDeals();
     if (response.success) {
       PyCaller.loggerInfo('Read json db and loaded games page');
@@ -43,7 +46,8 @@ const FreeGamesPage: React.FunctionComponent = () => {
             image_url={gamesInfo[key][Deal.IMAGE]}
             link={gamesInfo[key][Deal.OPEN_GIVEAWAY_URL]}
             end_date={gamesInfo[key][Deal.END_DATE]}
-            platforms={gamesInfo[key][Deal.PLATFORMS]}/>)
+            platforms={gamesInfo[key][Deal.PLATFORMS]}
+            show_title={show_titles}/>)
       }
       if (gameRows.length == 0) gameRows.push(NO_GAMES_PAGE[0]);
       setGamesContainer(gameRows);

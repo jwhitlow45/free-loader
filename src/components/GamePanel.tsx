@@ -7,6 +7,7 @@ type GamePanelProps = {
   link: string;
   end_date: string;
   platforms: string;
+  show_title: boolean;
 }
 
 const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
@@ -25,7 +26,9 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
               </td>
               <td style={{width: '100%'}}>
                 <div>
-                  <h1 style={{ lineHeight: '40px' }}>{props.title}</h1>
+                  <h1 style={{ 
+                    lineHeight: props.show_title ? '40px':'0px',
+                    visibility: props.show_title ? 'visible':'hidden' }}>{props.title}</h1>
                   <h3 style={{ lineHeight: '10px' }}>{props.platforms}</h3>
                   <h3 style={{ lineHeight: '10px' }}><s>{props.worth}</s> Free</h3>
                   <h3 style={{ lineHeight: '10px' }}>Ends {props.end_date}</h3>

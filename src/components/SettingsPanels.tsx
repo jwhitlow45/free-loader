@@ -20,6 +20,7 @@ const SettingsPanel: React.FunctionComponent = () => {
   let [enableSteamGames, setEnableSteamGames] = useState(cur_settings[Settings.ENABLE_STEAM_GAMES]);
   let [enableEgsGames, setEnableEgsGames] = useState(cur_settings[Settings.ENABLE_EGS_GAMES]);
   let [enableGogGames, setEnableGogGames] = useState(cur_settings[Settings.ENABLE_GOG_GAMES]);
+  let [showTitles, setShowTitles] = useState(cur_settings[Settings.SHOW_TITLES]);
 
   const updateAllStates = useCallback(async () => {
     setDays(cur_settings[Settings.UPDATE_FREQ_DAY])
@@ -29,6 +30,7 @@ const SettingsPanel: React.FunctionComponent = () => {
     setEnableSteamGames(cur_settings[Settings.ENABLE_STEAM_GAMES]);
     setEnableEgsGames(cur_settings[Settings.ENABLE_EGS_GAMES]);
     setEnableGogGames(cur_settings[Settings.ENABLE_GOG_GAMES]);
+    setShowTitles(cur_settings[Settings.SHOW_TITLES]);
   }, [cur_settings]);
 
   const updateFreq = useCallback(async (setting: Settings, increment: boolean) => {
@@ -97,6 +99,14 @@ const SettingsPanel: React.FunctionComponent = () => {
             value={notifyFreeGames}
             setting={Settings.NOTIFY_ON_FREE_GAMES}
             setter={setNotifyFreeGames}
+            cur_settings={cur_settings}/>
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Show Game Titles'
+            value={showTitles}
+            setting={Settings.SHOW_TITLES}
+            setter={setShowTitles}
             cur_settings={cur_settings}/>
         </PanelSectionRow>
         <PanelSectionRow>
