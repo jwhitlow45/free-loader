@@ -137,8 +137,11 @@ class DealDB:
             # it is guaranteed that the Giveaway ending to the title will need to be removed if the above
             # filters are not in the string
             title = title.removesuffix(' Giveaway')
-        title = title.removesuffix(' for FREE!') # Remove GOG giveaway suffix
-        title = title.removeprefix('Free ') # Remove Free prefix from long-standing steam giveaways
+            if title.startswith('Get ') and title.endswith(' for FREE!'):
+                title = title.removeprefix('Get ') # Remove Get prefix from GOG games
+                title = title.removesuffix(' for FREE!') # Remove GOG giveaway suffix
+            else:
+                title = title.removeprefix('Free ') # Remove Free prefix from long-standing steam giveaways
         return title
     
     def cleanup_deal_platforms(self, platforms: str):
