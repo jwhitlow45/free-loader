@@ -54,7 +54,12 @@ const FreeGamesPage: React.FunctionComponent = () => {
             show_title={show_titles}
             show_hidden_game={show_hidden_games}/>)
       }
-      if (gameRows.length == 0) gameRows.push(NO_GAMES_PAGE[0]);
+      if (gameRows.length == 0) {
+        gameRows.push(NO_GAMES_PAGE[0])
+      } else {
+        let all_hidden = gameRows.every((elem) => Boolean(elem.props.hidden))
+        if (all_hidden && !show_hidden_games) gameRows.push(NO_GAMES_PAGE[0]);
+      };
       setGamesContainer(gameRows);
     } else {
       if (retries <= MAX_RETRIES) {
