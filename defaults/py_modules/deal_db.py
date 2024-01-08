@@ -31,6 +31,7 @@ class Deal(Enum):
 class Endpoint(Enum):
     STEAM_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=steam&type=game'
     EGS_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=epic-games-store&type=game'
+    GOG_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=gog&type=game'
 
 
 class DealDB:
@@ -58,7 +59,8 @@ class DealDB:
     def get_deal_endpoints(self) -> dict:
         endpoints = {
             Endpoint.STEAM_REQUEST: settingsManager.getSetting(Settings.ENABLE_STEAM_GAMES.value),
-            Endpoint.EGS_REQUEST: settingsManager.getSetting(Settings.ENABLE_EGS_GAMES.value)
+            Endpoint.EGS_REQUEST: settingsManager.getSetting(Settings.ENABLE_EGS_GAMES.value),
+            Endpoint.GOG_REQUEST: settingsManager.getSetting(Settings.ENABLE_GOG_GAMES.value),
         }
         return endpoints
 
@@ -87,21 +89,27 @@ class DealDB:
                 continue
 
             # ensure deal was published within last 90 days
-            pub_date = datetime.strptime(new_deal.get(
-                Deal.PUBLISHED_DATE.value), '%Y-%m-%d %H:%M:%S')
-            if pub_date < (datetime.utcnow() - timedelta(days=90)):
-                continue
+            # pub_date = datetime.strptime(new_deal.get(
+            #     Deal.PUBLISHED_DATE.value), '%Y-%m-%d %H:%M:%S')
+            # if pub_date < (datetime.utcnow() - timedelta(days=90)):
+            #     continue
 
             # some deals on gamerpower have an end date of N/A
             # these are promotional, require third-party accounts, and overall
-            # will just clutter the games available, i have opted to ignore them
+            # will just clutter the games available, they will be ignored unless
+            # they are GOG games which often have N/A
             end_date_str = new_deal.get(Deal.END_DATE.value)
-            if end_date_str == 'N/A':
-                continue
+            # if end_date_str == 'N/A':
+            #     continue
+            
+            try:
+                end_date = datetime.strptime(end_date_str, '%Y-%m-%d %H:%M:%S')
+                # overwrite with just date information
+                new_deal[Deal.END_DATE.value] = end_date.strftime('%Y-%m-%d')
+            except Exception as e:
+                logger.warning('Could not parse date, setting end_date to N/A')
+                new_deal[Deal.END_DATE.value] = 'N/A'
 
-            end_date = datetime.strptime(end_date_str, '%Y-%m-%d %H:%M:%S')
-            # overwrite with just date information
-            new_deal[Deal.END_DATE.value] = end_date.strftime('%Y-%m-%d')
 
             cur_deal = {}
             for att in Deal:
@@ -131,11 +139,13 @@ class DealDB:
             # it is guaranteed that the Giveaway ending to the title will need to be removed if the above
             # filters are not in the string
             title = title.removesuffix(' Giveaway')
+        title = title.removesuffix(' for FREE!') # Remove GOG giveaway suffix
+        title = title.removeprefix('Free ') # Remove Free prefix from long-standing steam giveaways
         return title
     
     def cleanup_deal_platforms(self, platforms: str):
         # ordering is important as earlier platforms have higher priority
-        store_names = ['Steam', 'Epic Games Store']
+        store_names = ['GOG', 'Steam', 'Epic Games Store']
         for store_name in store_names:
             if store_name in platforms:
                 return store_name
@@ -155,9 +165,6 @@ class DealDB:
                 logger.info(
                     f'Received response containing deals from {endpoint}')
                 response_json = response.json()
-                # remove games on both Steam and EGS from EGS endpoint response
-                if endpoint == Endpoint.EGS_REQUEST.name:
-                    response_json = [game for game in response_json if 'Steam' not in game[Deal.PLATFORMS.value]]
                 deal_response_list.append(response_json)
                 continue
 

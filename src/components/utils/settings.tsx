@@ -12,6 +12,7 @@ export enum Settings {
     LAST_UPDATE_TIME = "last_update_timestamp",
     ENABLE_STEAM_GAMES = "enable_steam_games",
     ENABLE_EGS_GAMES = "enable_egs_games",
+    ENABLE_GOG_GAMES = "enable_gog_games",
 }
 
 export async function loadSettings(retries: number = 0): Promise<{}> {
