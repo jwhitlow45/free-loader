@@ -13,7 +13,7 @@ enum Deal {
   END_DATE = 'end_date',
   STATUS = 'status',
   PLATFORMS = 'platforms',
-  NOTIFIED = 'notified'
+  HIDDEN = 'hidden'
 }
 
 const MAX_RETRIES = 3;
@@ -41,12 +41,14 @@ const FreeGamesPage: React.FunctionComponent = () => {
       for (let key in gamesInfo) {
         gameRows.push(
           <GamePanel
+            id={gamesInfo[key][Deal.ID]}
             title={gamesInfo[key][Deal.TITLE]}
             worth={gamesInfo[key][Deal.WORTH]} 
             image_url={gamesInfo[key][Deal.IMAGE]}
             link={gamesInfo[key][Deal.OPEN_GIVEAWAY_URL]}
             end_date={gamesInfo[key][Deal.END_DATE]}
             platforms={gamesInfo[key][Deal.PLATFORMS]}
+            hidden={gamesInfo[key][Deal.HIDDEN]}
             show_title={show_titles}/>)
       }
       if (gameRows.length == 0) gameRows.push(NO_GAMES_PAGE[0]);

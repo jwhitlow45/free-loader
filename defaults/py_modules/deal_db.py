@@ -3,8 +3,7 @@
 import json
 import os
 from enum import Enum
-from time import daylight
-from datetime import datetime, timedelta
+from datetime import datetime
 from decky_plugin import logger
 from request_lib import request
 from typing import List
@@ -26,6 +25,7 @@ class Deal(Enum):
     END_DATE = 'end_date'
     STATUS = 'status'
     PLATFORMS = 'platforms'
+    HIDDEN = 'hidden'
 
 
 class Endpoint(Enum):
@@ -65,18 +65,16 @@ class DealDB:
         return endpoints
 
     def compare_deals(self, deals: dict[Deal]) -> dict:
-        new_db = {}
-
         for key in deals:
-            new_db[key] = deals[key]
-
             if key not in self.deals:
                 self.num_new_deals += 1
+            else:
+                deals[key][Deal.HIDDEN.value] = self.deals[key].get(Deal.HIDDEN.value) or False
 
         logger.info(f'Found {self.num_new_deals} new deals')
-        return new_db
+        return deals
 
-    def compare_and_export_deals(self, deals: dict[Deal]) -> dict:
+    def compare_and_export_deals(self, deals: dict[Deal]):
         new_deals = self.compare_deals(deals)
         self.deals = new_deals
         self.export_to_json()
@@ -106,7 +104,7 @@ class DealDB:
                 end_date = datetime.strptime(end_date_str, '%Y-%m-%d %H:%M:%S')
                 # overwrite with just date information
                 new_deal[Deal.END_DATE.value] = end_date.strftime('%Y-%m-%d')
-            except Exception as e:
+            except Exception as _:
                 logger.warning('Could not parse date, setting end_date to N/A')
                 new_deal[Deal.END_DATE.value] = 'N/A'
 
@@ -165,6 +163,9 @@ class DealDB:
                 logger.info(
                     f'Received response containing deals from {endpoint}')
                 response_json = response.json()
+                # ensure deal ids are stored as strings and not integers
+                for deal in response_json:
+                    deal[Deal.ID.value] = str(deal[Deal.ID.value])
                 deal_response_list.append(response_json)
                 continue
 
@@ -179,3 +180,11 @@ class DealDB:
         self.import_from_json()
         new_deals = self.get_new_deals()
         self.compare_and_export_deals(new_deals)
+        
+    def toggle_deal_visibility(self, id: str) -> bool:
+        self.import_from_json()
+        is_hidden = not self.deals[id][Deal.HIDDEN.value]
+        self.deals[id][Deal.HIDDEN.value] = is_hidden
+        self.export_to_json()
+        return is_hidden
+        

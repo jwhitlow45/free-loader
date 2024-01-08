@@ -1,6 +1,9 @@
 import { DialogButton, PanelSection, PanelSectionRow } from "decky-frontend-lib";
+import { PyCaller } from "../PyCaller";
+import React from "react";
 
 type GamePanelProps = {
+  id: string,
   title: string;
   worth: string;
   image_url: string;
@@ -8,16 +11,28 @@ type GamePanelProps = {
   end_date: string;
   platforms: string;
   show_title: boolean;
+  hidden: boolean;
 }
 
 const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
+  const [hideGamePanel, setHideGamePanel] = React.useState(props.hidden);
+  if (hideGamePanel) return null;
   return (
     <PanelSection>
       <PanelSectionRow>
-        <DialogButton onClick={() => {
-          window.open(props.link)
-        }}
+        <DialogButton
+          onClick={() => {
+            window.open(props.link)
+          }}
+          onSecondaryButton={async () => {
+            let response = await PyCaller.toggleDealVisibility(props.id)
+            if (response.success) {
+              let is_hidden = Boolean(response.result['hidden'])
+              setHideGamePanel(is_hidden)
+            }
+          }}
           onOKActionDescription='Open Store Page'
+          onSecondaryActionDescription={hideGamePanel ? 'Show Game':'Hide Game'}
         >
           <table>
             <tr>

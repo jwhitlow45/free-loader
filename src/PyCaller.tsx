@@ -54,6 +54,10 @@ export class PyCaller {
         return await this.serverAPI.callPluginMethod<{}, {}>('clear_deals', {});
     }
 
+    static async toggleDealVisibility(id: string): Promise<any> {
+        return await this.serverAPI.callPluginMethod<{}, {}>('toggle_deal_visibility', { 'id': id })
+    }
+
     static async loggerInfo(info: any) {
         await this.serverAPI.callPluginMethod<{}, {}>('logger_info', { 'info': info })
     }

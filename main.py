@@ -54,7 +54,13 @@ class Plugin:
         dealdb.export_to_json()
         logger.info('Cleared game database')
         return dealdb.deals
-        
+    
+    async def toggle_deal_visibility(self, id: str) -> dict:
+        dealdb = DealDB()
+        is_hidden = dealdb.toggle_deal_visibility(id)
+        logger.info(f'Game id {id} hidden: {is_hidden}')
+        return { 'hidden': is_hidden }
+    
     async def logger_info(self, info):
         logger.info(info)
         
