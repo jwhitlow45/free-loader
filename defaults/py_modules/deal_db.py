@@ -8,7 +8,7 @@ from decky_plugin import logger
 from request_lib import request
 from typing import List
 
-from py_modules.settings import Settings, SETTINGS_DEFAULTS, settingsManager
+from py_modules.settings import Settings, settingsManager
 
 INIT_JSON = {}
 DEFAULT_DB_FILE_PATH = os.path.join(os.environ.get(

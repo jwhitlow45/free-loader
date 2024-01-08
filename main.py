@@ -7,8 +7,7 @@ from enum import Enum
 from settings import SettingsManager
 from decky_plugin import logger
 from py_modules.deal_db import DealDB
-from py_modules.deal_db import SETTINGS_DEFAULTS
-from py_modules.settings import settingsManager
+from py_modules.settings import settingsManager, SETTINGS_DEFAULTS
 
 
 class Plugin:
