@@ -9,6 +9,9 @@ Do you hate having to look for free Steam game promotions on external websites? 
 - View a list of currently free games with links to their Steam store pages to easily add them to your library
 <img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/games_list.jpg?raw=true"/>
 
+- Hide games you have claimed/are not interested in from the games list
+<img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/hideen_games_list.jpg?raw=true"/>
+
 ### Manual Games List Update
 - Check for new free games anytime you like with the click of a button
 <img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/manual_update.jpg?raw=true"/>
@@ -20,6 +23,9 @@ Do you hate having to look for free Steam game promotions on external websites? 
 ### User Settings
 - Change games list update frequency
 <img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/update_frequency.jpg?raw=true"/>
+
+- Enable/Disable game titles and hidden games in the games list
+<img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/hidden_games_toggle.jpg?raw=true"/>
 
 - Enable/Disable notifications
 <img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/notification_toggle.jpg?raw=true"/>
