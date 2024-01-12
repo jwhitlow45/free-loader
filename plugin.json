@@ -3,8 +3,8 @@
   "author": "jwhitlow45",
   "flags": ["debug"],
   "publish": {
-    "tags": ["free", "game", "games", "notifications", "steam", "store", "library", "loader", "epic", "epic games store"],
-    "description": "Notifications for free games on Steam and Epic Games!",
+    "tags": ["free", "game", "games", "notifications", "steam", "store", "library", "loader", "epic", "epic games store", "gog"],
+    "description": "Notifications for free games on Steam, GOG, and Epic Games!",
     "image": "https://github.com/jwhitlow45/free-loader/blob/main/assets/free-loader-logo.png?raw=true"
   }
 }
