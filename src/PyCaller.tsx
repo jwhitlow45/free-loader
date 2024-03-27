@@ -39,9 +39,12 @@ export class PyCaller {
             }
             PyCaller.loggerInfo(msg);
         } else {
-            msg = 'Failed to update games list'
-            this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: msg });
-            PyCaller.loggerError(msg);
+            if (is_notifications_enabled)
+            {
+                msg = 'Failed to update games list'
+                this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: msg });
+                PyCaller.loggerError(msg);
+            }
         }
     }
 
