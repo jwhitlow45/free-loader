@@ -2,7 +2,7 @@
 
 import json
 import os
-from enum import Enum
+from enum import StrEnum
 from datetime import datetime
 from decky_plugin import logger
 from request_lib import request
@@ -15,7 +15,7 @@ DEFAULT_DB_FILE_PATH = os.path.join(os.environ.get(
     'DECKY_PLUGIN_SETTINGS_DIR'), 'deal_db.json')
 
 
-class Deal(Enum):
+class Deal(StrEnum):
     ID = 'id'
     TITLE = 'title'
     WORTH = 'worth'
@@ -28,11 +28,20 @@ class Deal(Enum):
     HIDDEN = 'hidden'
 
 
-class Endpoint(Enum):
-    STEAM_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=steam&type=game'
-    EGS_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=epic-games-store&type=game'
-    GOG_REQUEST = 'https://www.gamerpower.com/api/giveaways?platform=gog&type=game'
+class Store:
+    def __init__(self, endpoint: str, platform_name: str, title_name: str, setting: Settings):
+        self.endpoint = endpoint
+        self.platform_name = platform_name
+        self.title_name = title_name
+        self.setting = setting
 
+# order matters for store priority
+STORE_LIST = [
+    Store('https://www.gamerpower.com/api/giveaways?platform=gog&type=game', 'GOG', '(GOG)', Settings.ENABLE_GOG_GAMES),
+    Store('https://www.gamerpower.com/api/giveaways?platform=steam&type=game', 'Steam', '(Steam)', Settings.ENABLE_STEAM_GAMES),
+    Store('https://www.gamerpower.com/api/giveaways?platform=epic-games-store&type=game', 'Epic Games Store', '(Epic Games)', Settings.ENABLE_EGS_GAMES),
+    Store('https://www.gamerpower.com/api/giveaways?platform=itchio&type=game', 'Itch.io', '(itch.io)', Settings.ENABLE_ITCHIO_GAMES),
+]
 
 class DealDB:
     def __init__(self, deals: dict = {}):
@@ -56,20 +65,12 @@ class DealDB:
             json.dump(self.deals, json_file, indent=4)
             logger.info(f'Wrote deals to {DEFAULT_DB_FILE_PATH}')
     
-    def get_deal_endpoints(self) -> dict:
-        endpoints = {
-            Endpoint.STEAM_REQUEST: settingsManager.getSetting(Settings.ENABLE_STEAM_GAMES.value),
-            Endpoint.EGS_REQUEST: settingsManager.getSetting(Settings.ENABLE_EGS_GAMES.value),
-            Endpoint.GOG_REQUEST: settingsManager.getSetting(Settings.ENABLE_GOG_GAMES.value),
-        }
-        return endpoints
-
     def compare_deals(self, deals: dict[Deal]) -> dict:
         for key in deals:
             if key not in self.deals:
                 self.num_new_deals += 1
             else:
-                deals[key][Deal.HIDDEN.value] = self.deals[key].get(Deal.HIDDEN.value) or False
+                deals[key][Deal.HIDDEN] = self.deals[key].get(Deal.HIDDEN) or False
 
         logger.info(f'Found {self.num_new_deals} new deals')
         return deals
@@ -83,12 +84,12 @@ class DealDB:
         formatted_deals = {}
         for new_deal in deals:
             # ensure deal is active
-            if new_deal.get(Deal.STATUS.value) != "Active":
+            if new_deal.get(Deal.STATUS) != "Active":
                 continue
 
             # ensure deal was published within last 90 days
             # pub_date = datetime.strptime(new_deal.get(
-            #     Deal.PUBLISHED_DATE.value), '%Y-%m-%d %H:%M:%S')
+            #     Deal.PUBLISHED_DATE), '%Y-%m-%d %H:%M:%S')
             # if pub_date < (datetime.utcnow() - timedelta(days=90)):
             #     continue
 
@@ -96,35 +97,35 @@ class DealDB:
             # these are promotional, require third-party accounts, and overall
             # will just clutter the games available, they will be ignored unless
             # they are GOG games which often have N/A
-            end_date_str = new_deal.get(Deal.END_DATE.value)
+            end_date_str = new_deal.get(Deal.END_DATE)
             # if end_date_str == 'N/A':
             #     continue
             
             try:
                 end_date = datetime.strptime(end_date_str, '%Y-%m-%d %H:%M:%S')
                 # overwrite with just date information
-                new_deal[Deal.END_DATE.value] = end_date.strftime('%Y-%m-%d')
+                new_deal[Deal.END_DATE] = end_date.strftime('%Y-%m-%d')
             except Exception as _:
                 logger.warning('Could not parse date, setting end_date to N/A')
-                new_deal[Deal.END_DATE.value] = 'N/A'
+                new_deal[Deal.END_DATE] = 'N/A'
 
 
             cur_deal = {}
             for att in Deal:
                 if att == Deal.TITLE:
-                    title = new_deal.get(att.value)
-                    cur_deal[att.value] = self.cleanup_deal_title(title)
+                    title = new_deal.get(att)
+                    cur_deal[att] = self.cleanup_deal_title(title)
                 elif att == Deal.PLATFORMS:
-                    platforms = new_deal.get(att.value)
-                    cur_deal[att.value] = self.cleanup_deal_platforms(platforms)
+                    platforms = new_deal.get(att)
+                    cur_deal[att] = self.cleanup_deal_platforms(platforms)
                 else:
-                    cur_deal[att.value] = new_deal.get(att.value)
-            id = new_deal.get(Deal.ID.value)
+                    cur_deal[att] = new_deal.get(att)
+            id = new_deal.get(Deal.ID)
             formatted_deals[str(id)] = cur_deal
         return formatted_deals
 
     def cleanup_deal_title(self, title: str) -> str:
-        title_filters = [' (Steam)', ' (Epic Games)']
+        title_filters = [store.title_name for store in STORE_LIST] + ['(PC)']
         # check title for instance of filter, if not present, return nothing instead of -1 from .find()
         filter_indicies = [index for filter in title_filters if (
             (index := title.find(filter)) > 0)]
@@ -146,25 +147,24 @@ class DealDB:
     
     def cleanup_deal_platforms(self, platforms: str):
         # ordering is important as earlier platforms have higher priority
-        store_names = ['GOG', 'Steam', 'Epic Games Store']
-        for store_name in store_names:
-            if store_name in platforms:
-                return store_name
+        platform_name_list = [store.platform_name for store in STORE_LIST]
+        for name in platform_name_list:
+            if name in platforms:
+                return name
 
     def get_new_deals(self) -> dict:
-        responses = {endpoint.name: request(endpoint.value) for endpoint, enabled in self.get_deal_endpoints().items() \
-                        if enabled}
+        responses = { store.platform_name: request(store.endpoint) for store in STORE_LIST if settingsManager.getSetting(store.setting, False) }
         logger.info(f'Requested free game information for the following endpoints: {[r for r in responses]}')
         deal_response_list = []
 
-        for endpoint, response in responses.items():
+        for platform, response in responses.items():
             if response.status == 201:
-                logger.info(f'No current deals for {endpoint}')
+                logger.info(f'No current deals for {platform}')
                 continue
 
             if response.status == 200:
                 logger.info(
-                    f'Received response containing deals from {endpoint}')
+                    f'Received response containing deals from {platform}')
                 response_json = response.json()
                 # ensure deal ids are stored as strings and not integers
                 for deal in response_json:
@@ -173,7 +173,7 @@ class DealDB:
                 continue
 
             logger.error(
-                f'Something went wrong. Received status code {response.status} from {endpoint}')
+                f'Something went wrong. Received status code {response.status} from {platform}')
             return None
 
         # convert list of api response lists to single list and return formatted version of them
