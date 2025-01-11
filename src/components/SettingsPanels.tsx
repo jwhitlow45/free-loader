@@ -20,6 +20,7 @@ const SettingsPanel: React.FunctionComponent = () => {
   let [enableSteamGames, setEnableSteamGames] = useState(cur_settings[Settings.ENABLE_STEAM_GAMES]);
   let [enableEgsGames, setEnableEgsGames] = useState(cur_settings[Settings.ENABLE_EGS_GAMES]);
   let [enableGogGames, setEnableGogGames] = useState(cur_settings[Settings.ENABLE_GOG_GAMES]);
+  let [enableItchioGames, setEnableItchioGames] = useState(cur_settings[Settings.ENABLE_ITCHIO_GAMES]);
   let [showTitles, setShowTitles] = useState(cur_settings[Settings.SHOW_TITLES]);
   let [showHiddenGames, setShowHiddenGames] = useState(cur_settings[Settings.SHOW_HIDDEN_GAMES]);
 
@@ -31,6 +32,7 @@ const SettingsPanel: React.FunctionComponent = () => {
     setEnableSteamGames(cur_settings[Settings.ENABLE_STEAM_GAMES]);
     setEnableEgsGames(cur_settings[Settings.ENABLE_EGS_GAMES]);
     setEnableGogGames(cur_settings[Settings.ENABLE_GOG_GAMES]);
+    setEnableItchioGames(cur_settings[Settings.ENABLE_ITCHIO_GAMES]);
     setShowTitles(cur_settings[Settings.SHOW_TITLES]);
     setShowHiddenGames(cur_settings[Settings.SHOW_HIDDEN_GAMES]);
   }, [cur_settings]);
@@ -141,6 +143,14 @@ const SettingsPanel: React.FunctionComponent = () => {
             value={enableGogGames}
             setting={Settings.ENABLE_GOG_GAMES}
             setter={setEnableGogGames}
+            cur_settings={cur_settings}/>
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Enable itch.io Games'
+            value={enableItchioGames}
+            setting={Settings.ENABLE_ITCHIO_GAMES}
+            setter={setEnableItchioGames}
             cur_settings={cur_settings}/>
         </PanelSectionRow>
         <PanelSectionRow>

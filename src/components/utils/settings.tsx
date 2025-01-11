@@ -13,6 +13,7 @@ export enum Settings {
     ENABLE_STEAM_GAMES = "enable_steam_games",
     ENABLE_EGS_GAMES = "enable_egs_games",
     ENABLE_GOG_GAMES = "enable_gog_games",
+    ENABLE_ITCHIO_GAMES = "enable_itchio_games",
     SHOW_TITLES = "show_titles",
     SHOW_HIDDEN_GAMES = "show_hidden_games",
 }
