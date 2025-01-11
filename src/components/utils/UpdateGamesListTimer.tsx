@@ -1,4 +1,4 @@
-import { Settings } from "./settings";
+import { Settings, SettingsType } from "./settings";
 import { PyCaller } from "../../PyCaller";
 
 export class UpdateGamesListTimer {
@@ -13,7 +13,7 @@ export class UpdateGamesListTimer {
     return days * 86400000 + hours * 3600000 + mins * 60000
   }
   
-  private static async getInterval(settings: {}): Promise<NodeJS.Timer> {
+  private static async getInterval(settings: {[key: SettingsType]: any}): Promise<NodeJS.Timer> {
     // get interval of frequency check
     let freq_ms = this.convert_frequency_to_ms(
       settings[Settings.UPDATE_FREQ_DAY],

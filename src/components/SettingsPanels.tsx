@@ -1,7 +1,7 @@
 import { ButtonItem, Field, PanelSection, PanelSectionRow } from "decky-frontend-lib";
 import { createContext, useCallback, useState } from "react";
 import { PyCaller } from "../PyCaller";
-import { Settings, loadSettings } from "./utils/settings";
+import { Settings, SettingsType, loadSettings } from "./utils/settings";
 import { FrequencyRow } from "./FrequencyRow";
 import { UpdateGamesListTimer } from "./utils/UpdateGamesListTimer";
 import { SettingToggle } from "./SettingToggle";
@@ -9,7 +9,7 @@ import { SettingToggle } from "./SettingToggle";
 let cur_settings: { [key: string]: any } = {}
 let loaded = false
 
-export const UpdateFreqConext = createContext((setting: Settings, increment: boolean) => { setting; increment; });
+export const UpdateFreqConext = createContext((setting: SettingsType, increment: boolean) => { setting; increment; });
 
 const SettingsPanel: React.FunctionComponent = () => {
   let [days, setDays] = useState(cur_settings[Settings.UPDATE_FREQ_DAY]);
@@ -37,7 +37,7 @@ const SettingsPanel: React.FunctionComponent = () => {
     setShowHiddenGames(cur_settings[Settings.SHOW_HIDDEN_GAMES]);
   }, [cur_settings]);
 
-  const updateFreq = useCallback(async (setting: Settings, increment: boolean) => {
+  const updateFreq = useCallback(async (setting: SettingsType, increment: boolean) => {
     const MAX_VALUE = 99;
     const MIN_VALUE = 0;
 

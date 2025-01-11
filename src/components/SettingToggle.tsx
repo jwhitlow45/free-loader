@@ -1,13 +1,13 @@
 import { ToggleField } from "decky-frontend-lib";
-import { Settings } from "./utils/settings";
+import { SettingsType } from "./utils/settings";
 import { PyCaller } from "../PyCaller";
 
 type SettingToggleProps = {
   label: string;
   value: boolean;
-  setting: Settings;
+  setting: SettingsType;
   setter: (value: boolean) => void;
-  cur_settings: object;
+  cur_settings: { [key: SettingsType]: any};
 }
 
 const SettingToggle: React.FunctionComponent<SettingToggleProps> = (props) => {
