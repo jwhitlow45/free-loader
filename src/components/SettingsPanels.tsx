@@ -6,7 +6,7 @@ import { FrequencyRow } from "./FrequencyRow";
 import { UpdateGamesListTimer } from "./utils/UpdateGamesListTimer";
 import { SettingToggle } from "./SettingToggle";
 
-let cur_settings = {}
+let cur_settings: { [key: string]: any } = {}
 let loaded = false
 
 export const UpdateFreqConext = createContext((setting: Settings, increment: boolean) => { setting; increment; });
