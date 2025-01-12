@@ -37,6 +37,8 @@ export class PyCaller {
             if ((notifyOnZeroNewGames == true || numFreeGames > 0) && is_notifications_enabled) {
                 this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: msg });
             }
+            const now = new Date();
+            await PyCaller.setSetting(Settings.LAST_UPDATE_TIME, now.toISOString())
             PyCaller.loggerInfo(msg);
         } else {
             msg = 'Failed to update games list'
