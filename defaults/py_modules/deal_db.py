@@ -203,7 +203,7 @@ class DealDB:
                 title = title.removeprefix(
                     "Free "
                 )  # Remove Free prefix from long-standing steam giveaways
-        return title
+        return title.strip()
 
     def cleanup_deal_platforms(self, platforms: str) -> str:
         # ordering is important as earlier platforms have higher priority
