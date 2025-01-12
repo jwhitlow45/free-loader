@@ -147,7 +147,7 @@ const SettingsPanel: React.FunctionComponent = () => {
         </PanelSectionRow>
         <PanelSectionRow>
           <SettingToggle
-            label='Enable itch.io Games'
+            label='Enable Itch.io Games'
             value={enableItchioGames}
             setting={Settings.ENABLE_ITCHIO_GAMES}
             setter={setEnableItchioGames}
