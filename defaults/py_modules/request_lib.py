@@ -8,6 +8,7 @@ import urllib.request
 import ssl
 from email.message import Message
 
+
 class Response(typing.NamedTuple):
     body: str
     headers: Message
@@ -63,7 +64,7 @@ def request(
     httprequest = urllib.request.Request(
         url, data=request_data, headers=headers, method=method
     )
-    
+
     context = ssl.create_default_context()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
