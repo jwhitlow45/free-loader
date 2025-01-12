@@ -21,24 +21,6 @@ class Plugin:
             logger.exception(e)
             raise e
 
-    async def settings_commit(self):
-        logger.info("Saving settings")
-        return settingsManager.commit()
-
-    async def settings_getSetting(self, key: str):
-        logger.info("Get {}".format(key))
-        return settingsManager.getSetting(key)
-
-    async def settings_setSetting(self, key: str, value):
-        logger.info("Set {}: {}".format(key, value))
-        return settingsManager.setSetting(key, value)
-
-    async def settings_restoreSettings(self):
-        for key, value in SETTINGS_DEFAULTS.items():
-            settingsManager.setSetting(key, value)
-        logger.info("Restored settings to defaults")
-        return settingsManager.commit()
-
     async def update_deals_now(self):
         try:
             dealdb = DealDB()
@@ -53,7 +35,7 @@ class Plugin:
             logger.info("Reading deals from local json")
             dealdb = DealDB()
             dealdb.import_from_json()
-            return dealdb.deals
+            return dealdb.to_dict()
         except Exception as e:
             logger.exception(e)
             raise e
@@ -63,7 +45,7 @@ class Plugin:
             dealdb = DealDB()
             dealdb.export_to_json()
             logger.info("Cleared game database")
-            return dealdb.deals
+            return dealdb.to_dict()
         except Exception as e:
             logger.exception(e)
             raise e
@@ -77,6 +59,24 @@ class Plugin:
         except Exception as e:
             logger.exception(e)
             raise e
+
+    async def settings_commit(self):
+        logger.info("Saving settings")
+        return settingsManager.commit()
+
+    async def settings_getSetting(self, key: str):
+        logger.info("Get {}".format(key))
+        return settingsManager.getSetting(key, None)
+
+    async def settings_setSetting(self, key: str, value):
+        logger.info("Set {}: {}".format(key, value))
+        return settingsManager.setSetting(key, value)
+
+    async def settings_restoreSettings(self):
+        for key, value in SETTINGS_DEFAULTS.items():
+            settingsManager.setSetting(key, value)
+        logger.info("Restored settings to defaults")
+        return settingsManager.commit()
 
     async def logger_info(self, info):
         logger.info(info)

@@ -30,9 +30,9 @@ class Response(typing.NamedTuple):
 
 def request(
     url: str,
-    data: dict = None,
-    params: dict = None,
-    headers: dict = None,
+    data: dict[str, typing.Any] | None = None,
+    params: dict[str, typing.Any] | None = None,
+    headers: dict[str, typing.Any] | None = None,
     method: str = "GET",
     data_as_json: bool = True,
     error_count: int = 0,
