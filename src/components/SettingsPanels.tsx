@@ -79,6 +79,66 @@ const SettingsPanel: React.FunctionComponent = () => {
 
   return (
     <div>
+      <PanelSection title="Stores">
+        <PanelSectionRow>
+          <SettingToggle
+            label='Steam'
+            value={enableSteamGames}
+            setting={Settings.ENABLE_STEAM_GAMES}
+            setter={setEnableSteamGames}
+            cur_settings={cur_settings} />
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Epic Games Store'
+            value={enableEgsGames}
+            setting={Settings.ENABLE_EGS_GAMES}
+            setter={setEnableEgsGames}
+            cur_settings={cur_settings} />
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='GOG'
+            value={enableGogGames}
+            setting={Settings.ENABLE_GOG_GAMES}
+            setter={setEnableGogGames}
+            cur_settings={cur_settings} />
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Itch.io'
+            value={enableItchioGames}
+            setting={Settings.ENABLE_ITCHIO_GAMES}
+            setter={setEnableItchioGames}
+            cur_settings={cur_settings} />
+        </PanelSectionRow>
+      </PanelSection>
+      <PanelSection title="Settings">
+        <PanelSectionRow>
+          <SettingToggle
+            label='Notify on Free Games'
+            value={notifyFreeGames}
+            setting={Settings.NOTIFY_ON_FREE_GAMES}
+            setter={setNotifyFreeGames}
+            cur_settings={cur_settings} />
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Show Game Titles'
+            value={showTitles}
+            setting={Settings.SHOW_TITLES}
+            setter={setShowTitles}
+            cur_settings={cur_settings} />
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Show Hidden Games'
+            value={showHiddenGames}
+            setting={Settings.SHOW_HIDDEN_GAMES}
+            setter={setShowHiddenGames}
+            cur_settings={cur_settings} />
+        </PanelSectionRow>
+      </PanelSection>
       <PanelSection title="Update Frequency">
         <PanelSectionRow>
           <Field
@@ -96,63 +156,7 @@ const SettingsPanel: React.FunctionComponent = () => {
           </Field>
         </PanelSectionRow>
       </PanelSection>
-      <PanelSection title="Settings">
-        <PanelSectionRow>
-          <SettingToggle
-            label='Notify on Free Games'
-            value={notifyFreeGames}
-            setting={Settings.NOTIFY_ON_FREE_GAMES}
-            setter={setNotifyFreeGames}
-            cur_settings={cur_settings}/>
-        </PanelSectionRow>
-        <PanelSectionRow>
-          <SettingToggle
-            label='Show Game Titles'
-            value={showTitles}
-            setting={Settings.SHOW_TITLES}
-            setter={setShowTitles}
-            cur_settings={cur_settings}/>
-        </PanelSectionRow>
-        <PanelSectionRow>
-          <SettingToggle
-            label='Show Hidden Games'
-            value={showHiddenGames}
-            setting={Settings.SHOW_HIDDEN_GAMES}
-            setter={setShowHiddenGames}
-            cur_settings={cur_settings}/>
-        </PanelSectionRow>
-        <PanelSectionRow>
-          <SettingToggle
-            label='Enable Steam Games'
-            value={enableSteamGames}
-            setting={Settings.ENABLE_STEAM_GAMES}
-            setter={setEnableSteamGames}
-            cur_settings={cur_settings}/>
-        </PanelSectionRow>
-        <PanelSectionRow>
-          <SettingToggle
-            label='Enable EGS Games'
-            value={enableEgsGames}
-            setting={Settings.ENABLE_EGS_GAMES}
-            setter={setEnableEgsGames}
-            cur_settings={cur_settings}/>
-        </PanelSectionRow>
-        <PanelSectionRow>
-          <SettingToggle
-            label='Enable GOG Games'
-            value={enableGogGames}
-            setting={Settings.ENABLE_GOG_GAMES}
-            setter={setEnableGogGames}
-            cur_settings={cur_settings}/>
-        </PanelSectionRow>
-        <PanelSectionRow>
-          <SettingToggle
-            label='Enable Itch.io Games'
-            value={enableItchioGames}
-            setting={Settings.ENABLE_ITCHIO_GAMES}
-            setter={setEnableItchioGames}
-            cur_settings={cur_settings}/>
-        </PanelSectionRow>
+      <PanelSection title="Data">
         <PanelSectionRow>
           <ButtonItem layout='below' onClick={async () => {
             await PyCaller.clearDeals();
