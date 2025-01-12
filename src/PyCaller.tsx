@@ -50,7 +50,7 @@ export class PyCaller {
     }
 
     static async clearDeals(): Promise<any> {
-        this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: 'Cleared deal database' })
+        this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: 'Cleared games database' })
         return await this.serverAPI.callPluginMethod<{}, {}>('clear_deals', {});
     }
 
