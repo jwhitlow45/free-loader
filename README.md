@@ -1,3 +1,13 @@
+# Support
+
+<a href="https://protectourwinters.org/donate-to-pow/">
+    <p align="center">
+        <img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/pow.png?raw=true" align="center" width="256"/>
+    </p>        
+</a>
+
+I maintain this project in my free time as a way to give back to the open-source community that I have greatly benefited from throughout my life. If you'd like to support this project financially, I encourage you to donate directly to Protect Our Winters instead by clicking the image above. I'm fortunate to have a stable career as a full-time software engineer, and Protect Our Winters can make better use of the funds than I can. Thank you.
+
 # Free Loader Decky Plugin
 
 ![Free Loader Logo](https://github.com/jwhitlow45/free-loader/blob/main/assets/free-loader-logo.png?raw=true)
