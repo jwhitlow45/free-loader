@@ -241,7 +241,6 @@ class DealDB:
             logger.error(
                 f"Something went wrong. Received status code {response.status} from {platform}"
             )
-            return {}
 
         # convert list of api response lists to single list and return formatted version of them
         return self.format_deals(sum(deal_response_list, []))
