@@ -56,36 +56,32 @@ class DealDbKey(StrEnum):
 
 class Store:
     def __init__(
-        self, endpoint: str, platform_name: str, title_name: str, setting: Settings
+        self, platform_name: str, title_name: str, setting: Settings
     ):
-        self.endpoint = endpoint
         self.platform_name = platform_name
         self.title_name = title_name
         self.setting = setting
 
 
+STORE_GAMES_ENDPOINT = "https://www.gamerpower.com/api/giveaways?type=game"
 # order matters for store priority
 STORE_LIST = [
     Store(
-        "https://www.gamerpower.com/api/giveaways?platform=gog&type=game",
         "GOG",
         "(GOG)",
         Settings.ENABLE_GOG_GAMES,
     ),
     Store(
-        "https://www.gamerpower.com/api/giveaways?platform=steam&type=game",
         "Steam",
         "(Steam)",
         Settings.ENABLE_STEAM_GAMES,
     ),
     Store(
-        "https://www.gamerpower.com/api/giveaways?platform=epic-games-store&type=game",
         "Epic Games Store",
         "(Epic Games)",
         Settings.ENABLE_EGS_GAMES,
     ),
     Store(
-        "https://www.gamerpower.com/api/giveaways?platform=itchio&type=game",
         "Itch.io",
         "(itch.io)",
         Settings.ENABLE_ITCHIO_GAMES,
@@ -214,36 +210,33 @@ class DealDB:
         return ""
 
     def get_new_deals(self) -> dict[str, Deal]:
-        responses = {
-            store.platform_name: request(store.endpoint)
-            for store in STORE_LIST
-            if settingsManager.getSetting(store.setting, False)
-        }
-        logger.info(
-            f"Requested free game information for the following endpoints: {[r for r in responses]}"
-        )
-        deal_response_list: list[list[dict[str, str | int]]] = []
+        response = request(STORE_GAMES_ENDPOINT)
+        deal_response_list: list[dict[str, str | int]] = []
 
-        for platform, response in responses.items():
-            if response.status == 201:
-                logger.info(f"No current deals for {platform}")
-                continue
-
-            if response.status == 200:
-                logger.info(f"Received response containing deals from {platform}")
-                response_json = response.json()
-                # ensure deal ids are stored as strings and not integers
-                for deal in response_json:
-                    deal[DealDbKey.ID] = str(deal[DealDbKey.ID])
-                deal_response_list.append(response_json)
-                continue
-
+        if response.status >= 400:
             logger.error(
-                f"Something went wrong. Received status code {response.status} from {platform}"
+                f"Something went wrong. Received status code {response.status} from {STORE_GAMES_ENDPOINT}"
             )
+            return {}
 
-        # convert list of api response lists to single list and return formatted version of them
-        return self.format_deals(sum(deal_response_list, []))
+        if response.status == 201:
+            logger.info("No current deals available")
+            return {}
+
+        if response.status == 200:
+            logger.info(f"Received response containing deals from {STORE_GAMES_ENDPOINT}")
+            response_json = response.json()
+            # ensure deal ids are stored as strings and not integers
+            for deal in response_json:
+                for store in STORE_LIST:
+                    # only return games from enabled stores and supported platforms
+                    if settingsManager.getSetting(store.setting, False) and store.platform_name in deal[DealDbKey.PLATFORMS]:
+                        deal[DealDbKey.ID] = str(deal[DealDbKey.ID])
+                        deal_response_list.append(deal)
+                        continue
+
+        # return formatted deals
+        return self.format_deals(deal_response_list)
 
     def process_new_deals(self) -> None:
         self.import_from_json()
