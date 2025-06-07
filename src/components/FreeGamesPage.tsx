@@ -58,7 +58,30 @@ const FreeGamesPage: React.FunctionComponent = () => {
         gameRows.push(NO_GAMES_PAGE[0])
       } else {
         let all_hidden = gameRows.every((elem) => Boolean(elem.props.hidden))
-        if (all_hidden && !show_hidden_games) gameRows.push(NO_GAMES_PAGE[0]);
+        if (all_hidden && !show_hidden_games) {
+          gameRows.push(NO_GAMES_PAGE[0]);
+        } else {
+          gameRows.sort((a, b) => {
+            const dateA = a.props.end_date === 'N/A' ? null : new Date(a.props.end_date);
+            const dateB = b.props.end_date === 'N/A' ? null : new Date(b.props.end_date);
+
+            if (dateA && dateB) {
+              const dateDifference = dateA.getTime() - dateB.getTime();
+              if (dateDifference !== 0) {
+                return dateDifference
+              }
+              // if dates are the same sort by title
+              return a.props.title.localeCompare(b.props.title);
+            } else if (!dateA && dateB) {
+              return 1;
+            } else if (dateA && !dateB) {
+              return -1;
+            } else {
+              // if dates are both N/A then sort by title
+              return a.props.title.localeCompare(b.props.title);
+            }
+          });
+        }
       };
       setGamesContainer(gameRows);
     } else {
