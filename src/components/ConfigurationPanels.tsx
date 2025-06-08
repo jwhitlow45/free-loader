@@ -74,11 +74,13 @@ const ConfigurationPanels: React.FunctionComponent = () => {
       }
       updateAllStates();
       await UpdateGamesListTimer.updateTimer(cur_settings);
+      // focus config panel container ensuring scroll position is at top of settings page on load
+      document.getElementById('configuration-panel-container')?.focus()
     });
   }
 
   return (
-    <div>
+    <div id="configuration-panel-container">
       <PanelSection title="Stores">
         <PanelSectionRow>
           <SettingToggle
