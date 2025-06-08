@@ -27,7 +27,6 @@ const ActionsPanel: React.FunctionComponent = () => {
                 minWidth: 'auto',
               }}
               onClick={async () => { 
-                await PyCaller.updateDealsNow();
                 Router.CloseSideMenus();
                 Router.Navigate("/free-loader-configuration");
               }}
