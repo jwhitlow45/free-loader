@@ -11,10 +11,10 @@ import { loadSettings } from "./components/utils/settings";
 import { ConfigurationPanels } from "./components/ConfigurationPanels";
 import { Sidebar } from "./components/Sidebar";
 
-const FreeGamesRouter: VFC = () => {
+const FreeLoaderConfigurationRouter: VFC = () => {
   return (
     // top and bottom margins account for browser header and footer
-    <div style={{ overflowY: 'scroll', marginTop: '60px', marginBottom: '60px', height: 'calc(100%-80px)' }}>
+    <div style={{ overflowY: 'scroll', marginTop: '40px', marginBottom: '40px', height: 'calc(100% - 80px)' }}>
       <ConfigurationPanels />
     </div>
   );
@@ -22,7 +22,7 @@ const FreeGamesRouter: VFC = () => {
 
 export default definePlugin((serverApi: ServerAPI) => {
   PyCaller.setServer(serverApi);
-  serverApi.routerHook.addRoute("/free-loader-configuration", FreeGamesRouter, {
+  serverApi.routerHook.addRoute("/free-loader-configuration", FreeLoaderConfigurationRouter, {
     exact: true,
   });
 
