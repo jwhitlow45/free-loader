@@ -18,22 +18,6 @@ const ActionsPanel: React.FunctionComponent = () => {
         >
           <Focusable style={{ display: 'flex' }}>
             <DialogButton
-              onOKActionDescription='Open Settings'
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                minWidth: 'auto',
-              }}
-              onClick={async () => { 
-                Router.CloseSideMenus();
-                Router.Navigate("/free-loader-configuration");
-              }}
-            >
-              <FaCog />
-            </DialogButton>
-            <DialogButton
               disabled={disabled}
               onOKActionDescription='Update Game List'
               style={{
@@ -42,7 +26,6 @@ const ActionsPanel: React.FunctionComponent = () => {
                 alignItems: 'center',
                 padding: '10px',
                 minWidth: 'auto',
-                marginLeft: '.5em',
               }}
               onClick={async () => {
                 setDisabled(true);
@@ -53,6 +36,24 @@ const ActionsPanel: React.FunctionComponent = () => {
             >
               <FaRedo />
             </DialogButton>
+            <DialogButton
+              onOKActionDescription='Open Settings'
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '10px',
+                minWidth: 'auto',
+                marginLeft: '.5em',
+              }}
+              onClick={async () => {
+                Router.CloseSideMenus();
+                Router.Navigate("/free-loader-configuration");
+              }}
+            >
+              <FaCog />
+            </DialogButton>
+
           </Focusable>
         </Field>
       </PanelSectionRow>
