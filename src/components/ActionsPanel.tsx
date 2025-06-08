@@ -1,5 +1,5 @@
 import { DialogButton, Field, Focusable, PanelSection, PanelSectionRow, Router } from "decky-frontend-lib";
-import { FaRedo } from "react-icons/fa";
+import { FaCog, FaRedo } from "react-icons/fa";
 import { PyCaller } from "../PyCaller";
 import { useState } from "react";
 
@@ -18,18 +18,21 @@ const ActionsPanel: React.FunctionComponent = () => {
         >
           <Focusable style={{ display: 'flex' }}>
             <DialogButton
-              onOKActionDescription='View Game List'
+              onOKActionDescription='Open Settings'
               style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 padding: '10px',
-                fontSize: '14px',
+                minWidth: 'auto',
               }}
               onClick={async () => { 
                 await PyCaller.updateDealsNow();
                 Router.CloseSideMenus();
-                Router.Navigate("/free-games");
+                Router.Navigate("/free-loader-configuration");
               }}
             >
-              View Game List
+              <FaCog />
             </DialogButton>
             <DialogButton
               disabled={disabled}

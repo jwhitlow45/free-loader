@@ -1,7 +1,7 @@
 import { DialogButton, DialogLabel, Focusable } from "decky-frontend-lib";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { SettingsType } from "./utils/settings";
-import { UpdateFreqConext } from "./SettingsPanels";
+import { UpdateFreqConext } from "./ConfigurationPanels";
 import { useContext } from "react";
 
 type FrequencyRowProps = {

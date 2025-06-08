@@ -11,7 +11,7 @@ let loaded = false
 
 export const UpdateFreqConext = createContext((setting: SettingsType, increment: boolean) => { setting; increment; });
 
-const SettingsPanel: React.FunctionComponent = () => {
+const ConfigurationPanels: React.FunctionComponent = () => {
   let [days, setDays] = useState(cur_settings[Settings.UPDATE_FREQ_DAY]);
   let [hours, setHours] = useState(cur_settings[Settings.UPDATE_FREQ_HOUR]);
   let [mins, setMins] = useState(cur_settings[Settings.UPDATE_FREQ_MIN]);
@@ -177,4 +177,4 @@ const SettingsPanel: React.FunctionComponent = () => {
   );
 }
 
-export { SettingsPanel };
+export { ConfigurationPanels };

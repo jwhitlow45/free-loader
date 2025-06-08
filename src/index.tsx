@@ -5,21 +5,24 @@ import {
 } from "decky-frontend-lib";
 import { VFC } from "react";
 import { FaDollarSign } from "react-icons/fa";
-import { FreeLoader } from "./components/FreeLoader";
 import { PyCaller } from "./PyCaller";
-import { FreeGamesPage } from "./components/FreeGamesPage";
 import { UpdateGamesListTimer } from "./components/utils/UpdateGamesListTimer";
 import { loadSettings } from "./components/utils/settings";
+import { ConfigurationPanels } from "./components/ConfigurationPanels";
+import { Sidebar } from "./components/Sidebar";
 
 const FreeGamesRouter: VFC = () => {
   return (
-    <FreeGamesPage />
+    // top and bottom margins account for browser header and footer
+    <div style={{ overflowY: 'scroll', marginTop: '60px', marginBottom: '60px', height: 'calc(100%-80px)' }}>
+      <ConfigurationPanels />
+    </div>
   );
 };
 
 export default definePlugin((serverApi: ServerAPI) => {
   PyCaller.setServer(serverApi);
-  serverApi.routerHook.addRoute("/free-games", FreeGamesRouter, {
+  serverApi.routerHook.addRoute("/free-loader-configuration", FreeGamesRouter, {
     exact: true,
   });
 
@@ -32,10 +35,10 @@ export default definePlugin((serverApi: ServerAPI) => {
 
   return {
     title: <div className={staticClasses.Title}>Free Loader</div>,
-    content: <FreeLoader />,
+    content: <Sidebar />,
     icon: <FaDollarSign />,
     onDismount() {
-      serverApi.routerHook.removeRoute("/free-games");
+      serverApi.routerHook.removeRoute("/free-loader-configuration");
     },
   };
 });

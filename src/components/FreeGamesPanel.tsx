@@ -2,6 +2,7 @@ import { PyCaller } from "../PyCaller";
 import { useCallback, useEffect, useState } from "react";
 import { GamePanel } from "./GamePanel";
 import { Settings } from "./utils/settings";
+import { PanelSection } from "decky-frontend-lib";
 
 enum Deal {
   ID = 'id',
@@ -25,10 +26,10 @@ const FAILED_TO_LOAD_PAGE = [
 ];
 const NO_GAMES_PAGE = [
   <div><h1 style={NON_GAMES_PAGE_STYLE}>
-    No free games right now.<br/>Check back later!</h1></div>
+    No free games right now.<br />Check back later!</h1></div>
 ]
 
-const FreeGamesPage: React.FunctionComponent = () => {
+const FreeGamesPanel: React.FunctionComponent = () => {
   const [gamesContainer, setGamesContainer] = useState(EMPTY_DIV)
 
   const loadGames = useCallback(async (retries = 0) => {
@@ -45,14 +46,14 @@ const FreeGamesPage: React.FunctionComponent = () => {
           <GamePanel
             id={gamesInfo[key][Deal.ID]}
             title={gamesInfo[key][Deal.TITLE]}
-            worth={gamesInfo[key][Deal.WORTH]} 
+            worth={gamesInfo[key][Deal.WORTH]}
             image_url={gamesInfo[key][Deal.IMAGE]}
             link={gamesInfo[key][Deal.OPEN_GIVEAWAY_URL]}
             end_date={gamesInfo[key][Deal.END_DATE]}
             platforms={gamesInfo[key][Deal.PLATFORMS]}
             hidden={gamesInfo[key][Deal.HIDDEN]}
             show_title={show_titles}
-            show_hidden_game={show_hidden_games}/>)
+            show_hidden_game={show_hidden_games} />)
       }
       if (gameRows.length == 0) {
         gameRows.push(NO_GAMES_PAGE[0])
@@ -102,10 +103,10 @@ const FreeGamesPage: React.FunctionComponent = () => {
   });
 
   return (
-    <div style={{ overflowY: 'scroll', marginTop: '60px', marginBottom: '60px', height: 'calc(100%-80px)' }}>
+    <PanelSection title="Free Games">
       {gamesContainer}
-    </div>
+    </PanelSection>
   );
 }
 
-export { FreeGamesPage };
+export { FreeGamesPanel };
