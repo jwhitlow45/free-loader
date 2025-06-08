@@ -19,14 +19,14 @@ enum Deal {
 
 const MAX_RETRIES = 3;
 const EMPTY_DIV = [<div></div>];
-const NON_GAMES_PAGE_STYLE = { display: 'flex', justifyContent: 'center', marginTop: '175px' }
+const NON_GAMES_PAGE_STYLE = { display: 'flex', justifyContent: 'center' }
 const FAILED_TO_LOAD_PAGE = [
-  <div><h1 style={NON_GAMES_PAGE_STYLE}>
-    Failed to load games!</h1></div>
+  <div><h3 style={NON_GAMES_PAGE_STYLE}>
+    Failed to load games!</h3></div>
 ];
 const NO_GAMES_PAGE = [
-  <div><h1 style={NON_GAMES_PAGE_STYLE}>
-    No free games right now.<br />Check back later!</h1></div>
+  <div><h3 style={NON_GAMES_PAGE_STYLE}>
+    No free games right now.<br />Check back later!</h3></div>
 ]
 
 const FreeGamesPanel: React.FunctionComponent = () => {

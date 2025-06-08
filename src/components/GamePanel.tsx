@@ -20,6 +20,7 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
   const [hideGamePanel, setHideGamePanel] = React.useState(!props.show_hidden_game && props.hidden);
   if (hideGamePanel) return null;
   return (
+    <div style={{display: 'flex', marginBottom: '10px'}}>
     <PanelSectionRow>
       <DialogButton
         onClick={() => {
@@ -38,28 +39,25 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
       >
         <table>
           <tr>
-            <td>
-              <img src={props.image_url} style={{ borderRadius: '10px', height: '160px', marginRight: '10px' }} />
+            <td style={{ width: '100%' }}>
+              <img src={props.image_url} style={{ borderRadius: '10px', width: '100%' }} />
             </td>
+          </tr>
+          <tr>
             <td style={{ width: '100%' }}>
               <div>
-                <h1 style={{
-                  lineHeight: props.show_title ? '40px' : '0px',
-                  visibility: props.show_title ? 'visible' : 'hidden'
-                }}>{props.title}</h1>
-                <h3 style={{ lineHeight: '10px' }}>{props.platforms}</h3>
-                <h3 style={{ lineHeight: '10px' }}><s>{props.worth}</s> Free</h3>
-                <h3 style={{ lineHeight: '10px' }}>Ends {props.end_date}</h3>
-                <h3 style={{
-                  lineHeight: hiddenState ? '10px' : '0px',
-                  visibility: hiddenState ? 'visible' : 'hidden'
-                }}><i>Hidden</i></h3>
+                {props.show_title && <h3 style={{ lineHeight: '20px' }}>{props.title}</h3>}
+                <h4 style={{ lineHeight: '3px' }}>{props.platforms}</h4>
+                <h4 style={{ lineHeight: '3px' }}><s>{props.worth}</s> Free</h4>
+                <h4 style={{ lineHeight: '3px' }}>Ends {props.end_date}</h4>
+                {hiddenState && <h4 style={{ lineHeight: '3px' }}><i>Hidden</i></h4>}
               </div>
             </td>
           </tr>
         </table>
       </DialogButton>
     </PanelSectionRow>
+    </div>
   );
 }
 
