@@ -1,4 +1,4 @@
-import { DialogButton, PanelSectionRow } from "decky-frontend-lib";
+import { DialogButton, Navigation, PanelSectionRow } from "decky-frontend-lib";
 import { PyCaller } from "../PyCaller";
 import React from "react";
 
@@ -23,8 +23,9 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
     <div style={{display: 'flex', marginBottom: '10px'}}>
     <PanelSectionRow>
       <DialogButton
-        onClick={() => {
-          window.open(props.link)
+        onClick={async () => {
+          Navigation.CloseSideMenus()
+          Navigation.NavigateToExternalWeb(props.link);
         }}
         onSecondaryButton={async () => {
           let response = await PyCaller.toggleDealVisibility(props.id)
