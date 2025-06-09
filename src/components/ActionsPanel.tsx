@@ -3,7 +3,11 @@ import { FaCog, FaRedo } from "react-icons/fa";
 import { PyCaller } from "../PyCaller";
 import { useState } from "react";
 
-const ActionsPanel: React.FunctionComponent = () => {
+type ActionsPanelProps = {
+  loadGamesFunction: () => Promise<void>
+}
+
+const ActionsPanel: React.FunctionComponent<ActionsPanelProps> = (props) => {
   const [disabled, setDisabled] = useState(false);
 
   return (
@@ -30,6 +34,7 @@ const ActionsPanel: React.FunctionComponent = () => {
               onClick={async () => {
                 setDisabled(true);
                 await PyCaller.updateDealsNow();
+                await props.loadGamesFunction();
                 await new Promise(res => setTimeout(res, 1000));
                 setDisabled(false);
               }}
@@ -53,7 +58,6 @@ const ActionsPanel: React.FunctionComponent = () => {
             >
               <FaCog />
             </DialogButton>
-
           </Focusable>
         </Field>
       </PanelSectionRow>
