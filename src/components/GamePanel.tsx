@@ -20,7 +20,7 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
   const [hideGamePanel, setHideGamePanel] = React.useState(!props.show_hidden_game && props.hidden);
   if (hideGamePanel) return null;
   return (
-    <div style={{ display: 'flex', marginBottom: '10px' }}>
+    <div style={{ display: 'flex', marginBottom: '10px', animation: 'fadeIn 0.25s ease-in-out' }}>
       <PanelSectionRow>
         <DialogButton
           onClick={async () => {
@@ -58,6 +58,16 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
           </table>
         </DialogButton>
       </PanelSectionRow>
+      <style>
+        {`@keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }`}
+      </style>
     </div>
   );
 }
