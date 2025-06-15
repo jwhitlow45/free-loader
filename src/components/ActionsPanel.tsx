@@ -1,14 +1,13 @@
 import { DialogButton, Field, Focusable, PanelSection, PanelSectionRow, Router } from "decky-frontend-lib";
 import { FaCog, FaRedo } from "react-icons/fa";
 import { PyCaller } from "../PyCaller";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import GamesListContext from "./context/GamesListContext";
+import { fetchGamesList } from "./utils/games";
 
-type ActionsPanelProps = {
-  loadGamesFunction: () => Promise<void>
-}
-
-const ActionsPanel: React.FunctionComponent<ActionsPanelProps> = (props) => {
-  const [disabled, setDisabled] = useState(false);
+const ActionsPanel: React.FunctionComponent = () => {
+  const [updateButtonDisabled, setUpdateButtonDisabled] = useState(false);
+  const { setGamesList } = useContext(GamesListContext)
 
   return (
     <PanelSection title="Actions">
@@ -22,7 +21,7 @@ const ActionsPanel: React.FunctionComponent<ActionsPanelProps> = (props) => {
         >
           <Focusable style={{ display: 'flex' }}>
             <DialogButton
-              disabled={disabled}
+              disabled={updateButtonDisabled}
               onOKActionDescription='Update Game List'
               style={{
                 display: 'flex',
@@ -32,11 +31,12 @@ const ActionsPanel: React.FunctionComponent<ActionsPanelProps> = (props) => {
                 minWidth: 'auto',
               }}
               onClick={async () => {
-                setDisabled(true);
+                setUpdateButtonDisabled(true);
                 await PyCaller.updateDealsNow();
-                await props.loadGamesFunction();
+                const gamesList = await fetchGamesList();
+                setGamesList(gamesList);
                 await new Promise(res => setTimeout(res, 1000));
-                setDisabled(false);
+                setUpdateButtonDisabled(false);
               }}
             >
               <FaRedo />
