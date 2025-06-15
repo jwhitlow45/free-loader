@@ -35,7 +35,7 @@ const ActionsPanel: React.FunctionComponent = () => {
                 await PyCaller.updateDealsNow();
                 const gamesList = await fetchGamesList();
                 setGamesList(gamesList);
-                await new Promise(res => setTimeout(res, 1000));
+                await new Promise(res => setTimeout(res, 500));
                 setUpdateButtonDisabled(false);
               }}
             >
