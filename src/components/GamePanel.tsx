@@ -1,6 +1,8 @@
 import { DialogButton, Navigation, PanelSectionRow } from "decky-frontend-lib";
 import { PyCaller } from "../PyCaller";
-import React from "react";
+import React, { useContext } from "react";
+import GamesListContext from "./context/GamesListContext";
+import { fetchGamesList } from "./utils/games";
 
 type GamePanelProps = {
   id: string,
@@ -18,6 +20,9 @@ type GamePanelProps = {
 const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
   const [hiddenState, setHiddenState] = React.useState(props.hidden);
   const [hideGamePanel, setHideGamePanel] = React.useState(!props.show_hidden_game && props.hidden);
+
+  const { setGamesList } = useContext(GamesListContext);
+
   if (hideGamePanel) return null;
   return (
     <div style={{ display: 'flex', marginBottom: '10px', animation: 'fadeIn 0.25s ease-in-out' }}>
@@ -33,6 +38,7 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
               let hidden_state = Boolean(response.result['hidden'])
               setHiddenState(hidden_state)
               setHideGamePanel(!props.show_hidden_game && hidden_state)
+              setGamesList(await fetchGamesList())
             }
           }}
           onOKActionDescription='Open Store Page'
