@@ -2,18 +2,18 @@ import { Settings, SettingsType } from "./settings";
 import { PyCaller } from "../../PyCaller";
 
 export class UpdateGamesListTimer {
-  private static timer: NodeJS.Timer;
+  private static timer: NodeJS.Timeout;
 
   public static updateTimer = async (settings: {}) => {
     clearInterval(this.timer);
     this.timer = await this.getInterval(settings);
-  } 
+  }
 
   private static convert_frequency_to_ms(days: number, hours: number, mins: number) {
     return days * 86400000 + hours * 3600000 + mins * 60000
   }
-  
-  private static async getInterval(settings: {[key: SettingsType]: any}): Promise<NodeJS.Timer> {
+
+  private static async getInterval(settings: { [key: SettingsType]: any }): Promise<NodeJS.Timeout> {
     // get interval of frequency check
     let freq_ms = this.convert_frequency_to_ms(
       settings[Settings.UPDATE_FREQ_DAY],
@@ -31,7 +31,7 @@ export class UpdateGamesListTimer {
       await PyCaller.setSetting(Settings.LAST_UPDATE_TIME, now.toISOString())
       await PyCaller.loggerInfo(`Next games list update at ${new Date(now.getTime() + freq_ms)}`);
     }, freq_ms)
-  
+
     return timer;
   }
 }
