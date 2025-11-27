@@ -18,6 +18,9 @@ Do you hate having to look for free game promotions on external websites, or man
 ### View a list of currently free games with links to their store pages
 <img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/games_list.jpg?raw=true"/>
 
+### Display a QR code to easily claim free games on your mobile device
+<img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/qr_code.jpg?raw=true"/>
+
 ### Hide games you've claimed or aren't interested in
 <img src="https://github.com/jwhitlow45/free-loader/blob/main/assets/screenshots/hidden_games_list.jpg?raw=true"/>
 
