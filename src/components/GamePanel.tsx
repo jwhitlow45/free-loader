@@ -3,6 +3,7 @@ import { PyCaller } from "../PyCaller";
 import React, { useContext } from "react";
 import GamesListContext from "./context/GamesListContext";
 import { fetchGamesList } from "./utils/games";
+import QRCode from "react-qr-code";
 
 type GamePanelProps = {
   id: string,
@@ -23,19 +24,6 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
   const [hideGamePanel, setHideGamePanel] = React.useState(!props.show_hidden_game && props.hidden);
 
   const { setGamesList } = useContext(GamesListContext);
-
-  function getQrCodeImageUrl() {
-    const encodeQueryParams = (p: { [key: string]: string | number | boolean }) =>
-      Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
-
-    const baseUrl = 'https://api.qrserver.com/v1/create-qr-code/?'
-    const queryParams = {
-      size: `150x150`,
-      data: props.link
-    }
-    return baseUrl + encodeQueryParams(queryParams)
-  }
-  const qrCodeUrl = getQrCodeImageUrl();
 
   if (hideGamePanel) return null;
   return (
@@ -65,7 +53,9 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = (props) => {
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', margin: 'auto' }}>
               <img src={props.image_url} hidden={showQrCode} style={{ height: '105px', borderRadius: '10px', animation: 'fadeIn 0.5s ease-in-out' }} />
-              <img src={qrCodeUrl} hidden={!showQrCode} style={{ height: '105px', padding: '0 59.8255814px', animation: 'fadeIn 0.5s ease-in-out' }} />
+              <div hidden={!showQrCode} style={{ height: '105px', animation: 'fadeIn 0.5s ease-in-out' }}>
+                <QRCode size={105} value={props.link} style={{ padding: '0 59.8255814px' }} />
+              </div>
             </div>
             <div style={{ width: '100%', marginTop: '8px' }}>
               {props.show_title && <h3 style={{ lineHeight: '20px' }}>{props.title}</h3>}
