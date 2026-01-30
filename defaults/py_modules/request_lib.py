@@ -45,7 +45,7 @@ def request(
     headers = headers or {}
     data = data or {}
     params = params or {}
-    headers = {"Accept": "application/json", **headers}
+    headers = {"Accept": "application/json", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", **headers}
 
     if method == "GET":
         params = {**params, **data}
