@@ -28,7 +28,6 @@ class Response(typing.NamedTuple):
             output = ""
         return output
 
-
 def request(
     url: str,
     data: dict[str, typing.Any] | None = None,
@@ -45,7 +44,11 @@ def request(
     headers = headers or {}
     data = data or {}
     params = params or {}
-    headers = {"Accept": "application/json", **headers}
+    headers = {
+        "Accept": "application/json",
+        "User-Agent": "FreeLoader/1.5.2 (https://github.com/jwhitlow45/free-loader)",
+        **headers
+    }
 
     if method == "GET":
         params = {**params, **data}
