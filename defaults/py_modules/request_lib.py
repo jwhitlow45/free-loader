@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import os
 import typing
 import urllib.error
 import urllib.parse
@@ -27,6 +28,24 @@ class Response(typing.NamedTuple):
         except json.JSONDecodeError:
             output = ""
         return output
+
+
+def _create_ssl_context() -> ssl.SSLContext:
+    context = ssl.create_default_context()
+    if context.cert_store_stats()["x509_ca"] > 0:
+        return context
+    # bundled/embedded Pythons (e.g. Decky's) have no CA paths baked in;
+    # fall back to well-known system CA bundle locations
+    for ca_file in (
+        "/etc/ssl/certs/ca-certificates.crt",  # SteamOS / Arch / Debian
+        "/etc/ssl/cert.pem",                   # Arch compat symlink, macOS
+        "/etc/pki/tls/certs/ca-bundle.crt",    # Fedora / RHEL
+    ):
+        if os.path.isfile(ca_file):
+            context.load_verify_locations(cafile=ca_file)
+            break
+    return context
+
 
 def request(
     url: str,
@@ -68,9 +87,7 @@ def request(
         url, data=request_data, headers=headers, method=method
     )
 
-    context = ssl.create_default_context()
-    context.check_hostname = False
-    context.verify_mode = ssl.CERT_NONE
+    context = _create_ssl_context()
 
     try:
         with urllib.request.urlopen(httprequest, context=context) as httpresponse:
