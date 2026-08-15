@@ -10,7 +10,7 @@ const Sidebar: React.FunctionComponent = () => {
 
   useEffect(() => {
     const fetchAndSetGamesList = async () => {
-      if (gamesList.length === 0 || gamesList[0] === (<div></div>)) {
+      if (gamesList.length === 0) {
         setGamesList(await fetchGamesList());
         await PyCaller.loggerInfo('Loaded games list');
       }
