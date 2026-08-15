@@ -38,6 +38,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     content: <Sidebar />,
     icon: <FaDollarSign />,
     onDismount() {
+      UpdateGamesListTimer.stop();
       serverApi.routerHook.removeRoute("/free-loader-configuration");
     },
   };
