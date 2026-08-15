@@ -75,7 +75,8 @@ def request(
         data = None
 
     if params:
-        url += "?" + urllib.parse.urlencode(params, doseq=True, safe="/")
+        separator = "&" if "?" in url else "?"
+        url += separator + urllib.parse.urlencode(params, doseq=True, safe="/")
 
     if data:
         if data_as_json:
