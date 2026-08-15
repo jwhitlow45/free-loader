@@ -18,11 +18,11 @@ enum Deal {
 const MAX_ATTEMPTS = 3;
 const NO_GAMES_PAGE_STYLE = { display: 'flex', justifyContent: 'center' }
 const FAILED_TO_LOAD_PAGE = [
-  <div><h3 style={NO_GAMES_PAGE_STYLE}>
+  <div key="failed-to-load"><h3 style={NO_GAMES_PAGE_STYLE}>
     Failed to load games!</h3></div>
 ];
 export const NO_GAMES_PAGE = [
-  <div><h3 style={NO_GAMES_PAGE_STYLE}>
+  <div key="no-games"><h3 style={NO_GAMES_PAGE_STYLE}>
     No free games right now.<br />Check back later!</h3></div>
 ];
 
@@ -37,6 +37,7 @@ export const fetchGamesList = async (attempts: number = 1): Promise<JSX.Element[
 
     const gameRows: JSX.Element[] = Object.keys(gamesInfo).map((key: string) =>
       <GamePanel
+        key={gamesInfo[key][Deal.ID]}
         id={gamesInfo[key][Deal.ID]}
         title={gamesInfo[key][Deal.TITLE]}
         worth={gamesInfo[key][Deal.WORTH]}
