@@ -3,6 +3,7 @@
 from enum import StrEnum
 import json
 import os
+import threading
 from datetime import datetime
 from typing import Any
 from decky_plugin import logger
@@ -14,6 +15,8 @@ INIT_JSON = {}
 DEFAULT_DB_FILE_PATH = os.path.join(
     os.environ.get("DECKY_PLUGIN_SETTINGS_DIR", ""), "deal_db.json"
 )
+# guards deal db file access, as updates run in a thread off the event loop
+_db_lock = threading.RLock()
 
 
 class Deal:
@@ -98,28 +101,30 @@ class DealDB:
         return {id: deal.__dict__ for id, deal in self.deals.items()}
 
     def import_from_json(self, file_path: str = DEFAULT_DB_FILE_PATH) -> None:
-        # if file does not exist create it
-        if not os.path.isfile(file_path):
-            logger.info("No deals db, creating new empty one")
-            with open(file_path, "w") as json_file:
-                json.dump(INIT_JSON, json_file, indent=4)
-            self.deals = INIT_JSON
+        with _db_lock:
+            # if file does not exist create it
+            if not os.path.isfile(file_path):
+                logger.info("No deals db, creating new empty one")
+                with open(file_path, "w") as json_file:
+                    json.dump(INIT_JSON, json_file, indent=4)
+                self.deals = INIT_JSON
 
-        with open(file_path, "r") as json_file:
-            deal_json: dict[str, dict[str, Any]] = json.load(json_file)
-            for id, deal in deal_json.items():
-                is_hidden = deal[DealDbKey.HIDDEN]
-                del deal[DealDbKey.HIDDEN]
+            with open(file_path, "r") as json_file:
+                deal_json: dict[str, dict[str, Any]] = json.load(json_file)
+                for id, deal in deal_json.items():
+                    is_hidden = deal[DealDbKey.HIDDEN]
+                    del deal[DealDbKey.HIDDEN]
 
-                self.deals[id] = Deal(**deal)
-                self.deals[id].hidden = is_hidden
+                    self.deals[id] = Deal(**deal)
+                    self.deals[id].hidden = is_hidden
 
         logger.info("Loaded deals from db")
 
     def export_to_json(self, file_path: str = DEFAULT_DB_FILE_PATH) -> None:
-        with open(file_path, "w") as json_file:
-            json.dump(self.to_dict(), json_file, indent=4)
-            logger.info(f"Wrote deals to {DEFAULT_DB_FILE_PATH}")
+        with _db_lock:
+            with open(file_path, "w") as json_file:
+                json.dump(self.to_dict(), json_file, indent=4)
+                logger.info(f"Wrote deals to {DEFAULT_DB_FILE_PATH}")
 
     def compare_deals(self, deals: dict[str, Deal]) -> dict[str, Deal]:
         for key in deals:
@@ -239,9 +244,12 @@ class DealDB:
         return self.format_deals(deal_response_list)
 
     def process_new_deals(self) -> None:
-        self.import_from_json()
+        # fetch over the network before taking the lock so file access is
+        # never blocked behind a slow request
         new_deals = self.get_new_deals()
-        self.compare_and_export_deals(new_deals)
+        with _db_lock:
+            self.import_from_json()
+            self.compare_and_export_deals(new_deals)
 
     def toggle_deal_visibility(self, id: str) -> bool:
         self.import_from_json()

@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 
@@ -24,7 +25,9 @@ class Plugin:
     async def update_deals_now(self):
         try:
             dealdb = DealDB()
-            dealdb.process_new_deals()
+            # run in a thread so the slow network request does not block
+            # other plugin methods on the event loop
+            await asyncio.to_thread(dealdb.process_new_deals)
             return dealdb.num_new_deals
         except Exception as e:
             logger.exception(e)
