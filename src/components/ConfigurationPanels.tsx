@@ -1,5 +1,5 @@
 import { ButtonItem, Field, PanelSection, PanelSectionRow } from "decky-frontend-lib";
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { PyCaller } from "../PyCaller";
 import { Settings, SettingsType, loadSettings } from "./utils/settings";
 import { FrequencyRow } from "./FrequencyRow";
@@ -57,27 +57,27 @@ const ConfigurationPanels: React.FunctionComponent = () => {
     await UpdateGamesListTimer.updateTimer(cur_settings);
   }, [cur_settings]);
 
-  if (!loaded) {
-    loadSettings().then(async (output) => {
+  useEffect(() => {
+    if (loaded) return;
+    (async () => {
+      let output = await loadSettings();
+      if (Object.keys(output).length === 0) {
+        PyCaller.loggerError('Could not load settings...restoring settings file.');
+        await PyCaller.restoreSettings();
+        output = await loadSettings();
+      }
       loaded = Object.keys(output).length > 0;
       if (loaded) {
         cur_settings = output;
         PyCaller.loggerInfo('Loaded settings:');
         PyCaller.loggerInfo(cur_settings);
-      } else {
-        PyCaller.loggerError('Could not load settings...restoring settings file.');
-        PyCaller.restoreSettings();
-        loadSettings().then(async (output) => {
-          cur_settings = output;
-          loaded = true;
-        });
       }
       updateAllStates();
       await UpdateGamesListTimer.updateTimer(cur_settings);
       // focus config panel container ensuring scroll position is at top of settings page on load
       document.getElementById('configuration-panel-container')?.focus()
-    });
-  }
+    })();
+  }, []);
 
   return (
     <div id="configuration-panel-container">
