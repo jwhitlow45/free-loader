@@ -9,7 +9,7 @@ from typing import Any
 from decky_plugin import logger
 from request_lib import request
 
-from py_modules.settings import Settings, settingsManager
+from py_modules.plugin_settings import Settings, settingsManager
 
 DEFAULT_DB_FILE_PATH = os.path.join(
     os.environ.get("DECKY_PLUGIN_SETTINGS_DIR", ""), "deal_db.json"

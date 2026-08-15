@@ -2,11 +2,13 @@ import asyncio
 import os
 import sys
 
-sys.path.append(os.path.abspath("../plugins/free-loader"))
+# resolve the plugin directory from this file's location, as the loader
+# process's working directory is not the plugin directory
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from decky_plugin import logger
 from py_modules.deal_db import DealDB
-from py_modules.settings import settingsManager, SETTINGS_DEFAULTS
+from py_modules.plugin_settings import settingsManager, SETTINGS_DEFAULTS
 
 
 class Plugin:
