@@ -11,10 +11,6 @@ export class PyCaller {
 
     static get server() { return this.serverAPI; }
 
-    static async getSettings(): Promise<ServerResponse<{}>> {
-        return await this.serverAPI.callPluginMethod<{}, {}>('settings_read', {});
-    }
-
     static async getSetting(key: string): Promise<ServerResponse<{}>> {
         return await this.serverAPI.callPluginMethod<{}, {}>('settings_getSetting', { key: key })
     }
@@ -52,8 +48,10 @@ export class PyCaller {
     }
 
     static async clearDeals(): Promise<any> {
-        this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: 'Cleared games database' })
-        return await this.serverAPI.callPluginMethod<{}, {}>('clear_deals', {});
+        const response = await this.serverAPI.callPluginMethod<{}, {}>('clear_deals', {});
+        const msg = response.success ? 'Cleared games database' : 'Failed to clear games database';
+        this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: msg });
+        return response;
     }
 
     static async toggleDealVisibility(id: string): Promise<any> {
