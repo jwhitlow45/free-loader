@@ -196,7 +196,9 @@ class DealDB:
 
     def cleanup_deal_title(self, title: str) -> str:
         title_filters = [store.title_name for store in STORE_LIST] + ["(PC)"]
-        # check title for instance of filter, if not present, return nothing instead of -1 from .find()
+        # collect positions of filters present in the title; > 0 intentionally
+        # skips both missing filters (-1 from .find()) and filters at position 0,
+        # which would otherwise truncate the title to an empty string
         filter_indicies = [
             index for filter in title_filters if ((index := title.find(filter)) > 0)
         ]
@@ -250,7 +252,7 @@ class DealDB:
                     if settingsManager.getSetting(store.setting, False) and store.platform_name in deal[DealDbKey.PLATFORMS]:
                         deal[DealDbKey.ID] = str(deal[DealDbKey.ID])
                         deal_response_list.append(deal)
-                        continue
+                        break
 
         # return formatted deals
         return self.format_deals(deal_response_list)
