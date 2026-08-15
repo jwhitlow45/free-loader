@@ -55,6 +55,7 @@ def request(
     method: str = "GET",
     data_as_json: bool = True,
     error_count: int = 0,
+    timeout: float = 15,
 ) -> Response:
     if not url.casefold().startswith("http"):
         raise urllib.error.URLError("Incorrect and possibly insecure protocol in url")
@@ -90,7 +91,9 @@ def request(
     context = _create_ssl_context()
 
     try:
-        with urllib.request.urlopen(httprequest, context=context) as httpresponse:
+        with urllib.request.urlopen(
+            httprequest, context=context, timeout=timeout
+        ) as httpresponse:
             response = Response(
                 headers=httpresponse.headers,
                 status=httpresponse.status,
