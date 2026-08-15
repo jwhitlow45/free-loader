@@ -27,8 +27,12 @@ export const NO_GAMES_PAGE = [
 ];
 
 export const fetchGamesList = async (attempts: number = 1): Promise<JSX.Element[]> => {
-  let show_titles = Boolean((await PyCaller.getSetting(Settings.SHOW_TITLES)).result)
-  let show_hidden_games = Boolean((await PyCaller.getSetting(Settings.SHOW_HIDDEN_GAMES)).result)
+  // fall back to setting defaults on failed reads, as a failed response's
+  // result is an error string which would coerce to true
+  const showTitlesResponse = await PyCaller.getSetting(Settings.SHOW_TITLES);
+  const showHiddenGamesResponse = await PyCaller.getSetting(Settings.SHOW_HIDDEN_GAMES);
+  let show_titles = showTitlesResponse.success ? Boolean(showTitlesResponse.result) : true;
+  let show_hidden_games = showHiddenGamesResponse.success ? Boolean(showHiddenGamesResponse.result) : false;
 
   let response = await PyCaller.readDeals();
   if (response.success) {
