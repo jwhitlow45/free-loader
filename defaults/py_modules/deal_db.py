@@ -11,7 +11,6 @@ from request_lib import request
 
 from py_modules.settings import Settings, settingsManager
 
-INIT_JSON = {}
 DEFAULT_DB_FILE_PATH = os.path.join(
     os.environ.get("DECKY_PLUGIN_SETTINGS_DIR", ""), "deal_db.json"
 )
@@ -105,26 +104,39 @@ class DealDB:
             # if file does not exist create it
             if not os.path.isfile(file_path):
                 logger.info("No deals db, creating new empty one")
-                with open(file_path, "w") as json_file:
-                    json.dump(INIT_JSON, json_file, indent=4)
-                self.deals = INIT_JSON
+                self.deals = {}
+                self.export_to_json(file_path)
+                return
 
-            with open(file_path, "r") as json_file:
-                deal_json: dict[str, dict[str, Any]] = json.load(json_file)
+            try:
+                with open(file_path, "r") as json_file:
+                    deal_json: dict[str, dict[str, Any]] = json.load(json_file)
                 for id, deal in deal_json.items():
-                    is_hidden = deal[DealDbKey.HIDDEN]
-                    del deal[DealDbKey.HIDDEN]
-
+                    is_hidden = deal.pop(DealDbKey.HIDDEN, False)
                     self.deals[id] = Deal(**deal)
                     self.deals[id].hidden = is_hidden
+            except Exception:
+                # the db is just a cache of the store api, so recover from a
+                # corrupt or outdated file by starting over instead of
+                # failing every plugin method forever
+                logger.exception(
+                    "Deals db is corrupt or outdated...resetting to empty db"
+                )
+                self.deals = {}
+                self.export_to_json(file_path)
+                return
 
         logger.info("Loaded deals from db")
 
     def export_to_json(self, file_path: str = DEFAULT_DB_FILE_PATH) -> None:
         with _db_lock:
-            with open(file_path, "w") as json_file:
+            # write to a temp file then rename so a crash mid-write cannot
+            # corrupt the db
+            tmp_file_path = file_path + ".tmp"
+            with open(tmp_file_path, "w") as json_file:
                 json.dump(self.to_dict(), json_file, indent=4)
-                logger.info(f"Wrote deals to {DEFAULT_DB_FILE_PATH}")
+            os.replace(tmp_file_path, file_path)
+        logger.info(f"Wrote deals to {file_path}")
 
     def compare_deals(self, deals: dict[str, Deal]) -> dict[str, Deal]:
         for key in deals:
