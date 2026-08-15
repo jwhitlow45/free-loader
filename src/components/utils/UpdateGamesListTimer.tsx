@@ -33,12 +33,10 @@ export class UpdateGamesListTimer {
     freq_ms = freq_ms > 0 ? freq_ms : 60000
     PyCaller.loggerInfo(`Next games list update at ${new Date(new Date().getTime() + freq_ms)}`);
     let timer = setInterval(async () => {
-      // update games list and last update timestamp
+      // update games list; updateDealsNow records the last update timestamp
       await PyCaller.loggerInfo('Updating games list now')
       await PyCaller.updateDealsNow(false);
-      const now = new Date();
-      await PyCaller.setSetting(Settings.LAST_UPDATE_TIME, now.toISOString())
-      await PyCaller.loggerInfo(`Next games list update at ${new Date(now.getTime() + freq_ms)}`);
+      await PyCaller.loggerInfo(`Next games list update at ${new Date(new Date().getTime() + freq_ms)}`);
     }, freq_ms)
 
     return timer;
