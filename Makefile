@@ -47,26 +47,36 @@ copy-ssh-key: ## Copy public ssh key to steamdeck
 	@echo "+ $@"
 	@ssh-copy-id -i $(DECK_KEY) $(DECK_USER)@$(DECK_HOST)
 
+deck-setup: ## Install password-less deploy helper on steamdeck (asks for sudo password; re-run after SteamOS updates)
+	@echo "+ $@"
+	@scp -P $(DECK_PORT) -i $(DECK_KEY) ./tools/decky-dev-setup.sh $(DECK_USER)@$(DECK_HOST):/tmp/decky-dev-setup.sh
+	@ssh -t $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) -i $(DECK_KEY) \
+ 		'sudo sh /tmp/decky-dev-setup.sh; rm -f /tmp/decky-dev-setup.sh'
+
 deploy-steamdeck: ## Deploy plugin build to steamdeck
 	@echo "+ $@"
 	@ssh $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) -i $(DECK_KEY) \
- 		'chmod -v 755 $(DECK_HOME)/homebrew/plugins/ && mkdir -p $(DECK_HOME)/homebrew/plugins/$(PLUGIN_FOLDER)'
+ 		'sudo -n /etc/decky-dev-prep 2>/dev/null || mkdir -p $(DECK_HOME)/homebrew/plugins/$(PLUGIN_FOLDER) 2>/dev/null; \
+ 		[ -O $(DECK_HOME)/homebrew/plugins/$(PLUGIN_FOLDER) ] || { echo "deploy prep failed (a SteamOS update wipes it) -- run: make deck-setup" >&2; exit 1; }'
 	@rsync -azp --delete --progress -e "ssh -p $(DECK_PORT) -i $(DECK_KEY)" \
 		--chmod=Du=rwx,Dg=rx,Do=rx,Fu=rwx,Fg=rx,Fo=rx \
 		--exclude='.git/' \
+		--exclude='.jj/' \
 		--exclude='.github/' \
 		--exclude='.vscode/' \
 		--exclude='node_modules/' \
 		--exclude='.pnpm-store/' \
 		--exclude='src/' \
 		--exclude='*.log' \
-		--exclude='.gitignore' . \
-		--exclude='.idea' . \
-		--exclude='.env' . \
-		--exclude='Makefile' . \
+		--exclude='.gitignore' \
+		--exclude='.idea' \
+		--exclude='.env' \
+		--exclude='Makefile' \
+		--exclude='.DS_Store' \
+		--exclude='.ruff_cache/' \
+		--exclude='.mypy_cache/' \
+		--exclude='tools/' \
  		./ $(DECK_USER)@$(DECK_HOST):$(DECK_HOME)/homebrew/plugins/$(PLUGIN_FOLDER)/
-	@ssh $(DECK_USER)@$(DECK_HOST) -p $(DECK_PORT) -i $(DECK_KEY) \
- 		'chmod -v 755 $(DECK_HOME)/homebrew/plugins/'
 
 restart-decky: ## Restart Decky on remote steamdeck
 	@echo "+ $@"
