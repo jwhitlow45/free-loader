@@ -2,9 +2,9 @@ const MS_PER_MINUTE = 60000;
 const MS_PER_HOUR = 3600000;
 const MS_PER_DAY = 86400000;
 
-// "Ends today" / "Ends tomorrow" / "Ends in 12 days", or null when there is
+// compact time left: "12d" / "8h" / "45m" / "ended", or null when there is
 // no usable end date (e.g. the N/A dates on GOG giveaways)
-export const describeEndDate = (endDate: string): string | null => {
+export const describeEndDateCompact = (endDate: string): string | null => {
   // deals end at the end of their listed day, local time
   const end = new Date(`${endDate}T23:59:59`);
   if (isNaN(end.getTime())) {
@@ -12,16 +12,17 @@ export const describeEndDate = (endDate: string): string | null => {
   }
   const msLeft = end.getTime() - Date.now();
   if (msLeft < 0) {
-    return 'Ended';
+    return 'ended';
   }
   const daysLeft = Math.floor(msLeft / MS_PER_DAY);
-  if (daysLeft === 0) {
-    return 'Ends today';
+  if (daysLeft >= 1) {
+    return `${daysLeft}d`;
   }
-  if (daysLeft === 1) {
-    return 'Ends tomorrow';
+  const hoursLeft = Math.floor(msLeft / MS_PER_HOUR);
+  if (hoursLeft >= 1) {
+    return `${hoursLeft}h`;
   }
-  return `Ends in ${daysLeft} days`;
+  return `${Math.floor(msLeft / MS_PER_MINUTE)}m`;
 };
 
 // "just now" / "5m ago" / "3h ago" / "2d ago", or null for missing or

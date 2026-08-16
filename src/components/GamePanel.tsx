@@ -6,7 +6,7 @@ import { FaEyeSlash, FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom, SiItchdotio } from "react-icons/si";
 import GamesListContext from "./context/GamesListContext";
 import { fetchGamesList, Deal } from "./utils/games";
-import { describeEndDate } from "./utils/time";
+import { describeEndDateCompact } from "./utils/time";
 import QRCode from "react-qr-code";
 
 // secondary text is dimmed with opacity rather than an explicit color so it
@@ -45,7 +45,7 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
   const fadeIn = (duration: string) => animate ? `free-loader-fade-in ${duration} ease-in-out` : 'none';
 
   const store = STORES[deal.platforms];
-  const endDateText = describeEndDate(deal.end_date);
+  const endDateText = describeEndDateCompact(deal.end_date);
 
   return (
     <PanelSectionRow>
@@ -75,7 +75,7 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
             {!showQrCode
               ? <img
                   src={deal.image}
-                  style={{ width: '100%', height: '118px', objectFit: 'cover', borderRadius: '4px', animation: fadeIn('0.5s') }} />
+                  style={{ display: 'block', width: '100%', height: '118px', objectFit: 'cover', borderRadius: '4px', animation: fadeIn('0.5s') }} />
               : <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '118px', backgroundColor: '#fff', borderRadius: '4px', animation: fadeIn('0.25s') }}>
                   <QRCode size={100} value={deal.open_giveaway_url} />
                 </div>}
@@ -87,6 +87,14 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {store ? store.label : deal.platforms}
                 </span>
+                {endDateText && <>
+                  <span>·</span>
+                  <span style={{ flexShrink: 0 }}>{endDateText}</span>
+                </>}
+                {deal.hidden && <>
+                  <span>·</span>
+                  <FaEyeSlash size={12} style={{ flexShrink: 0 }} />
+                </>}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                 {deal.worth.startsWith('$') &&
@@ -94,14 +102,6 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
                 <span style={FREE_BADGE_STYLE}>FREE</span>
               </div>
             </div>
-            {(endDateText || deal.hidden) &&
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: SECONDARY_OPACITY, fontSize: '11px' }}>
-                <span>{endDateText}</span>
-                {deal.hidden &&
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <FaEyeSlash size={11} /> Hidden
-                  </span>}
-              </div>}
           </div>
         </DialogButton>
       </div>
