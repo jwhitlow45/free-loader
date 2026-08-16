@@ -2,7 +2,7 @@ import { DialogButton, Navigation, PanelSectionRow } from "@decky/ui";
 import { PyCaller } from "../PyCaller";
 import React, { useContext } from "react";
 import { IconType } from "react-icons";
-import { FaEyeSlash, FaSteam } from "react-icons/fa";
+import { FaAmazon, FaEyeSlash, FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom, SiItchdotio } from "react-icons/si";
 import GamesListContext from "./context/GamesListContext";
 import { fetchGamesList, Deal } from "./utils/games";
@@ -30,6 +30,7 @@ const STORES: { [platform: string]: { icon: IconType; label: string } } = {
   'GOG': { icon: SiGogdotcom, label: 'GOG' },
   'Epic Games Store': { icon: SiEpicgames, label: 'Epic Games' },
   'Itch.io': { icon: SiItchdotio, label: 'Itch.io' },
+  'Amazon Prime': { icon: FaAmazon, label: 'Amazon Prime' },
 };
 
 // text sizes for the default and larger text accessibility modes
@@ -105,7 +106,7 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
                 </>}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                {deal.worth.startsWith('$') &&
+                {deal.worth && deal.worth !== 'N/A' &&
                   <s style={{ opacity: SECONDARY_OPACITY, fontSize: sizes.meta }}>{deal.worth}</s>}
                 <span style={{ ...FREE_BADGE_STYLE, fontSize: sizes.badge }}>FREE</span>
               </div>

@@ -125,6 +125,13 @@ const ConfigurationPanels: React.FunctionComponent = () => {
             setting={Settings.ENABLE_ITCHIO_GAMES}
             onUpdate={updateSetting} />
         </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Amazon Prime'
+            value={Boolean(settings[Settings.ENABLE_AMAZON_GAMES])}
+            setting={Settings.ENABLE_AMAZON_GAMES}
+            onUpdate={updateSetting} />
+        </PanelSectionRow>
       </PanelSection>
       <PanelSection title="Settings">
         <PanelSectionRow>
