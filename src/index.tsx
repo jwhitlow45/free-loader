@@ -26,12 +26,12 @@ export default definePlugin((serverApi: ServerAPI) => {
     exact: true,
   });
 
+  // the timer performs an immediate update when one is overdue, so no
+  // unconditional update is needed on load
   (async () => {
     let settings = await loadSettings();
     await UpdateGamesListTimer.updateTimer(settings);
   })()
-
-  PyCaller.updateDealsNow(false);
 
   return {
     title: <div className={staticClasses.Title}>Free Loader</div>,
