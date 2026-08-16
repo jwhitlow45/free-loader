@@ -58,7 +58,11 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
 
   return (
     <PanelSectionRow>
-      <div style={{ marginBottom: '10px', opacity: deal.hidden ? 0.5 : 1, animation: fadeIn('0.25s') }}>
+      <div
+        style={{ marginBottom: '10px', opacity: deal.hidden ? 0.5 : 1, animation: fadeIn('0.25s') }}
+        // the qr code goes back to the game art when the card loses focus,
+        // so at most one qr code is ever visible
+        onBlurCapture={() => setShowQrCode(false)}>
         <DialogButton
           style={{ padding: '10px', width: '100%' }}
           onClick={async () => {
@@ -83,11 +87,11 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
             {!showQrCode
               ? <img
-                  src={deal.image}
-                  style={{ display: 'block', width: '100%', height: '118px', objectFit: 'cover', borderRadius: '4px', animation: fadeIn('0.5s') }} />
+                src={deal.image}
+                style={{ display: 'block', width: '100%', height: '118px', objectFit: 'cover', borderRadius: '4px', animation: fadeIn('0.5s') }} />
               : <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '118px', backgroundColor: '#fff', borderRadius: '4px', animation: fadeIn('0.25s') }}>
-                  <QRCode size={100} value={deal.open_giveaway_url} />
-                </div>}
+                <QRCode size={100} value={deal.open_giveaway_url} />
+              </div>}
             {show_title &&
               <div style={{ fontSize: sizes.title, fontWeight: 500, lineHeight: '1.3' }}>{deal.title}</div>}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
