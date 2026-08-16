@@ -1,15 +1,19 @@
-import { ButtonItem, Field, PanelSection, PanelSectionRow } from "@decky/ui";
-import { createContext, useCallback, useEffect, useState } from "react";
+import { ButtonItem, PanelSection, PanelSectionRow, SliderField, SteamSpinner } from "@decky/ui";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PyCaller } from "../PyCaller";
 import { Settings, SettingsType, loadSettings } from "./utils/settings";
-import { FrequencyRow } from "./FrequencyRow";
 import { UpdateGamesListTimer } from "./utils/UpdateGamesListTimer";
 import { SettingToggle } from "./SettingToggle";
 
-export const UpdateFreqConext = createContext((setting: SettingsType, increment: boolean) => { setting; increment; });
+const FREQ_SLIDERS = [
+  { label: 'Days', setting: Settings.UPDATE_FREQ_DAY, max: 30 },
+  { label: 'Hours', setting: Settings.UPDATE_FREQ_HOUR, max: 23 },
+  { label: 'Minutes', setting: Settings.UPDATE_FREQ_MIN, max: 59 },
+];
 
 const ConfigurationPanels: React.FunctionComponent = () => {
   const [settings, setSettings] = useState<{ [key: SettingsType]: any } | null>(null);
+  const timerDebounce = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const loadAndApply = useCallback(async () => {
     let output: { [key: SettingsType]: any } = await loadSettings();
@@ -24,6 +28,13 @@ const ConfigurationPanels: React.FunctionComponent = () => {
       output = await loadSettings();
     }
     if (Object.keys(output).length > 0) {
+      // clamp frequency values saved before the sliders bounded their ranges
+      for (const { setting, max } of FREQ_SLIDERS) {
+        if (typeof output[setting] === 'number' && output[setting] > max) {
+          output[setting] = max;
+          PyCaller.setSetting(setting, max).catch(() => { });
+        }
+      }
       setSettings(output);
       await UpdateGamesListTimer.updateTimer(output);
     }
@@ -31,6 +42,12 @@ const ConfigurationPanels: React.FunctionComponent = () => {
 
   useEffect(() => {
     loadAndApply();
+    // flush any pending debounced timer update on unmount
+    return () => {
+      if (timerDebounce.current) {
+        clearTimeout(timerDebounce.current);
+      }
+    };
   }, []);
 
   // focus config panel container ensuring scroll position is at top of the
@@ -51,27 +68,30 @@ const ConfigurationPanels: React.FunctionComponent = () => {
     }
   }, []);
 
-  const updateFreq = useCallback(async (setting: SettingsType, increment: boolean) => {
-    const MAX_VALUE = 99;
-    const MIN_VALUE = 0;
-    if (settings === null)
+  const updateFreq = useCallback(async (setting: SettingsType, value: number) => {
+    if (settings === null || value === settings[setting]) {
       return;
-
-    const new_value = settings[setting] + (increment ? 1 : -1);
-    if (new_value > MAX_VALUE || new_value < MIN_VALUE)
-      return;
+    }
     // prevent a frequency of zero, which would poll the store api constantly
-    const freq_settings = [Settings.UPDATE_FREQ_DAY, Settings.UPDATE_FREQ_HOUR, Settings.UPDATE_FREQ_MIN];
-    const total = freq_settings.reduce((sum, s) => sum + (s === setting ? new_value : settings[s]), 0);
-    if (total <= 0)
+    const total = FREQ_SLIDERS.reduce((sum, slider) => sum + (slider.setting === setting ? value : settings[slider.setting]), 0);
+    if (total <= 0) {
+      // rerender so the slider snaps back to its stored value
+      setSettings((prev) => prev === null ? prev : { ...prev });
       return;
+    }
 
-    await updateSetting(setting, new_value);
-    await UpdateGamesListTimer.updateTimer({ ...settings, [setting]: new_value });
+    await updateSetting(setting, value);
+    // debounce timer rescheduling so dragging a slider does not reschedule
+    // on every step
+    if (timerDebounce.current) {
+      clearTimeout(timerDebounce.current);
+    }
+    const newSettings = { ...settings, [setting]: value };
+    timerDebounce.current = setTimeout(() => UpdateGamesListTimer.updateTimer(newSettings), 500);
   }, [settings, updateSetting]);
 
   if (settings === null) {
-    return null;
+    return <SteamSpinner />;
   }
 
   return (
@@ -137,21 +157,17 @@ const ConfigurationPanels: React.FunctionComponent = () => {
         </PanelSectionRow>
       </PanelSection>
       <PanelSection title="Update Frequency">
-        <PanelSectionRow>
-          <Field
-            bottomSeparator="none"
-            inlineWrap="keep-inline"
-            padding="none"
-            spacingBetweenLabelAndChild="none"
-            childrenContainerWidth="max"
-          >
-            <UpdateFreqConext.Provider value={updateFreq}>
-              <FrequencyRow label='Days' setting={Settings.UPDATE_FREQ_DAY} value={settings[Settings.UPDATE_FREQ_DAY]}></FrequencyRow>
-              <FrequencyRow label='Hours' setting={Settings.UPDATE_FREQ_HOUR} value={settings[Settings.UPDATE_FREQ_HOUR]}></FrequencyRow>
-              <FrequencyRow label='Minutes' setting={Settings.UPDATE_FREQ_MIN} value={settings[Settings.UPDATE_FREQ_MIN]}></FrequencyRow>
-            </UpdateFreqConext.Provider>
-          </Field>
-        </PanelSectionRow>
+        {FREQ_SLIDERS.map(({ label, setting, max }) =>
+          <PanelSectionRow key={setting}>
+            <SliderField
+              label={label}
+              value={settings[setting]}
+              min={0}
+              max={max}
+              step={1}
+              showValue={true}
+              onChange={(value) => updateFreq(setting, value)} />
+          </PanelSectionRow>)}
       </PanelSection>
       <PanelSection title="Data">
         <PanelSectionRow>
