@@ -1,66 +1,67 @@
-import { DialogButton, Field, Focusable, Navigation, PanelSection, PanelSectionRow } from "@decky/ui";
+import { DialogButton, Focusable, Navigation, PanelSection, PanelSectionRow } from "@decky/ui";
 import { FaCog, FaRedo } from "react-icons/fa";
 import { PyCaller } from "../PyCaller";
 import { useContext, useState } from "react";
 import GamesListContext from "./context/GamesListContext";
 import { fetchGamesList } from "./utils/games";
+import { describeTimeSince } from "./utils/time";
+
+const ACTION_BUTTON_STYLE: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: '10px',
+  flex: 1,
+  minWidth: 0,
+};
 
 const ActionsPanel: React.FunctionComponent = () => {
-  const [updateButtonDisabled, setUpdateButtonDisabled] = useState(false);
-  const { setGamesList } = useContext(GamesListContext)
+  const [updating, setUpdating] = useState(false);
+  const { gamesList, setGamesList } = useContext(GamesListContext)
+
+  const lastUpdatedText = describeTimeSince(gamesList.lastUpdated);
 
   return (
-    <PanelSection title="Actions">
+    <PanelSection>
       <PanelSectionRow>
-        <Field
-          bottomSeparator="none"
-          inlineWrap="keep-inline"
-          padding="none"
-          spacingBetweenLabelAndChild="none"
-          childrenContainerWidth="max"
-        >
-          <Focusable style={{ display: 'flex' }}>
-            <DialogButton
-              disabled={updateButtonDisabled}
-              onOKActionDescription='Update Game List'
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                minWidth: 'auto',
-              }}
-              onClick={async () => {
-                setUpdateButtonDisabled(true);
-                await PyCaller.updateDealsNow();
-                const gamesList = await fetchGamesList();
-                setGamesList(gamesList);
-                await new Promise(res => setTimeout(res, 500));
-                setUpdateButtonDisabled(false);
-              }}
-            >
-              <FaRedo />
-            </DialogButton>
-            <DialogButton
-              onOKActionDescription='Open Settings'
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                minWidth: 'auto',
-                marginLeft: '.5em',
-              }}
-              onClick={async () => {
-                Navigation.CloseSideMenus();
-                Navigation.Navigate("/free-loader-configuration");
-              }}
-            >
-              <FaCog />
-            </DialogButton>
-          </Focusable>
-        </Field>
+        <Focusable style={{ display: 'flex', gap: '8px' }}>
+          <DialogButton
+            disabled={updating}
+            onOKActionDescription='Update Game List'
+            style={ACTION_BUTTON_STYLE}
+            onClick={async () => {
+              setUpdating(true);
+              await PyCaller.updateDealsNow();
+              setGamesList(await fetchGamesList());
+              setUpdating(false);
+            }}
+          >
+            <FaRedo style={updating && gamesList.showAnimations ? { animation: 'spin 1s linear infinite' } : {}} />
+          </DialogButton>
+          <DialogButton
+            onOKActionDescription='Open Settings'
+            style={ACTION_BUTTON_STYLE}
+            onClick={async () => {
+              Navigation.CloseSideMenus();
+              Navigation.Navigate("/free-loader-configuration");
+            }}
+          >
+            <FaCog />
+          </DialogButton>
+          <style>
+            {`@keyframes spin {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+            }`}
+          </style>
+        </Focusable>
       </PanelSectionRow>
+      {lastUpdatedText &&
+        <PanelSectionRow>
+          <div style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.45)', textAlign: 'center', marginTop: '4px' }}>
+            Updated {lastUpdatedText}
+          </div>
+        </PanelSectionRow>}
     </PanelSection>
   );
 }
