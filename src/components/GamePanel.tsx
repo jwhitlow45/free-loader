@@ -32,17 +32,25 @@ const STORES: { [platform: string]: { icon: IconType; label: string } } = {
   'Itch.io': { icon: SiItchdotio, label: 'Itch.io' },
 };
 
+// text sizes for the default and larger text accessibility modes
+const TEXT_SIZES = {
+  normal: { title: '14px', meta: '12px', badge: '11px', icon: 12 },
+  larger: { title: '17px', meta: '15px', badge: '13px', icon: 15 },
+};
+
 type GamePanelProps = {
   deal: Deal;
   show_title: boolean;
   animate: boolean;
+  larger_text: boolean;
 }
 
-const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, animate }) => {
+const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, animate, larger_text }) => {
   const [showQrCode, setShowQrCode] = React.useState(false);
 
   const { setGamesList } = useContext(GamesListContext);
   const fadeIn = (duration: string) => animate ? `free-loader-fade-in ${duration} ease-in-out` : 'none';
+  const sizes = larger_text ? TEXT_SIZES.larger : TEXT_SIZES.normal;
 
   const store = STORES[deal.platforms];
   const endDateText = describeEndDateCompact(deal.end_date);
@@ -80,10 +88,10 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
                   <QRCode size={100} value={deal.open_giveaway_url} />
                 </div>}
             {show_title &&
-              <div style={{ fontSize: '14px', fontWeight: 500, lineHeight: '1.3' }}>{deal.title}</div>}
+              <div style={{ fontSize: sizes.title, fontWeight: 500, lineHeight: '1.3' }}>{deal.title}</div>}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: SECONDARY_OPACITY, fontSize: '12px', minWidth: 0 }}>
-                {store && <store.icon size={12} style={{ flexShrink: 0 }} />}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: SECONDARY_OPACITY, fontSize: sizes.meta, minWidth: 0 }}>
+                {store && <store.icon size={sizes.icon} style={{ flexShrink: 0 }} />}
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {store ? store.label : deal.platforms}
                 </span>
@@ -93,13 +101,13 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
                 </>}
                 {deal.hidden && <>
                   <span>·</span>
-                  <FaEyeSlash size={12} style={{ flexShrink: 0 }} />
+                  <FaEyeSlash size={sizes.icon} style={{ flexShrink: 0 }} />
                 </>}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                 {deal.worth.startsWith('$') &&
-                  <s style={{ opacity: SECONDARY_OPACITY, fontSize: '12px' }}>{deal.worth}</s>}
-                <span style={FREE_BADGE_STYLE}>FREE</span>
+                  <s style={{ opacity: SECONDARY_OPACITY, fontSize: sizes.meta }}>{deal.worth}</s>}
+                <span style={{ ...FREE_BADGE_STYLE, fontSize: sizes.badge }}>FREE</span>
               </div>
             </div>
           </div>
