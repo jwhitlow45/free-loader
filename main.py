@@ -65,6 +65,13 @@ class Plugin:
             logger.exception(e)
             raise e
 
+    async def settings_read(self) -> dict:
+        logger.info("Reading all settings")
+        return {
+            key.value: settingsManager.getSetting(key, default)
+            for key, default in SETTINGS_DEFAULTS.items()
+        }
+
     async def settings_commit(self):
         logger.info("Saving settings")
         return settingsManager.commit()
