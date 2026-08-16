@@ -1,4 +1,4 @@
-import { ButtonItem, PanelSection, PanelSectionRow, SliderField, SteamSpinner } from "@decky/ui";
+import { ButtonItem, ConfirmModal, PanelSection, PanelSectionRow, SliderField, SteamSpinner, showModal } from "@decky/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PyCaller } from "../PyCaller";
 import { Settings, SettingsType, loadSettings } from "./utils/settings";
@@ -171,14 +171,32 @@ const ConfigurationPanels: React.FunctionComponent = () => {
       </PanelSection>
       <PanelSection title="Data">
         <PanelSectionRow>
-          <ButtonItem layout='below' onClick={async () => {
-            await PyCaller.clearDeals();
+          <ButtonItem layout='below' onClick={() => {
+            showModal(
+              <ConfirmModal
+                strTitle='Clear Games Database'
+                strDescription='This removes all cached games, including which games are hidden. The list fills back up on the next update.'
+                strOKButtonText='Clear'
+                bDestructiveWarning={true}
+                onOK={async () => {
+                  await PyCaller.clearDeals();
+                }} />
+            );
           }}>Clear Games Database</ButtonItem>
         </PanelSectionRow>
         <PanelSectionRow>
-          <ButtonItem layout='below' onClick={async () => {
-            await PyCaller.restoreSettings();
-            await loadAndApply();
+          <ButtonItem layout='below' onClick={() => {
+            showModal(
+              <ConfirmModal
+                strTitle='Restore Settings'
+                strDescription='This resets every setting back to its default value.'
+                strOKButtonText='Restore'
+                bDestructiveWarning={true}
+                onOK={async () => {
+                  await PyCaller.restoreSettings();
+                  await loadAndApply();
+                }} />
+            );
           }}>Restore Settings</ButtonItem>
         </PanelSectionRow>
       </PanelSection>
