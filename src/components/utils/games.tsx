@@ -52,24 +52,27 @@ const compareDeals = (a: Deal, b: Deal): number => {
 }
 
 export const fetchGamesList = async (attempts: number = 1): Promise<GamesListState> => {
-  // fall back to setting defaults on failed reads, as a failed response's
-  // result is an error string which would coerce to true
-  const showTitlesResponse = await PyCaller.getSetting(Settings.SHOW_TITLES);
-  const showHiddenGamesResponse = await PyCaller.getSetting(Settings.SHOW_HIDDEN_GAMES);
-  const showTitles = showTitlesResponse.success ? Boolean(showTitlesResponse.result) : true;
-  const showHiddenGames = showHiddenGamesResponse.success ? Boolean(showHiddenGamesResponse.result) : false;
+  // fall back to setting defaults when settings cannot be read
+  let showTitles = true;
+  let showHiddenGames = false;
+  try {
+    const settings = await PyCaller.getSettings();
+    showTitles = Boolean(settings[Settings.SHOW_TITLES]);
+    showHiddenGames = Boolean(settings[Settings.SHOW_HIDDEN_GAMES]);
+  } catch (error) {
+    PyCaller.loggerError(`Could not read settings for games list: ${error}`);
+  }
 
-  const response = await PyCaller.readDeals();
-  if (response.success) {
-    await PyCaller.loggerInfo('Read json db');
-    const gamesInfo = response.result as { [id: string]: Deal };
+  try {
+    const gamesInfo = await PyCaller.readDeals();
+    PyCaller.loggerInfo('Read json db');
     const deals = Object.values(gamesInfo).sort(compareDeals);
     return { status: 'ready', deals, showTitles, showHiddenGames };
+  } catch (error) {
+    if (attempts >= MAX_ATTEMPTS) {
+      PyCaller.loggerError(`Reached max retry limit of ${MAX_ATTEMPTS}...cannot load page.`);
+      return { status: 'error', deals: [], showTitles, showHiddenGames };
+    }
+    return fetchGamesList(attempts + 1);
   }
-
-  if (attempts >= MAX_ATTEMPTS) {
-    await PyCaller.loggerError(`Reached max retry limit of ${MAX_ATTEMPTS}...cannot load page.`);
-    return { status: 'error', deals: [], showTitles, showHiddenGames };
-  }
-  return fetchGamesList(attempts + 1);
 }

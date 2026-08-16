@@ -1,4 +1,4 @@
-import { DialogButton, Field, Focusable, PanelSection, PanelSectionRow, Router } from "decky-frontend-lib";
+import { DialogButton, Field, Focusable, Navigation, PanelSection, PanelSectionRow } from "@decky/ui";
 import { FaCog, FaRedo } from "react-icons/fa";
 import { PyCaller } from "../PyCaller";
 import { useContext, useState } from "react";
@@ -52,8 +52,8 @@ const ActionsPanel: React.FunctionComponent = () => {
                 marginLeft: '.5em',
               }}
               onClick={async () => {
-                Router.CloseSideMenus();
-                Router.Navigate("/free-loader-configuration");
+                Navigation.CloseSideMenus();
+                Navigation.Navigate("/free-loader-configuration");
               }}
             >
               <FaCog />

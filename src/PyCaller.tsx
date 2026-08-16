@@ -1,72 +1,79 @@
-import { ServerAPI, ServerResponse } from "decky-frontend-lib";
+import { callable, toaster } from "@decky/api";
 import { Settings } from "./components/utils/settings";
+import type { Deal } from "./components/utils/games";
+
+// typed bindings to python backend methods; calls reject when the backend
+// call fails
+const updateDealsNowBackend = callable<[], number>('update_deals_now');
+const readDealsBackend = callable<[], { [id: string]: Deal }>('read_deals');
+const clearDealsBackend = callable<[], { [id: string]: Deal }>('clear_deals');
+const toggleDealVisibilityBackend = callable<[id: string], { hidden: boolean }>('toggle_deal_visibility');
+const settingsReadBackend = callable<[], { [key: string]: any }>('settings_read');
+const settingsGetSettingBackend = callable<[key: string], any>('settings_getSetting');
+const settingsSetSettingBackend = callable<[key: string, value: any], void>('settings_setSetting');
+const settingsRestoreBackend = callable<[], void>('settings_restoreSettings');
+const loggerInfoBackend = callable<[info: any], void>('logger_info');
+const loggerErrorBackend = callable<[error: any], void>('logger_error');
 
 export class PyCaller {
-    private static serverAPI: ServerAPI;
     private static toastTitle = 'Free Loader';
 
-    static setServer(server: ServerAPI) {
-        this.serverAPI = server;
+    static async getSettings(): Promise<{ [key: string]: any }> {
+        return await settingsReadBackend();
     }
 
-    static get server() { return this.serverAPI; }
-
-    static async getSettings(): Promise<ServerResponse<{ [key: string]: any }>> {
-        return await this.serverAPI.callPluginMethod<{}, { [key: string]: any }>('settings_read', {});
-    }
-
-    static async getSetting(key: string): Promise<ServerResponse<{}>> {
-        return await this.serverAPI.callPluginMethod<{}, {}>('settings_getSetting', { key: key })
+    static async getSetting(key: string): Promise<any> {
+        return await settingsGetSettingBackend(key);
     }
 
     static async setSetting(key: string, value: any) {
-        await this.serverAPI.callPluginMethod<{}, {}>('settings_setSetting', { key: key, value: value });
+        await settingsSetSettingBackend(key, value);
     }
 
     static async restoreSettings() {
-        await this.serverAPI.callPluginMethod<{}, {}>('settings_restoreSettings', {});
+        await settingsRestoreBackend();
     }
 
     static async updateDealsNow(notifyOnZeroNewGames = true) {
-        let response = await this.serverAPI.callPluginMethod<{}, {}>('update_deals_now', {});
-        let is_notifications_enabled = (await this.getSetting(Settings.NOTIFY_ON_FREE_GAMES)).result;
-        let msg;
-        if (response.success) {
-            let numFreeGames = Number(response.result);
-            msg = `Found ${response.result} new free games!`
-            if ((notifyOnZeroNewGames == true || numFreeGames > 0) && is_notifications_enabled) {
-                this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: msg });
+        try {
+            const numFreeGames = await updateDealsNowBackend();
+            const isNotificationsEnabled = Boolean(await PyCaller.getSetting(Settings.NOTIFY_ON_FREE_GAMES));
+            const msg = `Found ${numFreeGames} new free games!`;
+            if ((notifyOnZeroNewGames || numFreeGames > 0) && isNotificationsEnabled) {
+                toaster.toast({ title: PyCaller.toastTitle, body: msg });
             }
-            const now = new Date();
-            await PyCaller.setSetting(Settings.LAST_UPDATE_TIME, now.toISOString())
+            await PyCaller.setSetting(Settings.LAST_UPDATE_TIME, new Date().toISOString());
             PyCaller.loggerInfo(msg);
-        } else {
-            msg = 'Failed to update games list'
-            this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: msg });
-            PyCaller.loggerError(msg);
+        } catch (error) {
+            const msg = 'Failed to update games list';
+            toaster.toast({ title: PyCaller.toastTitle, body: msg });
+            PyCaller.loggerError(`${msg}: ${error}`);
         }
     }
 
-    static async readDeals(): Promise<any> {
-        return await this.serverAPI.callPluginMethod<{}, {}>('read_deals', {});
+    static async readDeals(): Promise<{ [id: string]: Deal }> {
+        return await readDealsBackend();
     }
 
-    static async clearDeals(): Promise<any> {
-        const response = await this.serverAPI.callPluginMethod<{}, {}>('clear_deals', {});
-        const msg = response.success ? 'Cleared games database' : 'Failed to clear games database';
-        this.serverAPI.toaster.toast({ title: PyCaller.toastTitle, body: msg });
-        return response;
+    static async clearDeals() {
+        try {
+            await clearDealsBackend();
+            toaster.toast({ title: PyCaller.toastTitle, body: 'Cleared games database' });
+        } catch (error) {
+            toaster.toast({ title: PyCaller.toastTitle, body: 'Failed to clear games database' });
+            PyCaller.loggerError(`Failed to clear games database: ${error}`);
+        }
     }
 
-    static async toggleDealVisibility(id: string): Promise<any> {
-        return await this.serverAPI.callPluginMethod<{}, {}>('toggle_deal_visibility', { 'id': id })
+    static async toggleDealVisibility(id: string): Promise<{ hidden: boolean }> {
+        return await toggleDealVisibilityBackend(id);
     }
 
-    static async loggerInfo(info: any) {
-        await this.serverAPI.callPluginMethod<{}, {}>('logger_info', { 'info': info })
+    static loggerInfo(info: any) {
+        loggerInfoBackend(info).catch(() => { });
     }
 
-    static async loggerError(error: any) {
-        await this.serverAPI.callPluginMethod<{}, {}>('logger_error', { 'error': error })
+    static loggerError(error: any) {
+        loggerErrorBackend(error).catch(() => { });
     }
 }

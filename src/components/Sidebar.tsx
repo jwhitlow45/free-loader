@@ -1,6 +1,6 @@
 import { PyCaller } from "../PyCaller";
 import { useEffect, useState } from "react";
-import { PanelSection } from "decky-frontend-lib";
+import { PanelSection } from "@decky/ui";
 import { ActionsPanel } from "./ActionsPanel";
 import { GamePanel } from "./GamePanel";
 import GamesListContext from "./context/GamesListContext";
