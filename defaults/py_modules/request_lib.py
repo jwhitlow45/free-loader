@@ -30,6 +30,28 @@ class Response(typing.NamedTuple):
         return output
 
 
+def _read_plugin_version() -> str:
+    # walk upward to find the plugin root's package.json, as this file is
+    # reached via the py_modules symlink in development but may also be
+    # resolved to its real location one level deeper under defaults/
+    directory = os.path.dirname(os.path.abspath(__file__))
+    for _ in range(3):
+        directory = os.path.dirname(directory)
+        package_json_path = os.path.join(directory, "package.json")
+        if os.path.isfile(package_json_path):
+            try:
+                with open(package_json_path, "r") as package_file:
+                    return str(json.load(package_file)["version"])
+            except Exception:
+                return "unknown"
+    return "unknown"
+
+
+USER_AGENT = (
+    f"FreeLoader/{_read_plugin_version()} (https://github.com/jwhitlow45/free-loader)"
+)
+
+
 def _create_ssl_context() -> ssl.SSLContext:
     context = ssl.create_default_context()
     if context.cert_store_stats()["x509_ca"] > 0:
@@ -66,7 +88,7 @@ def request(
     params = params or {}
     headers = {
         "Accept": "application/json",
-        "User-Agent": "FreeLoader/1.5.2 (https://github.com/jwhitlow45/free-loader)",
+        "User-Agent": USER_AGENT,
         **headers
     }
 
