@@ -20,6 +20,7 @@ export type GamesListState = {
   showTitles: boolean;
   showHiddenGames: boolean;
   showAnimations: boolean;
+  lastUpdated: string;
 }
 
 export const INITIAL_GAMES_LIST_STATE: GamesListState = {
@@ -28,6 +29,7 @@ export const INITIAL_GAMES_LIST_STATE: GamesListState = {
   showTitles: true,
   showHiddenGames: false,
   showAnimations: true,
+  lastUpdated: '',
 }
 
 const MAX_ATTEMPTS = 3;
@@ -58,11 +60,13 @@ export const fetchGamesList = async (attempts: number = 1): Promise<GamesListSta
   let showTitles = true;
   let showHiddenGames = false;
   let showAnimations = true;
+  let lastUpdated = '';
   try {
     const settings = await PyCaller.getSettings();
     showTitles = Boolean(settings[Settings.SHOW_TITLES]);
     showHiddenGames = Boolean(settings[Settings.SHOW_HIDDEN_GAMES]);
     showAnimations = Boolean(settings[Settings.ENABLE_ANIMATIONS]);
+    lastUpdated = String(settings[Settings.LAST_UPDATE_TIME] ?? '');
   } catch (error) {
     PyCaller.loggerError(`Could not read settings for games list: ${error}`);
   }
@@ -71,11 +75,11 @@ export const fetchGamesList = async (attempts: number = 1): Promise<GamesListSta
     const gamesInfo = await PyCaller.readDeals();
     PyCaller.loggerInfo('Read json db');
     const deals = Object.values(gamesInfo).sort(compareDeals);
-    return { status: 'ready', deals, showTitles, showHiddenGames, showAnimations };
+    return { status: 'ready', deals, showTitles, showHiddenGames, showAnimations, lastUpdated };
   } catch (error) {
     if (attempts >= MAX_ATTEMPTS) {
       PyCaller.loggerError(`Reached max retry limit of ${MAX_ATTEMPTS}...cannot load page.`);
-      return { status: 'error', deals: [], showTitles, showHiddenGames, showAnimations };
+      return { status: 'error', deals: [], showTitles, showHiddenGames, showAnimations, lastUpdated };
     }
     return fetchGamesList(attempts + 1);
   }
