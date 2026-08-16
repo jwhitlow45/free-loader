@@ -6,83 +6,64 @@ import { FrequencyRow } from "./FrequencyRow";
 import { UpdateGamesListTimer } from "./utils/UpdateGamesListTimer";
 import { SettingToggle } from "./SettingToggle";
 
-let cur_settings: { [key: string]: any } = {}
-let loaded = false
-
 export const UpdateFreqConext = createContext((setting: SettingsType, increment: boolean) => { setting; increment; });
 
 const ConfigurationPanels: React.FunctionComponent = () => {
-  let [days, setDays] = useState(cur_settings[Settings.UPDATE_FREQ_DAY]);
-  let [hours, setHours] = useState(cur_settings[Settings.UPDATE_FREQ_HOUR]);
-  let [mins, setMins] = useState(cur_settings[Settings.UPDATE_FREQ_MIN]);
+  const [settings, setSettings] = useState<{ [key: SettingsType]: any } | null>(null);
 
-  let [notifyFreeGames, setNotifyFreeGames] = useState(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
-  let [enableSteamGames, setEnableSteamGames] = useState(cur_settings[Settings.ENABLE_STEAM_GAMES]);
-  let [enableEgsGames, setEnableEgsGames] = useState(cur_settings[Settings.ENABLE_EGS_GAMES]);
-  let [enableGogGames, setEnableGogGames] = useState(cur_settings[Settings.ENABLE_GOG_GAMES]);
-  let [enableItchioGames, setEnableItchioGames] = useState(cur_settings[Settings.ENABLE_ITCHIO_GAMES]);
-  let [showTitles, setShowTitles] = useState(cur_settings[Settings.SHOW_TITLES]);
-  let [showHiddenGames, setShowHiddenGames] = useState(cur_settings[Settings.SHOW_HIDDEN_GAMES]);
+  const loadAndApply = useCallback(async () => {
+    let output: { [key: SettingsType]: any } = await loadSettings();
+    if (Object.keys(output).length === 0) {
+      PyCaller.loggerError('Could not load settings...restoring settings file.');
+      await PyCaller.restoreSettings();
+      output = await loadSettings();
+    }
+    if (Object.keys(output).length > 0) {
+      setSettings(output);
+      await UpdateGamesListTimer.updateTimer(output);
+    }
+  }, []);
 
-  const updateAllStates = useCallback(async () => {
-    setDays(cur_settings[Settings.UPDATE_FREQ_DAY])
-    setHours(cur_settings[Settings.UPDATE_FREQ_HOUR])
-    setMins(cur_settings[Settings.UPDATE_FREQ_MIN])
-    setNotifyFreeGames(cur_settings[Settings.NOTIFY_ON_FREE_GAMES]);
-    setEnableSteamGames(cur_settings[Settings.ENABLE_STEAM_GAMES]);
-    setEnableEgsGames(cur_settings[Settings.ENABLE_EGS_GAMES]);
-    setEnableGogGames(cur_settings[Settings.ENABLE_GOG_GAMES]);
-    setEnableItchioGames(cur_settings[Settings.ENABLE_ITCHIO_GAMES]);
-    setShowTitles(cur_settings[Settings.SHOW_TITLES]);
-    setShowHiddenGames(cur_settings[Settings.SHOW_HIDDEN_GAMES]);
-  }, [cur_settings]);
+  useEffect(() => {
+    loadAndApply();
+  }, []);
+
+  // focus config panel container ensuring scroll position is at top of the
+  // settings page once it renders
+  const isLoaded = settings !== null;
+  useEffect(() => {
+    if (isLoaded) {
+      document.getElementById('configuration-panel-container')?.focus()
+    }
+  }, [isLoaded]);
+
+  const updateSetting = useCallback(async (setting: SettingsType, value: any) => {
+    setSettings((prev) => prev === null ? prev : { ...prev, [setting]: value });
+    await PyCaller.setSetting(setting, value);
+  }, []);
 
   const updateFreq = useCallback(async (setting: SettingsType, increment: boolean) => {
     const MAX_VALUE = 99;
     const MIN_VALUE = 0;
+    if (settings === null)
+      return;
 
-    if (increment) {
-      let inc_value = cur_settings[setting] + 1;
-      if (inc_value > MAX_VALUE)
-        return;
-      cur_settings[setting] = inc_value;
-    } else {
-      let dec_value = cur_settings[setting] - 1;
-      if (dec_value < MIN_VALUE)
-        return;
-      // prevent a frequency of zero, which would poll the store api constantly
-      const freq_settings = [Settings.UPDATE_FREQ_DAY, Settings.UPDATE_FREQ_HOUR, Settings.UPDATE_FREQ_MIN];
-      const total = freq_settings.reduce((sum, s) => sum + (s === setting ? dec_value : cur_settings[s]), 0);
-      if (total <= 0)
-        return;
-      cur_settings[setting] = dec_value;
-    }
-    await PyCaller.setSetting(setting, cur_settings[setting]);
-    updateAllStates();
-    await UpdateGamesListTimer.updateTimer(cur_settings);
-  }, [cur_settings]);
+    const new_value = settings[setting] + (increment ? 1 : -1);
+    if (new_value > MAX_VALUE || new_value < MIN_VALUE)
+      return;
+    // prevent a frequency of zero, which would poll the store api constantly
+    const freq_settings = [Settings.UPDATE_FREQ_DAY, Settings.UPDATE_FREQ_HOUR, Settings.UPDATE_FREQ_MIN];
+    const total = freq_settings.reduce((sum, s) => sum + (s === setting ? new_value : settings[s]), 0);
+    if (total <= 0)
+      return;
 
-  useEffect(() => {
-    if (loaded) return;
-    (async () => {
-      let output = await loadSettings();
-      if (Object.keys(output).length === 0) {
-        PyCaller.loggerError('Could not load settings...restoring settings file.');
-        await PyCaller.restoreSettings();
-        output = await loadSettings();
-      }
-      loaded = Object.keys(output).length > 0;
-      if (loaded) {
-        cur_settings = output;
-        PyCaller.loggerInfo('Loaded settings:');
-        PyCaller.loggerInfo(cur_settings);
-      }
-      updateAllStates();
-      await UpdateGamesListTimer.updateTimer(cur_settings);
-      // focus config panel container ensuring scroll position is at top of settings page on load
-      document.getElementById('configuration-panel-container')?.focus()
-    })();
-  }, []);
+    await updateSetting(setting, new_value);
+    await UpdateGamesListTimer.updateTimer({ ...settings, [setting]: new_value });
+  }, [settings, updateSetting]);
+
+  if (settings === null) {
+    return null;
+  }
 
   return (
     <div id="configuration-panel-container">
@@ -90,60 +71,53 @@ const ConfigurationPanels: React.FunctionComponent = () => {
         <PanelSectionRow>
           <SettingToggle
             label='Steam'
-            value={enableSteamGames}
+            value={Boolean(settings[Settings.ENABLE_STEAM_GAMES])}
             setting={Settings.ENABLE_STEAM_GAMES}
-            setter={setEnableSteamGames}
-            cur_settings={cur_settings} />
+            onUpdate={updateSetting} />
         </PanelSectionRow>
         <PanelSectionRow>
           <SettingToggle
             label='Epic Games Store'
-            value={enableEgsGames}
+            value={Boolean(settings[Settings.ENABLE_EGS_GAMES])}
             setting={Settings.ENABLE_EGS_GAMES}
-            setter={setEnableEgsGames}
-            cur_settings={cur_settings} />
+            onUpdate={updateSetting} />
         </PanelSectionRow>
         <PanelSectionRow>
           <SettingToggle
             label='GOG'
-            value={enableGogGames}
+            value={Boolean(settings[Settings.ENABLE_GOG_GAMES])}
             setting={Settings.ENABLE_GOG_GAMES}
-            setter={setEnableGogGames}
-            cur_settings={cur_settings} />
+            onUpdate={updateSetting} />
         </PanelSectionRow>
         <PanelSectionRow>
           <SettingToggle
             label='Itch.io'
-            value={enableItchioGames}
+            value={Boolean(settings[Settings.ENABLE_ITCHIO_GAMES])}
             setting={Settings.ENABLE_ITCHIO_GAMES}
-            setter={setEnableItchioGames}
-            cur_settings={cur_settings} />
+            onUpdate={updateSetting} />
         </PanelSectionRow>
       </PanelSection>
       <PanelSection title="Settings">
         <PanelSectionRow>
           <SettingToggle
             label='Notify on Free Games'
-            value={notifyFreeGames}
+            value={Boolean(settings[Settings.NOTIFY_ON_FREE_GAMES])}
             setting={Settings.NOTIFY_ON_FREE_GAMES}
-            setter={setNotifyFreeGames}
-            cur_settings={cur_settings} />
+            onUpdate={updateSetting} />
         </PanelSectionRow>
         <PanelSectionRow>
           <SettingToggle
             label='Show Game Titles'
-            value={showTitles}
+            value={Boolean(settings[Settings.SHOW_TITLES])}
             setting={Settings.SHOW_TITLES}
-            setter={setShowTitles}
-            cur_settings={cur_settings} />
+            onUpdate={updateSetting} />
         </PanelSectionRow>
         <PanelSectionRow>
           <SettingToggle
             label='Show Hidden Games'
-            value={showHiddenGames}
+            value={Boolean(settings[Settings.SHOW_HIDDEN_GAMES])}
             setting={Settings.SHOW_HIDDEN_GAMES}
-            setter={setShowHiddenGames}
-            cur_settings={cur_settings} />
+            onUpdate={updateSetting} />
         </PanelSectionRow>
       </PanelSection>
       <PanelSection title="Update Frequency">
@@ -156,9 +130,9 @@ const ConfigurationPanels: React.FunctionComponent = () => {
             childrenContainerWidth="max"
           >
             <UpdateFreqConext.Provider value={updateFreq}>
-              <FrequencyRow label='Days' setting={Settings.UPDATE_FREQ_DAY} value={days}></FrequencyRow>
-              <FrequencyRow label='Hours' setting={Settings.UPDATE_FREQ_HOUR} value={hours}></FrequencyRow>
-              <FrequencyRow label='Minutes' setting={Settings.UPDATE_FREQ_MIN} value={mins}></FrequencyRow>
+              <FrequencyRow label='Days' setting={Settings.UPDATE_FREQ_DAY} value={settings[Settings.UPDATE_FREQ_DAY]}></FrequencyRow>
+              <FrequencyRow label='Hours' setting={Settings.UPDATE_FREQ_HOUR} value={settings[Settings.UPDATE_FREQ_HOUR]}></FrequencyRow>
+              <FrequencyRow label='Minutes' setting={Settings.UPDATE_FREQ_MIN} value={settings[Settings.UPDATE_FREQ_MIN]}></FrequencyRow>
             </UpdateFreqConext.Provider>
           </Field>
         </PanelSectionRow>
@@ -172,11 +146,7 @@ const ConfigurationPanels: React.FunctionComponent = () => {
         <PanelSectionRow>
           <ButtonItem layout='below' onClick={async () => {
             await PyCaller.restoreSettings();
-            await loadSettings().then((output) => {
-              cur_settings = output;
-              updateAllStates();
-            });
-            await UpdateGamesListTimer.updateTimer(cur_settings);
+            await loadAndApply();
           }}>Restore Settings</ButtonItem>
         </PanelSectionRow>
       </PanelSection>
