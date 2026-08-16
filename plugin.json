@@ -1,6 +1,7 @@
 {
   "name": "Free Loader",
   "author": "jwhitlow45",
+  "api_version": 1,
   "flags": [],
   "publish": {
     "tags": ["free", "game", "games", "notifications", "steam", "store", "library", "loader", "epic", "epic games store", "gog", "itch.io"],

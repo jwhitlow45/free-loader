@@ -1,12 +1,60 @@
+import json
 import os
+import threading
 from enum import StrEnum
-from settings import SettingsManager
-from decky_plugin import logger
 
-# Get environment variable
-settingsDir = os.environ["DECKY_PLUGIN_SETTINGS_DIR"]
-logger.info("Settings path: {}".format(os.path.join(settingsDir, "settings.json")))
-settingsManager = SettingsManager(name="settings", settings_directory=settingsDir)
+from decky import logger, DECKY_PLUGIN_SETTINGS_DIR
+
+
+class SettingsManager:
+    """Minimal replacement for the loader's legacy settings helper, which is
+    not exposed to api_version 1 plugins. Reads and writes the same
+    settings.json file so existing settings carry over."""
+
+    def __init__(self, name: str, settings_directory: str):
+        self._path = os.path.join(settings_directory, f"{name}.json")
+        self._lock = threading.RLock()
+        self.settings: dict = {}
+        self.read()
+
+    def read(self) -> None:
+        with self._lock:
+            try:
+                with open(self._path, "r") as settings_file:
+                    self.settings = json.load(settings_file)
+            except FileNotFoundError:
+                self.settings = {}
+            except Exception:
+                logger.exception(
+                    "Settings file is corrupt...starting with empty settings"
+                )
+                self.settings = {}
+
+    def commit(self) -> None:
+        with self._lock:
+            # write to a temp file then rename so a crash mid-write cannot
+            # corrupt the settings file
+            tmp_path = self._path + ".tmp"
+            with open(tmp_path, "w") as settings_file:
+                json.dump(self.settings, settings_file, indent=4)
+            os.replace(tmp_path, self._path)
+
+    def getSetting(self, key, default=None):
+        with self._lock:
+            return self.settings.get(key, default)
+
+    def setSetting(self, key, value) -> None:
+        with self._lock:
+            self.settings[key] = value
+            self.commit()
+
+
+logger.info(
+    "Settings path: {}".format(os.path.join(DECKY_PLUGIN_SETTINGS_DIR, "settings.json"))
+)
+settingsManager = SettingsManager(
+    name="settings", settings_directory=DECKY_PLUGIN_SETTINGS_DIR
+)
 
 
 class Settings(StrEnum):

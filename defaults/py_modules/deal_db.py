@@ -6,14 +6,12 @@ import os
 import threading
 from datetime import datetime
 from typing import Any
-from decky_plugin import logger
+from decky import logger, DECKY_PLUGIN_SETTINGS_DIR
 from request_lib import request
 
 from py_modules.plugin_settings import Settings, settingsManager
 
-DEFAULT_DB_FILE_PATH = os.path.join(
-    os.environ.get("DECKY_PLUGIN_SETTINGS_DIR", ""), "deal_db.json"
-)
+DEFAULT_DB_FILE_PATH = os.path.join(DECKY_PLUGIN_SETTINGS_DIR, "deal_db.json")
 # guards deal db file access, as updates run in a thread off the event loop
 _db_lock = threading.RLock()
 

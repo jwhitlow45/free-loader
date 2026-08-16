@@ -5,35 +5,12 @@ import tempfile
 import types
 import unittest
 
-# stub the modules and environment the decky loader injects at runtime,
-# before importing any plugin code
-os.environ.setdefault("DECKY_PLUGIN_SETTINGS_DIR", tempfile.mkdtemp())
-
-_decky_stub = types.ModuleType("decky_plugin")
+# stub the decky module injected by the loader at runtime, before importing
+# any plugin code
+_decky_stub = types.ModuleType("decky")
 _decky_stub.logger = logging.getLogger("test")
-sys.modules.setdefault("decky_plugin", _decky_stub)
-
-
-class _SettingsManager:
-    def __init__(self, name, settings_directory=None):
-        self.settings = {}
-
-    def read(self):
-        pass
-
-    def commit(self):
-        pass
-
-    def getSetting(self, key, default=None):
-        return self.settings.get(key, default)
-
-    def setSetting(self, key, value):
-        self.settings[key] = value
-
-
-_settings_stub = types.ModuleType("settings")
-_settings_stub.SettingsManager = _SettingsManager
-sys.modules.setdefault("settings", _settings_stub)
+_decky_stub.DECKY_PLUGIN_SETTINGS_DIR = tempfile.mkdtemp()
+sys.modules.setdefault("decky", _decky_stub)
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path[:0] = [_ROOT, os.path.join(_ROOT, "py_modules")]
