@@ -43,6 +43,10 @@ build-back: ## Build backend
 build: ## Build everything
 	@$(MAKE) build-front
 
+test: ## Run backend unit tests
+	@echo "+ $@"
+	@python3 -m unittest discover -s tests -v
+
 copy-ssh-key: ## Copy public ssh key to steamdeck
 	@echo "+ $@"
 	@ssh-copy-id -i $(DECK_KEY) $(DECK_USER)@$(DECK_HOST)
@@ -77,6 +81,7 @@ deploy-steamdeck: ## Deploy plugin build to steamdeck
 		--exclude='.mypy_cache/' \
 		--exclude='__pycache__/' \
 		--exclude='tools/' \
+		--exclude='tests/' \
  		./ $(DECK_USER)@$(DECK_HOST):$(DECK_HOME)/homebrew/plugins/$(PLUGIN_FOLDER)/
 
 restart-decky: ## Restart Decky on remote steamdeck
