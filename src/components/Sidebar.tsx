@@ -1,12 +1,18 @@
 import { PyCaller } from "../PyCaller";
-import { useEffect, useState } from "react";
-import { PanelSection } from "@decky/ui";
+import { ReactNode, useEffect, useState } from "react";
+import { PanelSection, SteamSpinner } from "@decky/ui";
+import { FaExclamationTriangle, FaGift } from "react-icons/fa";
 import { ActionsPanel } from "./ActionsPanel";
 import { GamePanel } from "./GamePanel";
 import GamesListContext from "./context/GamesListContext";
 import { fetchGamesList, GamesListState, INITIAL_GAMES_LIST_STATE } from "./utils/games";
 
-const MESSAGE_STYLE = { display: 'flex', justifyContent: 'center' }
+const StatusMessage: React.FunctionComponent<{ icon: ReactNode; children: ReactNode }> = ({ icon, children }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px 0', color: 'rgba(255, 255, 255, 0.5)' }}>
+    {icon}
+    <span style={{ fontSize: '13px', textAlign: 'center', lineHeight: '1.4' }}>{children}</span>
+  </div>
+);
 
 const Sidebar: React.FunctionComponent = () => {
   const [gamesList, setGamesList] = useState<GamesListState>(INITIAL_GAMES_LIST_STATE);
@@ -26,10 +32,18 @@ const Sidebar: React.FunctionComponent = () => {
     <GamesListContext.Provider value={{ gamesList, setGamesList }}>
       <ActionsPanel />
       <PanelSection title="Free Games">
+        {gamesList.status === 'loading' &&
+          <div style={{ height: '80px' }}>
+            <SteamSpinner />
+          </div>}
         {gamesList.status === 'error' &&
-          <div><h3 style={MESSAGE_STYLE}>Failed to load games!</h3></div>}
+          <StatusMessage icon={<FaExclamationTriangle size={22} />}>
+            Failed to load games!
+          </StatusMessage>}
         {gamesList.status === 'ready' && visibleDeals.length === 0 &&
-          <div><h3 style={MESSAGE_STYLE}>No free games right now.<br />Check back later!</h3></div>}
+          <StatusMessage icon={<FaGift size={22} />}>
+            No free games right now.<br />Check back later!
+          </StatusMessage>}
         {visibleDeals.map((deal) =>
           <GamePanel key={deal.id} deal={deal} show_title={gamesList.showTitles} animate={gamesList.showAnimations} />)}
       </PanelSection>
