@@ -11,6 +11,10 @@ export class PyCaller {
 
     static get server() { return this.serverAPI; }
 
+    static async getSettings(): Promise<ServerResponse<{ [key: string]: any }>> {
+        return await this.serverAPI.callPluginMethod<{}, { [key: string]: any }>('settings_read', {});
+    }
+
     static async getSetting(key: string): Promise<ServerResponse<{}>> {
         return await this.serverAPI.callPluginMethod<{}, {}>('settings_getSetting', { key: key })
     }
