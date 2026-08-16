@@ -64,6 +64,8 @@ class Store:
 
 
 STORE_GAMES_ENDPOINT = "https://www.gamerpower.com/api/giveaways?type=game"
+# title markers that appear in forms not covered by the store list
+EXTRA_TITLE_FILTERS = ["(PC)", "(itchio)"]
 # order matters for store priority
 STORE_LIST = [
     Store(
@@ -194,12 +196,17 @@ class DealDB:
         return formatted_deals
 
     def cleanup_deal_title(self, title: str) -> str:
-        title_filters = [store.title_name for store in STORE_LIST] + ["(PC)"]
+        title_filters = [store.title_name for store in STORE_LIST] + EXTRA_TITLE_FILTERS
+        # markers appear with inconsistent casing (e.g. "(itch.io)" and
+        # "(Itch.io)"), so match them case-insensitively
+        lowered_title = title.casefold()
         # collect positions of filters present in the title; > 0 intentionally
         # skips both missing filters (-1 from .find()) and filters at position 0,
         # which would otherwise truncate the title to an empty string
         filter_indicies = [
-            index for filter in title_filters if ((index := title.find(filter)) > 0)
+            index
+            for filter in title_filters
+            if ((index := lowered_title.find(filter.casefold())) > 0)
         ]
         # get earliest point in string of filter to terminate string, removing all filter strings,
         # but if filter_indices is empty then just set str_end to -1 so title is left as is

@@ -72,6 +72,15 @@ class TestCleanupDealTitle(unittest.TestCase):
     def test_free_prefix_removed(self):
         self.assertEqual(self.db.cleanup_deal_title("Free Space Sim Giveaway"), "Space Sim")
 
+    def test_marker_matching_is_case_insensitive(self):
+        self.assertEqual(self.db.cleanup_deal_title("Indie Gem (Itch.io) Giveaway"), "Indie Gem")
+        self.assertEqual(self.db.cleanup_deal_title("Indie Gem (ITCH.IO) Giveaway"), "Indie Gem")
+        self.assertEqual(self.db.cleanup_deal_title("Some Game (STEAM) Giveaway"), "Some Game")
+
+    def test_dotless_itchio_marker(self):
+        self.assertEqual(self.db.cleanup_deal_title("Indie Gem (itchio) Giveaway"), "Indie Gem")
+        self.assertEqual(self.db.cleanup_deal_title("Indie Gem (Itchio) Giveaway"), "Indie Gem")
+
     def test_marker_at_position_zero_is_kept(self):
         # a marker at position 0 is ignored so the title is not truncated to
         # an empty string
