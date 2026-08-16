@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import sys
@@ -16,6 +17,14 @@ _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path[:0] = [_ROOT, os.path.join(_ROOT, "py_modules")]
 
 from py_modules.deal_db import Deal, DealDB  # noqa: E402
+from request_lib import USER_AGENT  # noqa: E402
+
+
+class TestUserAgent(unittest.TestCase):
+    def test_user_agent_uses_package_json_version(self):
+        with open(os.path.join(_ROOT, "package.json"), "r") as package_file:
+            version = json.load(package_file)["version"]
+        self.assertIn(f"FreeLoader/{version}", USER_AGENT)
 
 
 def make_raw_deal(**overrides):
