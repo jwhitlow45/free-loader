@@ -172,7 +172,8 @@ class DealDB:
                 # overwrite with just date information
                 new_deal[DealDbKey.END_DATE] = end_date.strftime("%Y-%m-%d")
             except Exception as _:
-                logger.warning("Could not parse date, setting end_date to N/A")
+                # routine for GOG deals, so not worth a warning per deal per update
+                logger.debug("Could not parse date, setting end_date to N/A")
                 new_deal[DealDbKey.END_DATE] = "N/A"
 
             cur_deal: dict[str, str] = {}
