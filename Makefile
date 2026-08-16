@@ -75,6 +75,7 @@ deploy-steamdeck: ## Deploy plugin build to steamdeck
 		--exclude='.DS_Store' \
 		--exclude='.ruff_cache/' \
 		--exclude='.mypy_cache/' \
+		--exclude='__pycache__/' \
 		--exclude='tools/' \
  		./ $(DECK_USER)@$(DECK_HOST):$(DECK_HOME)/homebrew/plugins/$(PLUGIN_FOLDER)/
 
