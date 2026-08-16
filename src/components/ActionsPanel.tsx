@@ -52,7 +52,7 @@ const ActionsPanel: React.FunctionComponent = () => {
       </PanelSectionRow>
       {lastUpdatedText &&
         <PanelSectionRow>
-          <div style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.45)', textAlign: 'center', marginTop: '4px' }}>
+          <div style={{ fontSize: gamesList.largerText ? '14px' : '11px', color: 'rgba(255, 255, 255, 0.45)', textAlign: 'center', marginTop: '4px' }}>
             Updated {lastUpdatedText}
           </div>
         </PanelSectionRow>}

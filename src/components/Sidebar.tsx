@@ -7,10 +7,10 @@ import { GamePanel } from "./GamePanel";
 import GamesListContext from "./context/GamesListContext";
 import { fetchGamesList, GamesListState, INITIAL_GAMES_LIST_STATE } from "./utils/games";
 
-const StatusMessage: React.FunctionComponent<{ icon: ReactNode; children: ReactNode }> = ({ icon, children }) => (
+const StatusMessage: React.FunctionComponent<{ icon: ReactNode; larger_text: boolean; children: ReactNode }> = ({ icon, larger_text, children }) => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '20px 0', color: 'rgba(255, 255, 255, 0.5)' }}>
     {icon}
-    <span style={{ fontSize: '13px', textAlign: 'center', lineHeight: '1.4' }}>{children}</span>
+    <span style={{ fontSize: larger_text ? '16px' : '13px', textAlign: 'center', lineHeight: '1.4' }}>{children}</span>
   </div>
 );
 
@@ -37,11 +37,11 @@ const Sidebar: React.FunctionComponent = () => {
             <SteamSpinner />
           </div>}
         {gamesList.status === 'error' &&
-          <StatusMessage icon={<FaExclamationTriangle size={22} />}>
+          <StatusMessage icon={<FaExclamationTriangle size={gamesList.largerText ? 26 : 22} />} larger_text={gamesList.largerText}>
             Failed to load games!
           </StatusMessage>}
         {gamesList.status === 'ready' && visibleDeals.length === 0 &&
-          <StatusMessage icon={<FaGift size={22} />}>
+          <StatusMessage icon={<FaGift size={gamesList.largerText ? 26 : 22} />} larger_text={gamesList.largerText}>
             No free games right now.<br />Check back later!
           </StatusMessage>}
         {visibleDeals.map((deal) =>
