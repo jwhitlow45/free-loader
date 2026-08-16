@@ -1,4 +1,3 @@
-import { staticClasses } from "@decky/ui";
 import { definePlugin, routerHook } from "@decky/api";
 import { FC } from "react";
 import { FaDollarSign } from "react-icons/fa";
@@ -29,8 +28,9 @@ export default definePlugin(() => {
   })()
 
   return {
+    // no titleView: the loader's default header renders the name without
+    // nesting steam's Title styling twice, which bled into the back button
     name: "Free Loader",
-    titleView: <div className={staticClasses.Title}>Free Loader</div>,
     content: <Sidebar />,
     icon: <FaDollarSign />,
     onDismount() {
