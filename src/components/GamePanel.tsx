@@ -8,15 +8,17 @@ import QRCode from "react-qr-code";
 type GamePanelProps = {
   deal: Deal;
   show_title: boolean;
+  animate: boolean;
 }
 
-const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title }) => {
+const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, animate }) => {
   const [showQrCode, setShowQrCode] = React.useState(false);
 
   const { setGamesList } = useContext(GamesListContext);
+  const fadeIn = (duration: string) => animate ? `fadeIn ${duration} ease-in-out` : 'none';
 
   return (
-    <div style={{ display: 'flex', marginBottom: '10px', animation: 'fadeIn 0.25s ease-in-out' }}>
+    <div style={{ display: 'flex', marginBottom: '10px', animation: fadeIn('0.25s') }}>
       <PanelSectionRow>
         <DialogButton
           onClick={async () => {
@@ -40,8 +42,8 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title }
         >
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', margin: 'auto' }}>
-              <img src={deal.image} hidden={showQrCode} style={{ height: '105px', borderRadius: '10px', animation: 'fadeIn 0.5s ease-in-out' }} />
-              <div hidden={!showQrCode} style={{ height: '105px', animation: 'fadeIn 0.5s ease-in-out' }}>
+              <img src={deal.image} hidden={showQrCode} style={{ height: '105px', borderRadius: '10px', animation: fadeIn('0.5s') }} />
+              <div hidden={!showQrCode} style={{ height: '105px', animation: fadeIn('0.5s') }}>
                 <QRCode size={105} value={deal.open_giveaway_url} style={{ padding: '0 59.8255814px' }} />
               </div>
             </div>

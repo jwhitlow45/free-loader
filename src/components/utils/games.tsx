@@ -19,6 +19,7 @@ export type GamesListState = {
   deals: Deal[];
   showTitles: boolean;
   showHiddenGames: boolean;
+  showAnimations: boolean;
 }
 
 export const INITIAL_GAMES_LIST_STATE: GamesListState = {
@@ -26,6 +27,7 @@ export const INITIAL_GAMES_LIST_STATE: GamesListState = {
   deals: [],
   showTitles: true,
   showHiddenGames: false,
+  showAnimations: true,
 }
 
 const MAX_ATTEMPTS = 3;
@@ -55,10 +57,12 @@ export const fetchGamesList = async (attempts: number = 1): Promise<GamesListSta
   // fall back to setting defaults when settings cannot be read
   let showTitles = true;
   let showHiddenGames = false;
+  let showAnimations = true;
   try {
     const settings = await PyCaller.getSettings();
     showTitles = Boolean(settings[Settings.SHOW_TITLES]);
     showHiddenGames = Boolean(settings[Settings.SHOW_HIDDEN_GAMES]);
+    showAnimations = Boolean(settings[Settings.ENABLE_ANIMATIONS]);
   } catch (error) {
     PyCaller.loggerError(`Could not read settings for games list: ${error}`);
   }
@@ -67,11 +71,11 @@ export const fetchGamesList = async (attempts: number = 1): Promise<GamesListSta
     const gamesInfo = await PyCaller.readDeals();
     PyCaller.loggerInfo('Read json db');
     const deals = Object.values(gamesInfo).sort(compareDeals);
-    return { status: 'ready', deals, showTitles, showHiddenGames };
+    return { status: 'ready', deals, showTitles, showHiddenGames, showAnimations };
   } catch (error) {
     if (attempts >= MAX_ATTEMPTS) {
       PyCaller.loggerError(`Reached max retry limit of ${MAX_ATTEMPTS}...cannot load page.`);
-      return { status: 'error', deals: [], showTitles, showHiddenGames };
+      return { status: 'error', deals: [], showTitles, showHiddenGames, showAnimations };
     }
     return fetchGamesList(attempts + 1);
   }

@@ -128,6 +128,13 @@ const ConfigurationPanels: React.FunctionComponent = () => {
             setting={Settings.SHOW_HIDDEN_GAMES}
             onUpdate={updateSetting} />
         </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
+            label='Enable Animations'
+            value={Boolean(settings[Settings.ENABLE_ANIMATIONS])}
+            setting={Settings.ENABLE_ANIMATIONS}
+            onUpdate={updateSetting} />
+        </PanelSectionRow>
       </PanelSection>
       <PanelSection title="Update Frequency">
         <PanelSectionRow>
