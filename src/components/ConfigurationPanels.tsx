@@ -136,7 +136,7 @@ const ConfigurationPanels: React.FunctionComponent = () => {
       <PanelSection title="Settings">
         <PanelSectionRow>
           <SettingToggle
-            label='Notify on Free Games'
+            label='Enable Notifications'
             value={Boolean(settings[Settings.NOTIFY_ON_FREE_GAMES])}
             setting={Settings.NOTIFY_ON_FREE_GAMES}
             onUpdate={updateSetting} />
