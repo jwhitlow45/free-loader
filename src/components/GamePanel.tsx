@@ -9,7 +9,10 @@ import { fetchGamesList, Deal } from "./utils/games";
 import { describeEndDate } from "./utils/time";
 import QRCode from "react-qr-code";
 
-const SECONDARY_TEXT = 'rgba(255, 255, 255, 0.55)';
+// secondary text is dimmed with opacity rather than an explicit color so it
+// inherits the button's text color, which steam inverts while the card is
+// focused and its background turns white
+const SECONDARY_OPACITY = 0.55;
 
 // mirrors the steam storefront discount badge styling
 const FREE_BADGE_STYLE: React.CSSProperties = {
@@ -79,7 +82,7 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
             {show_title &&
               <div style={{ fontSize: '14px', fontWeight: 500, lineHeight: '1.3' }}>{deal.title}</div>}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: SECONDARY_TEXT, fontSize: '12px', minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', opacity: SECONDARY_OPACITY, fontSize: '12px', minWidth: 0 }}>
                 {store && <store.icon size={12} style={{ flexShrink: 0 }} />}
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {store ? store.label : deal.platforms}
@@ -87,12 +90,12 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                 {deal.worth.startsWith('$') &&
-                  <s style={{ color: SECONDARY_TEXT, fontSize: '12px' }}>{deal.worth}</s>}
+                  <s style={{ opacity: SECONDARY_OPACITY, fontSize: '12px' }}>{deal.worth}</s>}
                 <span style={FREE_BADGE_STYLE}>FREE</span>
               </div>
             </div>
             {(endDateText || deal.hidden) &&
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: SECONDARY_TEXT, fontSize: '11px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: SECONDARY_OPACITY, fontSize: '11px' }}>
                 <span>{endDateText}</span>
                 {deal.hidden &&
                   <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
