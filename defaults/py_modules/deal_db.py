@@ -7,11 +7,14 @@ import threading
 from datetime import datetime
 from typing import Any
 from decky import logger, DECKY_PLUGIN_SETTINGS_DIR
+from amazon_feed import AMAZON_ID_PREFIX, fetch_amazon_game_offers
 from request_lib import request
 
 from py_modules.plugin_settings import Settings, settingsManager
 
 DEFAULT_DB_FILE_PATH = os.path.join(DECKY_PLUGIN_SETTINGS_DIR, "deal_db.json")
+GAMERPOWER_SOURCE = "gamerpower"
+AMAZON_SOURCE = "amazon"
 # guards deal db file access, as updates run in a thread off the event loop
 _db_lock = threading.RLock()
 
@@ -267,12 +270,57 @@ class DealDB:
         # return formatted deals
         return self.format_deals(deal_response_list)
 
+    def get_amazon_deals(self) -> dict[str, Deal]:
+        offers = fetch_amazon_game_offers()
+        logger.info(f"Received {len(offers)} amazon prime offers")
+        return {offer["id"]: Deal(**offer) for offer in offers}
+
+    def fetch_all_sources(self) -> tuple[dict[str, Deal], set[str]]:
+        # each source is fetched independently so one failing does not lose
+        # the deals from the others
+        new_deals: dict[str, Deal] = {}
+        attempted_sources: set[str] = set()
+        failed_sources: set[str] = set()
+
+        attempted_sources.add(GAMERPOWER_SOURCE)
+        try:
+            new_deals.update(self.get_gamerpower_deals())
+        except Exception:
+            logger.exception("Failed to fetch gamerpower deals")
+            failed_sources.add(GAMERPOWER_SOURCE)
+
+        if settingsManager.getSetting(Settings.ENABLE_AMAZON_GAMES, False):
+            attempted_sources.add(AMAZON_SOURCE)
+            try:
+                new_deals.update(self.get_amazon_deals())
+            except Exception:
+                logger.exception("Failed to fetch amazon prime deals")
+                failed_sources.add(AMAZON_SOURCE)
+
+        if attempted_sources == failed_sources:
+            raise RuntimeError("All deal sources failed to fetch")
+
+        return new_deals, failed_sources
+
+    def deal_source(self, id: str) -> str:
+        return AMAZON_SOURCE if id.startswith(AMAZON_ID_PREFIX) else GAMERPOWER_SOURCE
+
+    def retain_deals_from_failed_sources(
+        self, new_deals: dict[str, Deal], failed_sources: set[str]
+    ) -> None:
+        # a temporary source outage should not wipe its cached deals or
+        # their hidden flags from the db
+        for id, deal in self.deals.items():
+            if id not in new_deals and self.deal_source(id) in failed_sources:
+                new_deals[id] = deal
+
     def process_new_deals(self) -> None:
         # fetch over the network before taking the lock so file access is
         # never blocked behind a slow request
-        new_deals = self.get_gamerpower_deals()
+        new_deals, failed_sources = self.fetch_all_sources()
         with _db_lock:
             self.import_from_json()
+            self.retain_deals_from_failed_sources(new_deals, failed_sources)
             self.compare_and_export_deals(new_deals)
 
     def toggle_deal_visibility(self, id: str) -> bool:

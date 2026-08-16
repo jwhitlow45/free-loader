@@ -5,6 +5,8 @@ import sys
 import tempfile
 import types
 import unittest
+from datetime import datetime
+from unittest.mock import patch
 
 # stub the decky module injected by the loader at runtime, before importing
 # any plugin code
@@ -16,7 +18,14 @@ sys.modules.setdefault("decky", _decky_stub)
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path[:0] = [_ROOT, os.path.join(_ROOT, "py_modules")]
 
-from py_modules.deal_db import Deal, DealDB  # noqa: E402
+from py_modules.amazon_feed import parse_amazon_game_feed  # noqa: E402
+from py_modules.deal_db import (  # noqa: E402
+    AMAZON_SOURCE,
+    Deal,
+    DealDB,
+    GAMERPOWER_SOURCE,
+)
+from py_modules.plugin_settings import Settings, settingsManager  # noqa: E402
 from request_lib import USER_AGENT  # noqa: E402
 
 
@@ -161,6 +170,116 @@ class TestFormatDeals(unittest.TestCase):
     def test_unparseable_end_date_becomes_na(self):
         formatted = self.db.format_deals([make_raw_deal(end_date="N/A")])
         self.assertEqual(formatted["101"].end_date, "N/A")
+
+
+AMAZON_FEED_XML = """<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:html="http://www.w3.org/1999/xhtml">
+  <entry>
+    <id>https://feed.eikowagenknecht.com/lootscraper/10837</id>
+    <title>Amazon Prime (Game, PC) - Steelrising</title>
+    <link href="https://luna.amazon.com/claims/steelrising" rel="alternate"/>
+    <updated>2026-08-13T18:00:53.586Z</updated>
+    <content type="xhtml"><html:div><html:img src="https://images.example.com/steelrising.jpg"/><html:ul><html:li><html:b>Offer valid from:</html:b> 2026-08-13 18:00</html:li><html:li><html:b>Offer valid to:</html:b> 2026-09-16 00:00</html:li><html:li><html:b>Recommended price (Steam):</html:b> 49.99 EUR</html:li><html:li><html:b>Description:</html:b> Paris, 1789: a game about automatons.</html:li></html:ul></html:div></content>
+  </entry>
+  <entry>
+    <id>https://feed.eikowagenknecht.com/lootscraper/10000</id>
+    <title>Amazon Prime (Game, PC) - Expired Game</title>
+    <link href="https://luna.amazon.com/claims/expired" rel="alternate"/>
+    <content type="xhtml"><html:div><html:ul><html:li><html:b>Offer valid to:</html:b> 2026-08-01 12:00</html:li></html:ul></html:div></content>
+  </entry>
+  <entry>
+    <id>https://feed.eikowagenknecht.com/lootscraper/10001</id>
+    <title>Amazon Prime (Game, PC) - No End Date Game</title>
+    <link href="https://luna.amazon.com/claims/no-end" rel="alternate"/>
+    <content type="xhtml"><html:div/></content>
+  </entry>
+</feed>"""
+
+
+class TestAmazonFeed(unittest.TestCase):
+    def setUp(self):
+        self.offers = parse_amazon_game_feed(AMAZON_FEED_XML, now=datetime(2026, 8, 20))
+
+    def test_offer_fields(self):
+        offer = self.offers[0]
+        self.assertEqual(offer["id"], "amazon-10837")
+        self.assertEqual(offer["title"], "Steelrising")
+        self.assertEqual(offer["worth"], "49.99€")
+        self.assertEqual(offer["image"], "https://images.example.com/steelrising.jpg")
+        self.assertEqual(
+            offer["open_giveaway_url"], "https://luna.amazon.com/claims/steelrising"
+        )
+        self.assertEqual(offer["platforms"], "Amazon Prime")
+        self.assertEqual(offer["status"], "Active")
+
+    def test_midnight_end_rolls_back_to_previous_day(self):
+        # offers ending at exactly midnight are last claimable the day before
+        self.assertEqual(self.offers[0]["end_date"], "2026-09-15")
+
+    def test_expired_offers_filtered(self):
+        self.assertNotIn("amazon-10000", [offer["id"] for offer in self.offers])
+
+    def test_missing_end_date_becomes_na(self):
+        no_end = next(o for o in self.offers if o["id"] == "amazon-10001")
+        self.assertEqual(no_end["end_date"], "N/A")
+
+    def test_offers_build_valid_deals(self):
+        for offer in self.offers:
+            Deal(**offer)  # raises if fields do not match the deal model
+
+    def test_entities_unescaped(self):
+        feed = AMAZON_FEED_XML.replace(
+            "Amazon Prime (Game, PC) - Steelrising",
+            "Amazon Prime (Game, PC) - Command &amp; Conquer&#039;s &quot;Remaster&quot;",
+        )
+        offers = parse_amazon_game_feed(feed, now=datetime(2026, 8, 20))
+        self.assertEqual(offers[0]["title"], 'Command & Conquer\'s "Remaster"')
+
+
+class TestFetchAllSources(unittest.TestCase):
+    def setUp(self):
+        settingsManager.setSetting(Settings.ENABLE_AMAZON_GAMES, True)
+
+    def test_one_source_failing_keeps_the_other(self):
+        db = DealDB()
+        with (
+            patch.object(DealDB, "get_gamerpower_deals", side_effect=RuntimeError),
+            patch.object(
+                DealDB,
+                "get_amazon_deals",
+                return_value={"amazon-1": make_deal("amazon-1")},
+            ),
+        ):
+            new_deals, failed_sources = db.fetch_all_sources()
+        self.assertEqual(set(new_deals), {"amazon-1"})
+        self.assertEqual(failed_sources, {GAMERPOWER_SOURCE})
+
+    def test_all_sources_failing_raises(self):
+        db = DealDB()
+        with (
+            patch.object(DealDB, "get_gamerpower_deals", side_effect=RuntimeError),
+            patch.object(DealDB, "get_amazon_deals", side_effect=RuntimeError),
+        ):
+            with self.assertRaises(RuntimeError):
+                db.fetch_all_sources()
+
+    def test_deal_source_from_id(self):
+        db = DealDB()
+        self.assertEqual(db.deal_source("amazon-10837"), AMAZON_SOURCE)
+        self.assertEqual(db.deal_source("101"), GAMERPOWER_SOURCE)
+
+    def test_failed_source_deals_retained_with_hidden_flags(self):
+        db = DealDB()
+        db.deals = {
+            "1": make_deal("1", hidden=True),
+            "amazon-2": make_deal("amazon-2"),
+        }
+        new_deals = {"amazon-3": make_deal("amazon-3")}
+        db.retain_deals_from_failed_sources(new_deals, {GAMERPOWER_SOURCE})
+        self.assertIn("1", new_deals)
+        self.assertTrue(new_deals["1"].hidden)
+        # the amazon source succeeded, so its stale deal is not retained
+        self.assertNotIn("amazon-2", new_deals)
 
 
 class TestCompareDeals(unittest.TestCase):

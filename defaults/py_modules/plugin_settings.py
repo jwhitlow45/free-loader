@@ -67,6 +67,7 @@ class Settings(StrEnum):
     ENABLE_EGS_GAMES = "enable_egs_games"
     ENABLE_GOG_GAMES = "enable_gog_games"
     ENABLE_ITCHIO_GAMES = "enable_itchio_games"
+    ENABLE_AMAZON_GAMES = "enable_amazon_games"
     SHOW_TITLES = "show_titles"
     SHOW_HIDDEN_GAMES = "show_hidden_games"
     DISABLE_ANIMATIONS = "disable_animations"
@@ -83,6 +84,7 @@ SETTINGS_DEFAULTS = {
     Settings.ENABLE_EGS_GAMES: True,
     Settings.ENABLE_GOG_GAMES: True,
     Settings.ENABLE_ITCHIO_GAMES: True,
+    Settings.ENABLE_AMAZON_GAMES: True,
     Settings.SHOW_TITLES: True,
     Settings.SHOW_HIDDEN_GAMES: False,
     Settings.DISABLE_ANIMATIONS: False,
