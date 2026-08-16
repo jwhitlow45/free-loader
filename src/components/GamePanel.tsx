@@ -42,7 +42,7 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
   const [showQrCode, setShowQrCode] = React.useState(false);
 
   const { setGamesList } = useContext(GamesListContext);
-  const fadeIn = (duration: string) => animate ? `fadeIn ${duration} ease-in-out` : 'none';
+  const fadeIn = (duration: string) => animate ? `free-loader-fade-in ${duration} ease-in-out` : 'none';
 
   const store = STORES[deal.platforms];
   const endDateText = describeEndDate(deal.end_date);
@@ -105,16 +105,6 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
           </div>
         </DialogButton>
       </div>
-      <style>
-        {`@keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }`}
-      </style>
     </PanelSectionRow>
   );
 }

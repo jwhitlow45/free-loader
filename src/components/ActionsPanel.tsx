@@ -36,7 +36,7 @@ const ActionsPanel: React.FunctionComponent = () => {
               setUpdating(false);
             }}
           >
-            <FaRedo style={updating && gamesList.showAnimations ? { animation: 'spin 1s linear infinite' } : {}} />
+            <FaRedo style={updating && gamesList.showAnimations ? { animation: 'free-loader-spin 1s linear infinite' } : {}} />
           </DialogButton>
           <DialogButton
             onOKActionDescription='Open Settings'
@@ -48,12 +48,6 @@ const ActionsPanel: React.FunctionComponent = () => {
           >
             <FaCog />
           </DialogButton>
-          <style>
-            {`@keyframes spin {
-              from { transform: rotate(0deg); }
-              to { transform: rotate(360deg); }
-            }`}
-          </style>
         </Focusable>
       </PanelSectionRow>
       {lastUpdatedText &&
