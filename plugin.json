@@ -1,10 +1,10 @@
 {
   "name": "Free Loader",
   "author": "jwhitlow45",
-  "flags": ["debug"],
+  "flags": [],
   "publish": {
-    "tags": ["free", "game", "games", "notifications", "steam", "store", "library", "loader", "epic", "epic games store", "gog"],
-    "description": "Notifications for free games on Steam, GOG, and Epic Games!",
+    "tags": ["free", "game", "games", "notifications", "steam", "store", "library", "loader", "epic", "epic games store", "gog", "itch.io"],
+    "description": "Notifications for free games on Steam, GOG, Epic Games, and Itch.io!",
     "image": "https://github.com/jwhitlow45/free-loader/blob/main/assets/free-loader-logo.png?raw=true"
   }
 }
