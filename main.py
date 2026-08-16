@@ -6,7 +6,7 @@ import sys
 # process's working directory is not the plugin directory
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from decky_plugin import logger
+from decky import logger
 from py_modules.deal_db import DealDB
 from py_modules.plugin_settings import settingsManager, SETTINGS_DEFAULTS
 
@@ -16,13 +16,16 @@ class Plugin:
         try:
             # check settings for validity, if a setting is malformed then set it to default
             for key, value in SETTINGS_DEFAULTS.items():
-                setting = await Plugin.settings_getSetting(self, key)
+                setting = await self.settings_getSetting(key)
                 if setting is None:
                     logger.info(f"Setting {key} is malformed...resetting to default.")
-                    await Plugin.settings_setSetting(self, key, value)
+                    await self.settings_setSetting(key, value)
         except Exception as e:
             logger.exception(e)
             raise e
+
+    async def _unload(self):
+        logger.info("Unloading Free Loader")
 
     async def update_deals_now(self):
         try:
