@@ -1,4 +1,5 @@
 import { callable, toaster } from "@decky/api";
+import { Navigation, QuickAccessTab } from "@decky/ui";
 import { Settings } from "./components/utils/settings";
 import type { Deal } from "./components/utils/games";
 
@@ -16,7 +17,28 @@ const loggerInfoBackend = callable<[info: any], void>('logger_info');
 const loggerErrorBackend = callable<[error: any], void>('logger_error');
 
 export class PyCaller {
-    private static toastTitle = 'Free Loader';
+    // matches the plugin name in plugin.json
+    private static pluginName = 'Free Loader';
+
+    private static openPluginSidebar() {
+        try {
+            // focus this plugin's panel using the loader's internal state when
+            // available; otherwise the quick access menu still opens on the
+            // decky tab
+            (window as any).DeckyPluginLoader?.deckyState?.setActivePlugin?.(PyCaller.pluginName);
+        } catch (error) {
+            PyCaller.loggerError(`Could not focus plugin panel: ${error}`);
+        }
+        Navigation.OpenQuickAccessMenu(QuickAccessTab.Decky);
+    }
+
+    private static toast(body: string) {
+        toaster.toast({
+            title: PyCaller.pluginName,
+            body: body,
+            onClick: PyCaller.openPluginSidebar,
+        });
+    }
 
     static async getSettings(): Promise<{ [key: string]: any }> {
         return await settingsReadBackend();
@@ -40,13 +62,13 @@ export class PyCaller {
             const isNotificationsEnabled = Boolean(await PyCaller.getSetting(Settings.NOTIFY_ON_FREE_GAMES));
             const msg = `Found ${numFreeGames} new free games!`;
             if ((notifyOnZeroNewGames || numFreeGames > 0) && isNotificationsEnabled) {
-                toaster.toast({ title: PyCaller.toastTitle, body: msg });
+                PyCaller.toast(msg);
             }
             await PyCaller.setSetting(Settings.LAST_UPDATE_TIME, new Date().toISOString());
             PyCaller.loggerInfo(msg);
         } catch (error) {
             const msg = 'Failed to update games list';
-            toaster.toast({ title: PyCaller.toastTitle, body: msg });
+            PyCaller.toast(msg);
             PyCaller.loggerError(`${msg}: ${error}`);
         }
     }
@@ -58,9 +80,9 @@ export class PyCaller {
     static async clearDeals() {
         try {
             await clearDealsBackend();
-            toaster.toast({ title: PyCaller.toastTitle, body: 'Cleared games database' });
+            PyCaller.toast('Cleared games database');
         } catch (error) {
-            toaster.toast({ title: PyCaller.toastTitle, body: 'Failed to clear games database' });
+            PyCaller.toast('Failed to clear games database');
             PyCaller.loggerError(`Failed to clear games database: ${error}`);
         }
     }
