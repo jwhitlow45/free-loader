@@ -1,6 +1,6 @@
 {
   "name": "free-loader",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "Notifications for free games on Steam, GOG, Epic Games Store, and Itch.io!",
   "type": "module",
   "scripts": {
