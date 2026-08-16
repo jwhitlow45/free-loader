@@ -69,7 +69,7 @@ class Settings(StrEnum):
     ENABLE_ITCHIO_GAMES = "enable_itchio_games"
     SHOW_TITLES = "show_titles"
     SHOW_HIDDEN_GAMES = "show_hidden_games"
-    ENABLE_ANIMATIONS = "enable_animations"
+    DISABLE_ANIMATIONS = "disable_animations"
     LARGER_TEXT = "larger_text"
 
 
@@ -85,6 +85,6 @@ SETTINGS_DEFAULTS = {
     Settings.ENABLE_ITCHIO_GAMES: True,
     Settings.SHOW_TITLES: True,
     Settings.SHOW_HIDDEN_GAMES: False,
-    Settings.ENABLE_ANIMATIONS: True,
+    Settings.DISABLE_ANIMATIONS: False,
     Settings.LARGER_TEXT: False,
 }
