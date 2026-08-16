@@ -159,9 +159,9 @@ const ConfigurationPanels: React.FunctionComponent = () => {
         </PanelSectionRow>
         <PanelSectionRow>
           <SettingToggle
-            label='Enable Animations'
-            value={Boolean(settings[Settings.ENABLE_ANIMATIONS])}
-            setting={Settings.ENABLE_ANIMATIONS}
+            label='Disable Animations'
+            value={Boolean(settings[Settings.DISABLE_ANIMATIONS])}
+            setting={Settings.DISABLE_ANIMATIONS}
             onUpdate={updateSetting} />
         </PanelSectionRow>
       </PanelSection>

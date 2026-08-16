@@ -68,7 +68,7 @@ export const fetchGamesList = async (attempts: number = 1): Promise<GamesListSta
     const settings = await PyCaller.getSettings();
     showTitles = Boolean(settings[Settings.SHOW_TITLES]);
     showHiddenGames = Boolean(settings[Settings.SHOW_HIDDEN_GAMES]);
-    showAnimations = Boolean(settings[Settings.ENABLE_ANIMATIONS]);
+    showAnimations = !Boolean(settings[Settings.DISABLE_ANIMATIONS]);
     largerText = Boolean(settings[Settings.LARGER_TEXT]);
     lastUpdated = String(settings[Settings.LAST_UPDATE_TIME] ?? '');
   } catch (error) {
