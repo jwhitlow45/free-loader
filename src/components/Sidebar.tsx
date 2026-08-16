@@ -47,6 +47,19 @@ const Sidebar: React.FunctionComponent = () => {
         {visibleDeals.map((deal) =>
           <GamePanel key={deal.id} deal={deal} show_title={gamesList.showTitles} animate={gamesList.showAnimations} />)}
       </PanelSection>
+      {/* keyframes are global to the whole steam ui document, so they are
+          namespaced to avoid clashing with steam or decky animations and
+          defined once here rather than per card */}
+      <style>
+        {`@keyframes free-loader-fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes free-loader-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }`}
+      </style>
     </GamesListContext.Provider>
   );
 }
