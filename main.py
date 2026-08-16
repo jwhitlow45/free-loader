@@ -70,11 +70,11 @@ class Plugin:
         return settingsManager.commit()
 
     async def settings_getSetting(self, key: str):
-        logger.info("Get {}".format(key))
+        logger.debug("Get {}".format(key))
         return settingsManager.getSetting(key, None)
 
     async def settings_setSetting(self, key: str, value):
-        logger.info("Set {}: {}".format(key, value))
+        logger.debug("Set {}: {}".format(key, value))
         return settingsManager.setSetting(key, value)
 
     async def settings_restoreSettings(self):
