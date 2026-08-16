@@ -29,8 +29,9 @@ export class UpdateGamesListTimer {
       settings[Settings.UPDATE_FREQ_HOUR],
       settings[Settings.UPDATE_FREQ_MIN]
     );
-    // make minimum update time 60 seconds
-    freq_ms = freq_ms > 0 ? freq_ms : 60000
+    // fall back to one hour when settings are missing or zero, as a
+    // one minute floor hammers the store api
+    freq_ms = freq_ms > 0 ? freq_ms : 3600000
     PyCaller.loggerInfo(`Next games list update at ${new Date(new Date().getTime() + freq_ms)}`);
     let timer = setInterval(async () => {
       // update games list; updateDealsNow records the last update timestamp

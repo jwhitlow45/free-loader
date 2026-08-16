@@ -50,6 +50,11 @@ const ConfigurationPanels: React.FunctionComponent = () => {
       let dec_value = cur_settings[setting] - 1;
       if (dec_value < MIN_VALUE)
         return;
+      // prevent a frequency of zero, which would poll the store api constantly
+      const freq_settings = [Settings.UPDATE_FREQ_DAY, Settings.UPDATE_FREQ_HOUR, Settings.UPDATE_FREQ_MIN];
+      const total = freq_settings.reduce((sum, s) => sum + (s === setting ? dec_value : cur_settings[s]), 0);
+      if (total <= 0)
+        return;
       cur_settings[setting] = dec_value;
     }
     await PyCaller.setSetting(setting, cur_settings[setting]);
