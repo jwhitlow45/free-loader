@@ -1,9 +1,33 @@
 import { DialogButton, Navigation, PanelSectionRow } from "@decky/ui";
 import { PyCaller } from "../PyCaller";
 import React, { useContext } from "react";
+import { IconType } from "react-icons";
+import { FaEyeSlash, FaSteam } from "react-icons/fa";
+import { SiEpicgames, SiGogdotcom, SiItchdotio } from "react-icons/si";
 import GamesListContext from "./context/GamesListContext";
 import { fetchGamesList, Deal } from "./utils/games";
+import { describeEndDate } from "./utils/time";
 import QRCode from "react-qr-code";
+
+const SECONDARY_TEXT = 'rgba(255, 255, 255, 0.55)';
+
+// mirrors the steam storefront discount badge styling
+const FREE_BADGE_STYLE: React.CSSProperties = {
+  backgroundColor: '#4c6b22',
+  color: '#BEEE11',
+  borderRadius: '2px',
+  padding: '2px 6px',
+  fontSize: '11px',
+  fontWeight: 600,
+  letterSpacing: '0.5px',
+};
+
+const STORES: { [platform: string]: { icon: IconType; label: string } } = {
+  'Steam': { icon: FaSteam, label: 'Steam' },
+  'GOG': { icon: SiGogdotcom, label: 'GOG' },
+  'Epic Games Store': { icon: SiEpicgames, label: 'Epic Games' },
+  'Itch.io': { icon: SiItchdotio, label: 'Itch.io' },
+};
 
 type GamePanelProps = {
   deal: Deal;
@@ -17,10 +41,14 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
   const { setGamesList } = useContext(GamesListContext);
   const fadeIn = (duration: string) => animate ? `fadeIn ${duration} ease-in-out` : 'none';
 
+  const store = STORES[deal.platforms];
+  const endDateText = describeEndDate(deal.end_date);
+
   return (
-    <div style={{ display: 'flex', marginBottom: '10px', animation: fadeIn('0.25s') }}>
-      <PanelSectionRow>
+    <PanelSectionRow>
+      <div style={{ marginBottom: '10px', opacity: deal.hidden ? 0.5 : 1, animation: fadeIn('0.25s') }}>
         <DialogButton
+          style={{ padding: '10px', width: '100%' }}
           onClick={async () => {
             Navigation.CloseSideMenus()
             Navigation.NavigateToExternalWeb(deal.open_giveaway_url);
@@ -40,23 +68,40 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
           }}
           onOptionsActionDescription={showQrCode ? 'Hide QR Code' : 'Show QR Code'}
         >
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', margin: 'auto' }}>
-              <img src={deal.image} hidden={showQrCode} style={{ height: '105px', borderRadius: '10px', animation: fadeIn('0.5s') }} />
-              <div hidden={!showQrCode} style={{ height: '105px', animation: fadeIn('0.5s') }}>
-                <QRCode size={105} value={deal.open_giveaway_url} style={{ padding: '0 59.8255814px' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
+            {!showQrCode
+              ? <img
+                  src={deal.image}
+                  style={{ width: '100%', height: '118px', objectFit: 'cover', borderRadius: '4px', animation: fadeIn('0.5s') }} />
+              : <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '118px', backgroundColor: '#fff', borderRadius: '4px', animation: fadeIn('0.25s') }}>
+                  <QRCode size={100} value={deal.open_giveaway_url} />
+                </div>}
+            {show_title &&
+              <div style={{ fontSize: '14px', fontWeight: 500, lineHeight: '1.3' }}>{deal.title}</div>}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: SECONDARY_TEXT, fontSize: '12px', minWidth: 0 }}>
+                {store && <store.icon size={12} style={{ flexShrink: 0 }} />}
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {store ? store.label : deal.platforms}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                {deal.worth.startsWith('$') &&
+                  <s style={{ color: SECONDARY_TEXT, fontSize: '12px' }}>{deal.worth}</s>}
+                <span style={FREE_BADGE_STYLE}>FREE</span>
               </div>
             </div>
-            <div style={{ width: '100%', marginTop: '8px' }}>
-              {show_title && <h3 style={{ lineHeight: '20px' }}>{deal.title}</h3>}
-              <h4 style={{ lineHeight: '3px' }}>{deal.platforms}</h4>
-              <h4 style={{ lineHeight: '3px' }}><s>{deal.worth}</s> Free</h4>
-              <h4 style={{ lineHeight: '3px' }}>Ends {deal.end_date}</h4>
-              {deal.hidden && <h4 style={{ lineHeight: '3px' }}><i>Hidden</i></h4>}
-            </div>
+            {(endDateText || deal.hidden) &&
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: SECONDARY_TEXT, fontSize: '11px' }}>
+                <span>{endDateText}</span>
+                {deal.hidden &&
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <FaEyeSlash size={11} /> Hidden
+                  </span>}
+              </div>}
           </div>
         </DialogButton>
-      </PanelSectionRow>
+      </div>
       <style>
         {`@keyframes fadeIn {
           from {
@@ -67,7 +112,7 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title, 
           }
         }`}
       </style>
-    </div>
+    </PanelSectionRow>
   );
 }
 
