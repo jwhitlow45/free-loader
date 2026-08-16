@@ -31,7 +31,7 @@ const Sidebar: React.FunctionComponent = () => {
         {gamesList.status === 'ready' && visibleDeals.length === 0 &&
           <div><h3 style={MESSAGE_STYLE}>No free games right now.<br />Check back later!</h3></div>}
         {visibleDeals.map((deal) =>
-          <GamePanel key={deal.id} deal={deal} show_title={gamesList.showTitles} />)}
+          <GamePanel key={deal.id} deal={deal} show_title={gamesList.showTitles} animate={gamesList.showAnimations} />)}
       </PanelSection>
     </GamesListContext.Provider>
   );
