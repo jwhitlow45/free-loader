@@ -1,13 +1,11 @@
 import { ToggleField } from "decky-frontend-lib";
 import { SettingsType } from "./utils/settings";
-import { PyCaller } from "../PyCaller";
 
 type SettingToggleProps = {
   label: string;
   value: boolean;
   setting: SettingsType;
-  setter: (value: boolean) => void;
-  cur_settings: { [key: SettingsType]: any};
+  onUpdate: (setting: SettingsType, value: boolean) => void;
 }
 
 const SettingToggle: React.FunctionComponent<SettingToggleProps> = (props) => {
@@ -15,13 +13,7 @@ const SettingToggle: React.FunctionComponent<SettingToggleProps> = (props) => {
     label={props.label}
     checked={props.value}
     layout='below'
-    onChange={async () => {
-      props.cur_settings[props.setting] = !props.cur_settings[props.setting];
-      await PyCaller.setSetting(
-        props.setting,
-        props.cur_settings[props.setting]);
-      props.setter(props.cur_settings[props.setting]);
-    }} />);
+    onChange={(checked) => props.onUpdate(props.setting, checked)} />);
 }
 
 export { SettingToggle };
