@@ -148,6 +148,15 @@ const ConfigurationPanels: React.FunctionComponent = () => {
             setting={Settings.SHOW_HIDDEN_GAMES}
             onUpdate={updateSetting} />
         </PanelSectionRow>
+      </PanelSection>
+      <PanelSection title="Accessibility">
+        <PanelSectionRow>
+          <SettingToggle
+            label='Larger Text'
+            value={Boolean(settings[Settings.LARGER_TEXT])}
+            setting={Settings.LARGER_TEXT}
+            onUpdate={updateSetting} />
+        </PanelSectionRow>
         <PanelSectionRow>
           <SettingToggle
             label='Enable Animations'

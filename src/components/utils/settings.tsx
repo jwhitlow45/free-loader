@@ -17,6 +17,7 @@ export const Settings: { [key: string]: string } = {
     SHOW_TITLES: "show_titles",
     SHOW_HIDDEN_GAMES: "show_hidden_games",
     ENABLE_ANIMATIONS: "enable_animations",
+    LARGER_TEXT: "larger_text",
 }
 
 export type SettingsType = typeof Settings[keyof typeof Settings]

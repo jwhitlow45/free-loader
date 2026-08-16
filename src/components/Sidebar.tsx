@@ -45,7 +45,12 @@ const Sidebar: React.FunctionComponent = () => {
             No free games right now.<br />Check back later!
           </StatusMessage>}
         {visibleDeals.map((deal) =>
-          <GamePanel key={deal.id} deal={deal} show_title={gamesList.showTitles} animate={gamesList.showAnimations} />)}
+          <GamePanel
+            key={deal.id}
+            deal={deal}
+            show_title={gamesList.showTitles}
+            animate={gamesList.showAnimations}
+            larger_text={gamesList.largerText} />)}
       </PanelSection>
       {/* keyframes are global to the whole steam ui document, so they are
           namespaced to avoid clashing with steam or decky animations and

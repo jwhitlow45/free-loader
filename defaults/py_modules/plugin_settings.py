@@ -70,6 +70,7 @@ class Settings(StrEnum):
     SHOW_TITLES = "show_titles"
     SHOW_HIDDEN_GAMES = "show_hidden_games"
     ENABLE_ANIMATIONS = "enable_animations"
+    LARGER_TEXT = "larger_text"
 
 
 SETTINGS_DEFAULTS = {
@@ -85,4 +86,5 @@ SETTINGS_DEFAULTS = {
     Settings.SHOW_TITLES: True,
     Settings.SHOW_HIDDEN_GAMES: False,
     Settings.ENABLE_ANIMATIONS: True,
+    Settings.LARGER_TEXT: False,
 }
