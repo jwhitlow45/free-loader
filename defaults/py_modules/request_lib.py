@@ -60,8 +60,8 @@ def _create_ssl_context() -> ssl.SSLContext:
     # fall back to well-known system CA bundle locations
     for ca_file in (
         "/etc/ssl/certs/ca-certificates.crt",  # SteamOS / Arch / Debian
-        "/etc/ssl/cert.pem",                   # Arch compat symlink, macOS
-        "/etc/pki/tls/certs/ca-bundle.crt",    # Fedora / RHEL
+        "/etc/ssl/cert.pem",  # Arch compat symlink, macOS
+        "/etc/pki/tls/certs/ca-bundle.crt",  # Fedora / RHEL
     ):
         if os.path.isfile(ca_file):
             context.load_verify_locations(cafile=ca_file)
@@ -86,11 +86,7 @@ def request(
     headers = headers or {}
     data = data or {}
     params = params or {}
-    headers = {
-        "Accept": "application/json",
-        "User-Agent": USER_AGENT,
-        **headers
-    }
+    headers = {"Accept": "application/json", "User-Agent": USER_AGENT, **headers}
 
     if method == "GET":
         params = {**params, **data}

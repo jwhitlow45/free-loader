@@ -55,9 +55,7 @@ class DealDbKey(StrEnum):
 
 
 class Store:
-    def __init__(
-        self, platform_name: str, title_name: str, setting: Settings
-    ):
+    def __init__(self, platform_name: str, title_name: str, setting: Settings):
         self.platform_name = platform_name
         self.title_name = title_name
         self.setting = setting
@@ -249,13 +247,18 @@ class DealDB:
             return {}
 
         if response.status == 200:
-            logger.info(f"Received response containing deals from {STORE_GAMES_ENDPOINT}")
+            logger.info(
+                f"Received response containing deals from {STORE_GAMES_ENDPOINT}"
+            )
             response_json = response.json()
             # ensure deal ids are stored as strings and not integers
             for deal in response_json:
                 for store in STORE_LIST:
                     # only return games from enabled stores and supported platforms
-                    if settingsManager.getSetting(store.setting, False) and store.platform_name in deal[DealDbKey.PLATFORMS]:
+                    if (
+                        settingsManager.getSetting(store.setting, False)
+                        and store.platform_name in deal[DealDbKey.PLATFORMS]
+                    ):
                         deal[DealDbKey.ID] = str(deal[DealDbKey.ID])
                         deal_response_list.append(deal)
                         break

@@ -64,36 +64,62 @@ class TestCleanupDealTitle(unittest.TestCase):
         self.db = DealDB()
 
     def test_store_marker_terminates_title(self):
-        self.assertEqual(self.db.cleanup_deal_title("Awesome Game (Steam) Giveaway"), "Awesome Game")
-        self.assertEqual(self.db.cleanup_deal_title("Big Game (Epic Games) Giveaway"), "Big Game")
-        self.assertEqual(self.db.cleanup_deal_title("Indie Gem (itch.io) Giveaway"), "Indie Gem")
-        self.assertEqual(self.db.cleanup_deal_title("Old Game (PC) Key Giveaway"), "Old Game")
+        self.assertEqual(
+            self.db.cleanup_deal_title("Awesome Game (Steam) Giveaway"), "Awesome Game"
+        )
+        self.assertEqual(
+            self.db.cleanup_deal_title("Big Game (Epic Games) Giveaway"), "Big Game"
+        )
+        self.assertEqual(
+            self.db.cleanup_deal_title("Indie Gem (itch.io) Giveaway"), "Indie Gem"
+        )
+        self.assertEqual(
+            self.db.cleanup_deal_title("Old Game (PC) Key Giveaway"), "Old Game"
+        )
 
     def test_earliest_marker_wins(self):
-        self.assertEqual(self.db.cleanup_deal_title("Some Game (Steam) (PC) Giveaway"), "Some Game")
+        self.assertEqual(
+            self.db.cleanup_deal_title("Some Game (Steam) (PC) Giveaway"), "Some Game"
+        )
 
     def test_gog_get_for_free_wrapper(self):
-        self.assertEqual(self.db.cleanup_deal_title("Get Classic RPG for FREE!"), "Classic RPG")
+        self.assertEqual(
+            self.db.cleanup_deal_title("Get Classic RPG for FREE!"), "Classic RPG"
+        )
 
     def test_giveaway_suffix_removed(self):
         self.assertEqual(self.db.cleanup_deal_title("Neat Game Giveaway"), "Neat Game")
 
     def test_free_prefix_removed(self):
-        self.assertEqual(self.db.cleanup_deal_title("Free Space Sim Giveaway"), "Space Sim")
+        self.assertEqual(
+            self.db.cleanup_deal_title("Free Space Sim Giveaway"), "Space Sim"
+        )
 
     def test_marker_matching_is_case_insensitive(self):
-        self.assertEqual(self.db.cleanup_deal_title("Indie Gem (Itch.io) Giveaway"), "Indie Gem")
-        self.assertEqual(self.db.cleanup_deal_title("Indie Gem (ITCH.IO) Giveaway"), "Indie Gem")
-        self.assertEqual(self.db.cleanup_deal_title("Some Game (STEAM) Giveaway"), "Some Game")
+        self.assertEqual(
+            self.db.cleanup_deal_title("Indie Gem (Itch.io) Giveaway"), "Indie Gem"
+        )
+        self.assertEqual(
+            self.db.cleanup_deal_title("Indie Gem (ITCH.IO) Giveaway"), "Indie Gem"
+        )
+        self.assertEqual(
+            self.db.cleanup_deal_title("Some Game (STEAM) Giveaway"), "Some Game"
+        )
 
     def test_dotless_itchio_marker(self):
-        self.assertEqual(self.db.cleanup_deal_title("Indie Gem (itchio) Giveaway"), "Indie Gem")
-        self.assertEqual(self.db.cleanup_deal_title("Indie Gem (Itchio) Giveaway"), "Indie Gem")
+        self.assertEqual(
+            self.db.cleanup_deal_title("Indie Gem (itchio) Giveaway"), "Indie Gem"
+        )
+        self.assertEqual(
+            self.db.cleanup_deal_title("Indie Gem (Itchio) Giveaway"), "Indie Gem"
+        )
 
     def test_marker_at_position_zero_is_kept(self):
         # a marker at position 0 is ignored so the title is not truncated to
         # an empty string
-        self.assertEqual(self.db.cleanup_deal_title("(Steam) Game Giveaway"), "(Steam) Game")
+        self.assertEqual(
+            self.db.cleanup_deal_title("(Steam) Game Giveaway"), "(Steam) Game"
+        )
 
 
 class TestCleanupDealPlatforms(unittest.TestCase):
@@ -102,7 +128,9 @@ class TestCleanupDealPlatforms(unittest.TestCase):
 
     def test_single_platform(self):
         self.assertEqual(self.db.cleanup_deal_platforms("PC, Steam"), "Steam")
-        self.assertEqual(self.db.cleanup_deal_platforms("PC, Epic Games Store"), "Epic Games Store")
+        self.assertEqual(
+            self.db.cleanup_deal_platforms("PC, Epic Games Store"), "Epic Games Store"
+        )
 
     def test_priority_order(self):
         # GOG is listed before Steam in STORE_LIST so it wins
