@@ -2,8 +2,8 @@ import { Settings, SettingsType } from "./settings";
 import { PyCaller } from "../../PyCaller";
 
 export class UpdateGamesListTimer {
-  private static firstUpdate: NodeJS.Timeout | undefined;
-  private static timer: NodeJS.Timeout | undefined;
+  private static firstUpdate: ReturnType<typeof setTimeout> | undefined;
+  private static timer: ReturnType<typeof setInterval> | undefined;
 
   // scheduling is synchronous so there is no await window between clearing
   // the old timers and storing the new ones, which could orphan a timer

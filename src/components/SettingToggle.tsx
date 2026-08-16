@@ -1,4 +1,4 @@
-import { ToggleField } from "decky-frontend-lib";
+import { ToggleField } from "@decky/ui";
 import { SettingsType } from "./utils/settings";
 
 type SettingToggleProps = {

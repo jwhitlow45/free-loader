@@ -1,4 +1,4 @@
-import { DialogButton, Navigation, PanelSectionRow } from "decky-frontend-lib";
+import { DialogButton, Navigation, PanelSectionRow } from "@decky/ui";
 import { PyCaller } from "../PyCaller";
 import React, { useContext } from "react";
 import GamesListContext from "./context/GamesListContext";
@@ -25,9 +25,11 @@ const GamePanel: React.FunctionComponent<GamePanelProps> = ({ deal, show_title }
           }}
           onOKActionDescription='Open Store Page'
           onSecondaryButton={async () => {
-            const response = await PyCaller.toggleDealVisibility(deal.id)
-            if (response.success) {
+            try {
+              await PyCaller.toggleDealVisibility(deal.id)
               setGamesList(await fetchGamesList())
+            } catch (error) {
+              PyCaller.loggerError(`Failed to toggle game visibility: ${error}`)
             }
           }}
           onSecondaryActionDescription={deal.hidden ? 'Show Game' : 'Hide Game'}

@@ -1,4 +1,4 @@
-import { DialogButton, DialogLabel, Focusable } from "decky-frontend-lib";
+import { DialogButton, DialogLabel, Focusable } from "@decky/ui";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { SettingsType } from "./utils/settings";
 import { UpdateFreqConext } from "./ConfigurationPanels";

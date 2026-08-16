@@ -20,15 +20,19 @@ export const Settings: { [key: string]: string } = {
 
 export type SettingsType = typeof Settings[keyof typeof Settings]
 
-export async function loadSettings(retries: number = 0): Promise<{}> {
+export async function loadSettings(retries: number = 0): Promise<{ [key: string]: any }> {
     if (retries > MAX_LOAD_SETTINGS_RETRIES) {
         PyCaller.loggerError(`Max retries of ${MAX_LOAD_SETTINGS_RETRIES} reached for loading settings.`);
         return {};
     }
 
-    let response = await PyCaller.getSettings();
-    if (response.success && Object.keys(response.result).length > 0) {
-        return response.result;
+    try {
+        const settings = await PyCaller.getSettings();
+        if (Object.keys(settings).length > 0) {
+            return settings;
+        }
+    } catch (error) {
+        PyCaller.loggerError(`Cannot load settings: ${error}`);
     }
 
     PyCaller.loggerError(`Cannot load settings...retrying in ${RETRY_COOLDOWN / 1000} second(s).`);

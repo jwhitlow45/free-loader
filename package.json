@@ -2,6 +2,7 @@
   "name": "free-loader",
   "version": "1.5.2",
   "description": "Notifications for free games on Steam, GOG, Epic Games Store, and Itch.io!",
+  "type": "module",
   "scripts": {
     "build": "shx rm -rf dist && rollup -c",
     "watch": "rollup -c -w",
@@ -25,21 +26,16 @@
   },
   "homepage": "https://github.com/jwhitlow45/free-loader#readme",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^21.1.0",
-    "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@rollup/plugin-replace": "^4.0.0",
-    "@rollup/plugin-typescript": "^8.3.3",
-    "@types/react": "16.14.0",
-    "@types/webpack": "^5.28.0",
-    "decky-frontend-lib": "^3.20.7",
-    "rollup": "^2.77.1",
-    "rollup-plugin-import-assets": "^1.1.1",
+    "@decky/rollup": "^1.0.2",
+    "@decky/ui": "^4.12.0",
+    "@types/react": "18.3.3",
+    "rollup": "^4.20.0",
     "shx": "^0.3.4",
     "tslib": "^2.4.0",
-    "typescript": "^4.7.4"
+    "typescript": "^5.5.0"
   },
   "dependencies": {
+    "@decky/api": "^1.1.3",
     "react-icons": "^4.4.0",
     "react-qr-code": "^2.0.18"
   },

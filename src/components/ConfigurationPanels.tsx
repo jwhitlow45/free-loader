@@ -1,4 +1,4 @@
-import { ButtonItem, Field, PanelSection, PanelSectionRow } from "decky-frontend-lib";
+import { ButtonItem, Field, PanelSection, PanelSectionRow } from "@decky/ui";
 import { createContext, useCallback, useEffect, useState } from "react";
 import { PyCaller } from "../PyCaller";
 import { Settings, SettingsType, loadSettings } from "./utils/settings";
@@ -15,7 +15,12 @@ const ConfigurationPanels: React.FunctionComponent = () => {
     let output: { [key: SettingsType]: any } = await loadSettings();
     if (Object.keys(output).length === 0) {
       PyCaller.loggerError('Could not load settings...restoring settings file.');
-      await PyCaller.restoreSettings();
+      try {
+        await PyCaller.restoreSettings();
+      } catch (error) {
+        PyCaller.loggerError(`Failed to restore settings: ${error}`);
+        return;
+      }
       output = await loadSettings();
     }
     if (Object.keys(output).length > 0) {
@@ -39,7 +44,11 @@ const ConfigurationPanels: React.FunctionComponent = () => {
 
   const updateSetting = useCallback(async (setting: SettingsType, value: any) => {
     setSettings((prev) => prev === null ? prev : { ...prev, [setting]: value });
-    await PyCaller.setSetting(setting, value);
+    try {
+      await PyCaller.setSetting(setting, value);
+    } catch (error) {
+      PyCaller.loggerError(`Failed to save setting ${setting}: ${error}`);
+    }
   }, []);
 
   const updateFreq = useCallback(async (setting: SettingsType, increment: boolean) => {
