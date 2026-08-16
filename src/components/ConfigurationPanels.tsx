@@ -106,6 +106,13 @@ const ConfigurationPanels: React.FunctionComponent = () => {
         </PanelSectionRow>
         <PanelSectionRow>
           <SettingToggle
+            label='Amazon Prime'
+            value={Boolean(settings[Settings.ENABLE_AMAZON_GAMES])}
+            setting={Settings.ENABLE_AMAZON_GAMES}
+            onUpdate={updateSetting} />
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SettingToggle
             label='Epic Games Store'
             value={Boolean(settings[Settings.ENABLE_EGS_GAMES])}
             setting={Settings.ENABLE_EGS_GAMES}
@@ -123,13 +130,6 @@ const ConfigurationPanels: React.FunctionComponent = () => {
             label='Itch.io'
             value={Boolean(settings[Settings.ENABLE_ITCHIO_GAMES])}
             setting={Settings.ENABLE_ITCHIO_GAMES}
-            onUpdate={updateSetting} />
-        </PanelSectionRow>
-        <PanelSectionRow>
-          <SettingToggle
-            label='Amazon Prime'
-            value={Boolean(settings[Settings.ENABLE_AMAZON_GAMES])}
-            setting={Settings.ENABLE_AMAZON_GAMES}
             onUpdate={updateSetting} />
         </PanelSectionRow>
       </PanelSection>
