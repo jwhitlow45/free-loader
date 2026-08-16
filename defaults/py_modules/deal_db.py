@@ -232,15 +232,16 @@ class DealDB:
                 return name
         return ""
 
-    def get_new_deals(self) -> dict[str, Deal]:
+    def get_gamerpower_deals(self) -> dict[str, Deal]:
         response = request(STORE_GAMES_ENDPOINT)
         deal_response_list: list[dict[str, str | int]] = []
 
         if response.status >= 400:
-            logger.error(
-                f"Something went wrong. Received status code {response.status} from {STORE_GAMES_ENDPOINT}"
+            # raise instead of returning an empty result so a gamerpower
+            # outage keeps the cached deals rather than wiping the db
+            raise RuntimeError(
+                f"Received status code {response.status} from {STORE_GAMES_ENDPOINT}"
             )
-            return {}
 
         if response.status == 201:
             logger.info("No current deals available")
@@ -269,7 +270,7 @@ class DealDB:
     def process_new_deals(self) -> None:
         # fetch over the network before taking the lock so file access is
         # never blocked behind a slow request
-        new_deals = self.get_new_deals()
+        new_deals = self.get_gamerpower_deals()
         with _db_lock:
             self.import_from_json()
             self.compare_and_export_deals(new_deals)
